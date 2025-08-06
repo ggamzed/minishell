@@ -1,0 +1,71 @@
+1-	- güncel:
+		hata durumu -> 0
+		başarılı -> 1
+
+2- echo hata durumları:
+echo "a - ok
+echo a" - ok
+"echo a" - ko
+	executor da halledilmesi gerek:
+	Input: "echo a"
+		↓
+	Lexer: [DOUBLE_QUOTED_STRING:"echo a"]
+		↓
+	Parser: Command{argv=["echo a", NULL]}
+		↓
+	Executor: find_executable("echo a") → NULL
+		↓
+	Output: "echo a: command not found"
+
+3- Exit Status Değerleri:
+Exit Code | Anlamı
+----------|----------------------------------
+0         | Başarılı
+1         | Genel hata
+2         | Yanlış kullanım (Syntax hatası)
+126       | İzin yok (Execute permission yok)
+127       | Komut bulunamadı
+130       | Ctrl+C (SIGINT)
+255       | Geçersiz argüman
+
+GENEL
+1- expander'ı parserdan değil executor'dan çağırmak
+2- ft_iswitespace fonksiyonu sadece boşluğu kontrol etmeli
+3- hata durumlarını perror ile yazdırmak?
+4- dosya + fonksiyon isimlerini düzenle
+5- dönüş değerlerini kontrol et hepsi hata-0 başarılı-1 değil? + builtinler başarılı başarısız durumda hep mi 0 döndürüyor?
+
+
+LEXER 
+!!!!! FREE FONKSİYONUNU (garbage collector) SAKIN UNTUMA
+1- ft_validate_syntax ft_tokenize'a gelmeden de yapılabilir, 'bak.
+2- ft_get_operator_type fonksiyonunda:
+	return (++(*i), REDIRECT_IN); -> norm mu?
+3- ft_tokenize fonksiyonu +25 satır
+4- ft_get_operator_type fonksiyonunun son return değerine bak
+
+5- cat<eof çalışmamalı syntax kontrolüne ekle !!ÇALIŞIYORMUŞ!!
+
+PARSER
+!!!!! FREE FONKSİYONUNU (garbage collector) SAKIN UNTUMA
+1- ft_parse_tokens fonksiyonuna shell yapısını göndermemiz gerekiyor sanırım
+
+
+UTILS
+1- ft_malloc fonksiyonunda hata olursa sadece printf ile hata yazdırıyor, dönüşünü de fonksiyonun çağırıldığı yerde kontrol etmiyoruz.
+2- kendi ft_itoa'nı al
+3- kendi strjoin'ini al
+
+
+ENVIRONMENT
+1- arka planda nasıl tutuluyor ki bize geldiğinde env[0], env[1], env[2]... şeklinde direkt parçalı oluyor?
+
+
+EXPANDER -BİTMEDİ
+-> ileriki zamanlarda yazılsın?
+
+
+BUILTIN
+1- ft_execute_builtin fonksiyonunda else bloğunun içindeki if'e bak. gerekli mi gereksiz mi izin var mı başka nasıl olabilir?
+2- PATH_MAX kullanımı mantıklı mı? başka nasıl olabilir?
+3- ft_execute_builtin +25 satır

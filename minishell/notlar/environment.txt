@@ -1,0 +1,26 @@
+Terminal Process Environment:
+├── PATH=/usr/bin:/bin
+├── HOME=/home/user
+├── MY_VAR=hello
+└── ...
+
+   ↓ fork() + execve()
+
+Your Program Environment (envp):
+├── envp[0] = "PATH=/usr/bin:/bin"
+├── envp[1] = "HOME=/home/user"  
+├── envp[2] = "MY_VAR=hello"
+└── envp[n] = NULL
+
+Her environment variable bu formatta:
+"KEY=VALUE"
+
+// Array'in sonu her zaman NULL:
+envp[0] = "PATH=/usr/bin"
+envp[1] = "HOME=/home/user"  
+envp[2] = NULL  // ←← Bu sayede while döngüsü duruyor
+
+1- İşletim sistemi her program başlatırken environment'ı geçirir
+2- Parent process (terminal) kendi environment'ını aktarır
+3- Standart format (KEY=VALUE) sayesinde parse edebiliyoruz
+4- NULL-terminated array olduğu için döngü yapabiliyoruz

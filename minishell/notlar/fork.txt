@@ -1,0 +1,22 @@
+Fork() çağrısından ÖNCE:
+Tek process var: PID = 1234
+
+fork() çağrıldığında 2 ayrı process oluşur ve her ikisine de farklı değer döner:
+
+📊 Dönüş Değerleri:
+Child process'e: pid = 0 döner
+Parent process'e: pid = child'ın gerçek PID'i döner (pozitif sayı)
+Hata durumunda: pid = -1 döner
+
+Fork() çağrısından SONRA:
+👥 İki ayrı process oluşuyor:
+
+🟢 Child Process (YENİ):
+   - Gerçek PID'i = 1235
+   - fork() dönüş değeri = 0
+   - if (pid == 0) bloğuna girer
+
+🔵 Parent Process (ESKİ):
+   - Gerçek PID'i = 1234 (değişmez)
+   - fork() dönüş değeri = 1235 (child'ın PID'i)
+   - else bloğuna girer

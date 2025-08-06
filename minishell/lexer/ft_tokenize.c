@@ -1,0 +1,103 @@
+#include "../minishell.h"
+
+t_token_type	ft_get_word_type(char *line, int i)
+{
+	if (line[i] == '$' && line[i + 1] == '?')
+		return (EXIT_STATUS);
+	if (line[i] == '$' && (ft_isalpha(line[i + 1]) || line[i + 1] == '_'))
+		return (VARIABLE);
+	if (line[i] == '\'')
+		return (SINGLE_QUOTED_STRING);
+	if (line[i] == '"')
+		return (DOUBLE_QUOTED_STRING);
+	return (WORD);
+}
+
+t_token_type	ft_get_operator_type(char *line, int *i)
+{
+	if (line[*i] == '|' && ++(*i))
+		return (PIPE);
+	if (line[*i] == '<')
+	{
+		if (line[*i + 1] == '<' && (*i += 2))
+			return (HEREDOC);
+		return (++(*i), REDIRECT_IN);
+	}
+	if (line[*i] == '>')
+	{
+		if (line[*i + 1] == '>' && (*i += 2))
+			return (REDIRECT_APPEND);
+		return (++(*i), REDIRECT_OUT);
+	}
+	return (ft_get_word_type(line, *i)); //bu return'e bak başka ne olabilir?
+}
+
+char	*ft_get_word(char *line, int *i)
+{
+	int		start;
+	int		len;
+	char	*word;
+	char	quote;
+
+	start = *i;
+	if (line[*i] == '\'' || line[*i] == '"') // Eğer quote ile başlıyorsa, quote'ları çıkar
+	{
+		quote = line[*i];
+		(*i)++;      // Açılış quote'unu atla
+		start = *i;  // Gerçek içerik başlangıcı
+		while (line[*i] && line[*i] != quote)
+			(*i)++;
+		len = *i - start;  // Quote içindeki uzunluk
+		(*i)++;           // Kapanış quote'unu atla
+	}
+	else
+	{
+		while (line[*i] && !ft_is_whitespace(line[*i]) // Normal kelime işleme
+				&& line[*i] != '|' && line[*i] != '<' && line[*i] != '>')
+			(*i)++;
+		len = *i - start;
+	}
+	word = ft_substr(line, start, len);
+	return (word);
+}
+
+t_token	*ft_tokenize(char *line)
+{
+	t_token			*head_of_token;
+	t_token			*token;
+	t_token_type	type;
+	char			*word;
+	int				i;
+
+	if (!ft_validate_syntax(line)) //syntax kontrolü, kapanmamış tırnak var mı? başta yada sonda pipe/redirection yada ekstradan var mı?
+		return (NULL);
+	head_of_token = NULL;
+	i = 0;
+	while (line[i])
+	{
+		while (line[i] && ft_is_whitespace(line[i]))
+			i++;
+		if (!line[i])
+			break;
+		if (line[i] == '|' || line[i] == '<' || line[i] == '>')
+		{
+			type = ft_get_operator_type(line, &i);
+			token = ft_create_token(type, NULL); //null -> zaten type da ne olduğunu tutuyoruz
+			ft_add_token(&head_of_token, token);
+		}
+		else
+		{
+			type = ft_get_word_type(line, i);
+			word = ft_get_word(line, &i);
+			// if (!word)
+			// {
+			// 	ft_free_tokens(head_of_token);
+			// 	return (NULL);
+			// }
+			token = ft_create_token(type, word);
+			ft_add_token(&head_of_token, token);
+			// free(word); // BU SATIRI KALDIR! Token artık word'ü sahiplenir
+		}
+	}
+	return (head_of_token); //parser'a gönderilecek
+}
