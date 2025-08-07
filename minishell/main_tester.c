@@ -87,15 +87,33 @@ void print_commands(t_cmd *commands)
     }
 }
 
-int main(void) //int main(int argc, char **argv, char **envp) -> token / parser test
+void print_all_env(t_env *env_list)
+{
+	t_env *current = env_list;
+	
+	while (current)
+	{
+		// Value NULL değilse yazdır (boş string olsa bile)
+		if (current->value != NULL)
+		{
+			printf("%s=%s\n", current->key, current->value);
+		}
+		current = current->next;
+	}
+}
+
+int main(int argc, char **argv, char **envp) //int main(int argc, char **argv, char **envp) -> token / parser / environment tester
 {
 	t_token *tokens;
 	t_cmd   *cmd;
+	t_env *env_list;;
 	
+	(void)argc;
+    (void)argv;
+
 	//printf("Input: \"echo hello << a | echo hello | \\\"ece\\\"\"\n\n");
 	printf("input: cat << ece > a.txt | echo ece > b.txt | cat << ece > c.txt\n\n");
-	
-	// Tokenize
+
 	//tokens = ft_tokenize("echo hello << a | echo hello | \"ece\"");
 	tokens = ft_tokenize("cat << ece >> a.txt | echo ece > b.txt | cat << ece > c.txt");
 	if (!tokens)
@@ -103,20 +121,26 @@ int main(void) //int main(int argc, char **argv, char **envp) -> token / parser 
 		printf("Tokenization failed!\n");
 		return (1);
 	}
-	
-	// Print tokens
 	print_tokens(tokens);
 	
-	// Parse
+
+
 	cmd = ft_parse_tokens(tokens);
 	if (!cmd)
 	{
 	    printf("Parsing failed!\n");
 	    return (1);
 	}
-	
-	// Print parsed commands
 	print_commands(cmd);
+
+	
+    env_list = init_env(envp);
+	if (!env_list)
+	{
+		printf("Environment failed!\n");
+		return (1);
+	}
+	print_all_env(env_list);
 	
 	return (0);
 }

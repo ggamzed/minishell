@@ -22,17 +22,19 @@ SRCS = main.c \
        $(parser)ft_parse_tokens.c \
 	   $(parser)ft_handle_redirections.c \
 	   $(parser)ft_parse_command.c \
-	   $(env)environment.c \
-	   $(env)env_utils.c \
+	   $(env)ft_env_node.c \
+	   $(env)ft_env_utils.c \
+	   $(env)ft_init_env.c \
+	   $(env)ft_parse_env.c \
 	   $(expander)expander.c \
-	   $(builtins)builtin.c \
 	   $(builtins)ft_builtin_cd.c \
 	   $(builtins)ft_builtin_echo.c \
 	   $(builtins)ft_builtin_env.c \
 	   $(builtins)ft_builtin_exit.c \
 	   $(builtins)ft_builtin_export.c \
 	   $(builtins)ft_builtin_pwd.c \
-	   $(builtins)ft_builtin_unset.c
+	   $(builtins)ft_builtin_unset.c \
+	   $(builtins)ft_execute_builtin.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)
