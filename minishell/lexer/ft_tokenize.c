@@ -52,7 +52,7 @@ char	*ft_get_word(char *line, int *i)
 	}
 	else
 	{
-		while (line[*i] && !ft_is_whitespace(line[*i]) // Normal kelime işleme
+		while (line[*i] && !ft_is_space(line[*i]) // Normal kelime işleme
 				&& line[*i] != '|' && line[*i] != '<' && line[*i] != '>')
 			(*i)++;
 		len = *i - start;
@@ -75,7 +75,7 @@ t_token	*ft_tokenize(char *line)
 	i = 0;
 	while (line[i])
 	{
-		while (line[i] && ft_is_whitespace(line[i]))
+		while (line[i] && ft_is_space(line[i]))
 			i++;
 		if (!line[i])
 			break;

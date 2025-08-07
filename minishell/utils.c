@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int	ft_is_whitespace(char c)
+int	ft_is_space(char c)
 {
-	if (c == ' ' || c == '\t' || c == '\n' || c == '\r')
+	if (c == ' ')
 		return (1);
 	return (0);
 }

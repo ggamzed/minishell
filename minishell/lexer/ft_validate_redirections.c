@@ -18,7 +18,7 @@ static void	ft_skip_redirection_operator(char *line, int *i)
 
 static int	ft_check_filename_after_redirection(char *line, int i)
 {
-	while (line[i] && ft_is_whitespace(line[i]))
+	while (line[i] && ft_is_space(line[i]))
 		i++;
 	if (!line[i] || line[i] == '|' || line[i] == '<' || line[i] == '>')
 	{

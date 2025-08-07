@@ -116,10 +116,10 @@ char	*ft_expand_token_value(char *value, t_token_type type, t_shell *shell, int 
 		return (ft_strdup(value));
 }
 
-char	**ft_expand_cmd_arguments(t_cmd_arg *args, t_shell *shell)
+char	**ft_expand_cmd_arguments(t_token *args, t_shell *shell)
 {
 	char		**argv;
-	t_cmd_arg	*current;
+	t_token	*current;
 	char		*expanded;
 	int			count;
 	int			i;

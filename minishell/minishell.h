@@ -43,26 +43,18 @@ typedef struct s_token
 	struct s_token	*next;		//sonraki node'un adresi
 }	t_token;
 
-// command argument yapısı
-typedef struct s_cmd_arg
-{
-	char			*value;          // Raw token value
-	t_token_type	type;           // Token type (WORD, VARIABLE, DOUBLE_QUOTED, etc.)
-	struct s_cmd_arg *next;
-}	t_cmd_arg;
-
-// environment (çevre değişkenleri) yapısı
-typedef struct s_env
-{
-	char			*key;
-	char			*value;
-	struct s_env	*next;
-}	t_env;
+// // command argument yapısı
+// typedef struct s_cmd_arg
+// {
+// 	char			*value;          // Raw token value
+// 	t_token_type	type;           // Token type (WORD, VARIABLE, DOUBLE_QUOTED, etc.)
+// 	struct s_cmd_arg *next;
+// }	t_cmd_arg;
 
 // command yapısı -> tek bir komutu temsil eder 
 typedef struct s_cmd
 {
-	t_cmd_arg		*args;              // Linked list of arguments with types
+	t_token			*args;              // Linked list of arguments with types
 	char			*input_file;        // < input.txt (raw value)
 	t_token_type	input_type;         // Input file token type
 	char			*output_file;       // > output.txt (raw value)  
@@ -74,6 +66,14 @@ typedef struct s_cmd
 	struct s_cmd	*next;              // pipe'daki sonraki komut
 } t_cmd;
 
+// environment (çevre değişkenleri) yapısı
+typedef struct s_env
+{
+	char			*key;
+	char			*value;
+	struct s_env	*next;
+}	t_env;
+
 // main shell yapısı
 typedef struct s_shell
 {
@@ -84,8 +84,11 @@ typedef struct s_shell
 	int		exit_flag;		// shell kapansın mı? (exit komutu)
 }	t_shell;
 
+
+
+
 //--------------------------------UTILS--------------------------------
-int		ft_is_whitespace(char c);
+int		ft_is_space(char c);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 int		ft_strlen(const char *s);
 char	*ft_strdup(const char *s);
@@ -115,8 +118,8 @@ int	ft_validate_redirections(char *line);
 
 //--------------------------------PARSER--------------------------------
 t_cmd		*ft_create_command(void);
-t_cmd_arg	*ft_create_cmd_arg(char *value, t_token_type type);
-void		ft_add_cmd_arg(t_cmd_arg **args, t_cmd_arg *new_arg);
+t_token		*ft_create_cmd_arg(char *value, t_token_type type);
+void		ft_add_cmd_arg(t_token **args, t_token *new_arg);
 void		ft_get_cmd_arguments(t_token **current, t_cmd *cmd);
 int			ft_parse_redirections(t_cmd *cmd, t_token **current);
 t_cmd		*ft_parse_command(t_token **current);
@@ -132,7 +135,7 @@ int			ft_handle_heredoc(t_cmd *cmd, t_token **current);
 
 //--------------------------------EXPANDER--------------------------------
 char	*ft_expand_token_value(char *value, t_token_type type, t_shell *shell, int is_heredoc_delimiter);
-char	**ft_expand_cmd_arguments(t_cmd_arg *args, t_shell *shell);
+char	**ft_expand_cmd_arguments(t_token *args, t_shell *shell);
 char	*ft_expand_variables(char *str, t_shell *shell);
 
 //--------------------------------ENVIRONMENT--------------------------------

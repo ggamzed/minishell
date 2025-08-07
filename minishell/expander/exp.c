@@ -161,12 +161,12 @@ char	*ft_expand_filename(char *filename, t_token_type type, t_shell *shell)
 	return (ft_expand_single_token(filename, type, shell));
 }
 
-char	**ft_expand_arguments_to_argv(t_cmd_arg *args, t_shell *shell)
+char	**ft_expand_arguments_to_argv(t_token *args, t_shell *shell)
 {
 	// Argument linked list'ini argv array'ine çevirir
 	// Executor'da execve için hazır hale getirir
 	char		**argv;
-	t_cmd_arg	*current;
+	t_token	*current;
 	char		*expanded;
 	int			count;
 	int			i;

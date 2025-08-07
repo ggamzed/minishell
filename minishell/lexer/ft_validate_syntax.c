@@ -32,7 +32,7 @@
 // {
 // 	int	i = 0;
 
-// 	while (line[i] && ft_is_whitespace(line[i])) // Başlangıçta pipe kontrolü
+// 	while (line[i] && ft_is_space(line[i])) // Başlangıçta pipe kontrolü
 // 		i++;
 // 	if (line[i] == '|')
 // 	{
@@ -40,7 +40,7 @@
 // 		return (0);
 // 	}
 // 	i = ft_strlen(line) - 1;
-// 	while (i >= 0 && ft_is_whitespace(line[i])) // Sonda pipe kontrolü
+// 	while (i >= 0 && ft_is_space(line[i])) // Sonda pipe kontrolü
 // 		i--;
 // 	if (i >= 0 && line[i] == '|')
 // 	{
@@ -53,7 +53,7 @@
 // 		if (line[i] == '|')
 // 		{
 // 			i++;
-// 			while (line[i] && ft_is_whitespace(line[i]))
+// 			while (line[i] && ft_is_space(line[i]))
 // 				i++;
 // 			if (line[i] == '|')
 // 			{
@@ -89,7 +89,7 @@
 // 				if (line[i] == '>')
 // 					i++;
 // 			}
-// 			while (line[i] && ft_is_whitespace(line[i]))
+// 			while (line[i] && ft_is_space(line[i]))
 // 				i++;
 // 			if (!line[i] || line[i] == '|' || line[i] == '<' || line[i] == '>') // Filename kontrolü && karışık operatör && çift operatör (< <)
 // 			{

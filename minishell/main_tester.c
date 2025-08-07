@@ -33,9 +33,9 @@ void print_tokens(t_token *tokens)
     printf("Total tokens: %d\n\n", i);
 }
 
-void print_cmd_args(t_cmd_arg *args)
+void print_cmd_args(t_token *args)
 {
-    t_cmd_arg *current = args;
+    t_token *current = args;
     int i = 0;
     
     printf("    Arguments:\n");

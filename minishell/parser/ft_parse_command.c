@@ -18,20 +18,20 @@ t_cmd	*ft_create_command(void)
 	return (cmd);
 }
 
-t_cmd_arg	*ft_create_cmd_arg(char *value, t_token_type type)
+t_token	*ft_create_cmd_arg(char *value, t_token_type type)
 {
-	t_cmd_arg	*arg;
+	t_token	*arg;
 
-	arg = ft_malloc(sizeof(t_cmd_arg));
+	arg = ft_malloc(sizeof(t_token));
 	arg->value = ft_strdup(value);
 	arg->type = type;
 	arg->next = NULL;
 	return (arg);
 }
 
-void	ft_add_cmd_arg(t_cmd_arg **args, t_cmd_arg *new_arg)
+void	ft_add_cmd_arg(t_token **args, t_token *new_arg)
 {
-	t_cmd_arg	*current;
+	t_token	*current;
 
 	if (!*args)
 	{
@@ -47,7 +47,7 @@ void	ft_add_cmd_arg(t_cmd_arg **args, t_cmd_arg *new_arg)
 t_cmd	*ft_parse_command(t_token **current)
 {
 	t_cmd		*cmd;
-	t_cmd_arg	*arg;
+	t_token	*arg;
 
 	cmd = ft_create_command();
 	while (*current && (*current)->type != PIPE) // Tüm token'ları tek döngüde işle

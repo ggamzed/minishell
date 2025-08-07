@@ -7,9 +7,9 @@ static int	ft_check_pipe_boundaries(char *line)
 
 	i = 0;
 	j = ft_strlen(line) - 1;
-	while (line[i] && ft_is_whitespace(line[i]))
+	while (line[i] && ft_is_space(line[i]))
 		i++;
-	while (j >= 0 && ft_is_whitespace(line[j]))
+	while (j >= 0 && ft_is_space(line[j]))
 		j--;
 	if (line[i] == '|' || (j >= 0 && line[j] == '|'))
 	{
@@ -29,7 +29,7 @@ static int	ft_check_double_pipes(char *line)
 		if (line[i] == '|')
 		{
 			i++;
-			while (line[i] && ft_is_whitespace(line[i]))
+			while (line[i] && ft_is_space(line[i]))
 				i++;
 			if (line[i] == '|')
 			{
