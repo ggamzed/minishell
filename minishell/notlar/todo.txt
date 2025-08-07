@@ -35,6 +35,7 @@ GENEL
 4- dosya + fonksiyon isimlerini düzenle
 5- dönüş değerlerini kontrol et hepsi hata-0 başarılı-1 değil? + builtinler başarılı başarısız durumda hep mi 0 döndürüyor?
 6- t_cmd_arg struct'ı silindi, onun yerine t_token kullanılıyor. fonksiyon isimlerinde değişiklik? 
+7- lexer'da ilk t_token olarak liste oluşturuyoruz sonrasında parser'da t_cmd içindeki t_token args'a yeniden o listeyi geçiriyoruz. onun yerine leexer da direkt t_cmd->args'ı kullanarak liste oluştursak daha mantıklı olmaz mı?
 
 
 LEXER 

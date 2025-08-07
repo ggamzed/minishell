@@ -1,5 +1,6 @@
 #include "../minishell.h"
 
+// komut listesinin sonuna yeni komut ekler
 void	ft_add_command(t_cmd **commands, t_cmd *new_cmd)
 {
 	t_cmd	*current;
@@ -15,10 +16,11 @@ void	ft_add_command(t_cmd **commands, t_cmd *new_cmd)
 	current->next = new_cmd;
 }
 
+// pipe'larla ayrılmış komutları ayrı t_cmd'lere dönüştürür
 t_cmd	*ft_parse_tokens(t_token *tokens)
 {
-	t_cmd	*commands;
-	t_cmd	*cmd;
+	t_cmd	*commands;  //komut listesi
+	t_cmd	*cmd; //tek bir komut
 	t_token	*current;
 
 	commands = NULL;
