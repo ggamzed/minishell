@@ -71,3 +71,7 @@ BUILTIN
 1- ft_execute_builtin fonksiyonunda else bloğunun içindeki if'e bak. gerekli mi gereksiz mi izin var mı başka nasıl olabilir?
 2- PATH_MAX kullanımı mantıklı mı? başka nasıl olabilir?
 3- ft_execute_builtin +25 satır
+
+
+FREE
+genel olarak gözden geçir / yeniden yaz

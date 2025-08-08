@@ -103,6 +103,11 @@ char	*ft_strchr(const char *s, int c);
 int		ft_is_digit(char c);
 int		ft_atoi(const char *str);
 
+//--------------------------------FREE--------------------------------
+void	ft_free_tokens(t_token *tokens);
+void	ft_free_commands(t_cmd *commands);
+void	ft_free_shell(t_shell *shell);
+
 //--------------------------------LEXER--------------------------------
 t_token_type	ft_get_operator_type(char *line, int *i);
 char			*ft_get_word(char *line, int *i);
@@ -134,9 +139,7 @@ int			ft_handle_redirect_append(t_cmd *cmd, t_token **current);
 int			ft_handle_heredoc(t_cmd *cmd, t_token **current);
 
 //--------------------------------EXPANDER--------------------------------
-char	*ft_expand_token_value(char *value, t_token_type type, t_shell *shell, int is_heredoc_delimiter);
-char	**ft_expand_cmd_arguments(t_token *args, t_shell *shell);
-char	*ft_expand_variables(char *str, t_shell *shell);
+
 
 //--------------------------------ENVIRONMENT--------------------------------
 t_env	*ft_create_env_node(char *key, char *value);

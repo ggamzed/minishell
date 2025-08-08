@@ -12,6 +12,7 @@ builtins = builtins/
 # Source files
 SRCS = main.c \
        utils.c \
+	   free.c \
        $(lexer)ft_tokenize.c \
        $(lexer)ft_token.c \
        $(lexer)ft_validate_syntax.c \

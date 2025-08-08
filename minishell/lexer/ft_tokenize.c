@@ -69,7 +69,7 @@ t_token	*ft_tokenize(char *line)
 	char			*word;
 	int				i;
 
-	if (!ft_validate_syntax(line)) //syntax kontrolü, kapanmamış tırnak var mı? başta yada sonda pipe/redirection yada ekstradan var mı?
+	if (!ft_validate_syntax(line)) //(main process_line'da yapılıyor burada gerek yok?) syntax kontrolü, kapanmamış tırnak var mı? başta yada sonda pipe/redirection yada ekstradan var mı?
 		return (NULL);
 	head_of_token = NULL;
 	i = 0;
