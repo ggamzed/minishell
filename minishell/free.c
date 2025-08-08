@@ -15,20 +15,20 @@ void	ft_free_tokens(t_token *tokens)
 	}
 }
 
-// static void	free_split(char **split)
-// {
-// 	int	i;
+void	ft_free_split(char **split)
+{
+	int	i;
 
-// 	if (!split)
-// 		return;
-// 	i = 0;
-// 	while (split[i])
-// 	{
-// 		free(split[i]);
-// 		i++;
-// 	}
-// 	free(split);
-// }
+	if (!split)
+		return;
+	i = 0;
+	while (split[i])
+	{
+		free(split[i]);
+		i++;
+	}
+	free(split);
+}
 
 void	ft_free_commands(t_cmd *commands)
 {

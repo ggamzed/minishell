@@ -36,11 +36,11 @@ static int	ft_execute_builtin_function(char **argv, t_shell *shell)
 
 int	ft_execute_builtin(t_shell *shell, t_cmd *cmd, int in_pipe)
 {
-	char	**argv;
-
 	if (!cmd->expanded_argv || !cmd->expanded_argv[0])
         return (1);
-	if (!ft_is_builtin(argv[0]))
+	if (!ft_is_builtin(cmd->expanded_argv[0]))
 		return (1);
-	return (ft_execute_builtin_function(argv, shell));
+	if (in_pipe && ft_strcmp(cmd->expanded_argv[0], "exit") == 0)
+        return (0);
+	return (ft_execute_builtin_function(cmd->expanded_argv, shell));
 }

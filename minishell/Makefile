@@ -9,6 +9,7 @@ parser = parser/
 expander = expander/
 env = env/
 builtins = builtins/
+executor = executor/
 # Source files
 SRCS = main.c \
        utils.c \
@@ -35,7 +36,13 @@ SRCS = main.c \
 	   $(builtins)ft_builtin_export.c \
 	   $(builtins)ft_builtin_pwd.c \
 	   $(builtins)ft_builtin_unset.c \
-	   $(builtins)ft_execute_builtin.c
+	   $(builtins)ft_execute_builtin.c \
+	   $(executor)ft_execute_child_process.c \
+	   $(executor)ft_execute_commands.c \
+	   $(executor)ft_execute_multiple_command.c \
+	   $(executor)ft_execute_single_command.c \
+	   $(executor)ft_find_executable.c \
+	   $(executor)setup_redirection.c #değişecek 
 
 # Object files
 OBJS = $(SRCS:.c=.o)

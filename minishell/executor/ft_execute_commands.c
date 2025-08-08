@@ -19,7 +19,6 @@ static int	ft_count_commands(t_cmd *cmd_list)
 int	ft_execute_commands(t_shell *shell)
 {
 	t_cmd *current;
-	int result;
 	
 	if (!shell->cmd_list || !shell->cmd_list->args)
 		return (0);

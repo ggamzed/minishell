@@ -76,6 +76,44 @@ int	ft_unset_env_value(char *key, t_env **env_list)
 	return (0);
 }
 
+static int	ft_count_env_vars(t_env *env_list)
+{
+	t_env	*current;
+	int		count;
+
+	count = 0;
+	current = env_list;
+	while (current)
+	{
+		if (current->value)
+			count++;
+		current = current->next;
+	}
+	return (count);
+}
+
+static void	ft_fill_env_array(t_env *env_list, char **envp)
+{
+	t_env	*current;
+	char	*temp;
+	int		i;
+
+	current = env_list;
+	i = 0;
+	while (current)
+	{
+		if (current->value)
+		{
+			temp = ft_strjoin(current->key, "=");
+			envp[i] = ft_strjoin(temp, current->value);
+			free(temp);
+			i++;
+		}
+		current = current->next;
+	}
+	envp[i] = NULL;
+}
+
 char	**ft_env_to_array(t_env *env_list)
 {
 	char	**envp;
@@ -86,52 +124,3 @@ char	**ft_env_to_array(t_env *env_list)
 	ft_fill_env_array(env_list, envp);
 	return (envp);
 }
-
-// static int	ft_count_env_vars(t_env *env_list)
-// {
-// 	t_env	*current;
-// 	int		count;
-
-// 	count = 0;
-// 	current = env_list;
-// 	while (current)
-// 	{
-// 		if (current->value)
-// 			count++;
-// 		current = current->next;
-// 	}
-// 	return (count);
-// }
-
-// static void	ft_fill_env_array(t_env *env_list, char **envp)
-// {
-// 	t_env	*current;
-// 	char	*temp;
-// 	int		i;
-
-// 	current = env_list;
-// 	i = 0;
-// 	while (current)
-// 	{
-// 		if (current->value)
-// 		{
-// 			temp = ft_strjoin(current->key, "=");
-// 			envp[i] = ft_strjoin(temp, current->value);
-// 			free(temp);
-// 			i++;
-// 		}
-// 		current = current->next;
-// 	}
-// 	envp[i] = NULL;
-// }
-
-// char	**env_to_array(t_env *env_list)
-// {
-// 	char	**envp;
-// 	int		count;
-
-// 	count = ft_count_env_vars(env_list);
-// 	envp = ft_malloc(sizeof(char *) * (count + 1));
-// 	ft_fill_env_array(env_list, envp);
-// 	return (envp);
-// }

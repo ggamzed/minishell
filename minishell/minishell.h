@@ -8,7 +8,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <limits.h>
-//# include <sys/wait.h>
+# include <sys/wait.h>
 
 // PATH_MAX güvenlik kontrolü -> cd fonksiyonunda kullanmak için
 #ifndef PATH_MAX
@@ -109,6 +109,7 @@ char	**ft_split(char const *s, char c);
 void	ft_free_tokens(t_token *tokens);
 void	ft_free_commands(t_cmd *commands);
 void	ft_free_shell(t_shell *shell);
+void	ft_free_split(char **split);
 
 //--------------------------------LEXER--------------------------------
 t_token_type	ft_get_operator_type(char *line, int *i);
@@ -141,7 +142,7 @@ int			ft_handle_redirect_append(t_cmd *cmd, t_token **current);
 int			ft_handle_heredoc(t_cmd *cmd, t_token **current);
 
 //--------------------------------EXPANDER--------------------------------
-
+char	**ft_expand_tokens(t_token *args, t_shell *shell);
 
 //--------------------------------ENVIRONMENT--------------------------------
 t_env	*ft_create_env_node(char *key, char *value);
@@ -165,5 +166,13 @@ int	ft_builtin_exit(char **argv, t_shell *shell);
 int	ft_builtin_export(char **argv, t_env **env_list);
 int	ft_builtin_pwd(void);
 int	ft_builtin_unset(char **argv, t_env **env_list);
+
+//--------------------------------EXECUTOR--------------------------------
+int		ft_execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd, int prev_fd);
+int		ft_execute_commands(t_shell *shell);
+int		ft_execute_multiple_command(t_shell *shell);
+int		ft_execute_single_command(t_shell *shell, t_cmd *cmd);
+char	*ft_find_executable(char *cmd, t_env *env_list);
+int		setup_redirections(t_cmd *cmd);
 
 #endif
