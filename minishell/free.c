@@ -39,7 +39,9 @@ void	ft_free_commands(t_cmd *commands)
 	while (current)
 	{
 		next = current->next;
-		//free_split(current->argv);
+		// ft_free_tokens(current->args);
+		// if (current->expanded_argv)
+        //     ft_free_split(current->expanded_argv);
 		free(current->input_file);
 		free(current->output_file);
 		free(current->heredoc_delimiter);

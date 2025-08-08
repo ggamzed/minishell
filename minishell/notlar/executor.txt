@@ -1,0 +1,351 @@
+------------------------------HEREDOC------------------------------
+heredoc neden daha önce işlenir?
+
+1- Heredoc daha önceden işlenmeli çünkü kullanıcıdan interactive input bekler. 
+cat << EOF | wc -l komutunda heredoc kısmı (<< EOF) kullanıcının > prompt'unda satır satır input girmesini gerektirir. 
+Eğer bu işlem program execution sırasında yapılmaya çalışılırsa, kullanıcı input girmeye çalışırken aynı anda cat ve wc gibi 
+diğer komutlar da çalışmaya başlar ve stdin kontrolü karışır. Heredoc'u önceden işleyerek, 
+önce kullanıcıdan tüm input'u alır ve geçici dosyaya yazarız, sonra bu hazır veriyi stdin olarak kullanarak diğer komutları çalıştırırız. 
+Bu sayede kullanıcı interaction'ı ile program execution'ı ayrılmış olur ve her iki aşama da kendi zamanında temiz bir şekilde gerçekleşir.
+
+2- Heredoc daha önceden işlenmeli çünkü pipe'larda deadlock oluşur. 
+Eğer cat << EOF | wc -l komutunda heredoc sonradan işlense, önce pipe kurulur ve cat çalışmaya başlar, 
+ama cat stdin'den input beklerken kullanıcı henüz heredoc input'unu girememiştir - çünkü stdin artık cat'e ait, shell'e değil. 
+Bu durumda cat bekler, wc bekler, kullanıcı input veremez ve sistem kilitlenir. 
+Heredoc'u önceden işleyerek (temp dosyaya yazarak), pipe kurulmadan önce input'u hazır hale getiririz, 
+böylece cat başladığında stdin'de hazır veri bulur ve pipe akışı sorunsuz çalışır.
+
+------------------------------FORK------------------------------
+Fork() çağrısından ÖNCE:
+Tek process var: PID = 1234
+
+fork() çağrıldığında 2 ayrı process oluşur ve her ikisine de farklı değer döner:
+
+📊 Dönüş Değerleri:
+Child process'e: pid = 0 döner
+Parent process'e: pid = child'ın gerçek PID'i döner (pozitif sayı)
+Hata durumunda: pid = -1 döner
+
+Fork() çağrısından SONRA:
+👥 İki ayrı process oluşuyor:
+
+🟢 Child Process (YENİ):
+   - Gerçek PID'i = 1235
+   - fork() dönüş değeri = 0
+   - if (pid == 0) bloğuna girer
+
+🔵 Parent Process (ESKİ):
+   - Gerçek PID'i = 1234 (değişmez)
+   - fork() dönüş değeri = 1235 (child'ın PID'i)
+   - else bloğuna girer
+
+
+------------------------------EXECVE------------------------------
+Process Diagram:
+
+Fork Olmadan:
+┌─────────────┐               ┌──────────┐
+│  MINISHELL  │ ──execve()──→ │    LS    │ ──exit()──→ 💀
+│  PROCESS    │               │ PROCESS  │            SHELL DEAD
+└─────────────┘               └──────────┘
+
+Fork İle:
+┌─────────────┐ ──fork()──→ ┌─────────────┐				  ┌──────┐
+│  MINISHELL  │             │    CHILD    │ ──execve()──→ │  LS  │ ──exit()──→ 💀
+│   PARENT    │             │   PROCESS   │               │CHILD │            CHILD DEAD
+└─────────────┘             └─────────────┘               └──────┘
+       │                                                                        
+       │ ──waitpid()──→ ⏰ Wait for child                                       
+       │                                                                        
+       │ ──after child dies──→ 😊 Continue shell
+
+execve fonksiyonu fork olmadan çalıştırılırsa program biter.
+
+execve("/bin/ls", argv, envp);
+// Bu komut şu anlama gelir:
+// "Mevcut process'i tamamen LS programı ile DEĞIŞTIR"
+
+
+Process Replacement:
+Execve Öncesi:
+Process ID: 1234
+┌─────────────────────────┐
+│     MINISHELL           │
+│                         │
+│ - main() fonksiyonu     │
+│ - shell_loop()          │  
+│ - Memory: shell data    │
+│ - Code: minishell.exe   │
+└─────────────────────────┘
+Execve Sonrası:
+Process ID: 1234 (AYNI PID!)
+┌─────────────────────────┐
+│        LS               │
+│                         │  
+│ - main() fonksiyonu     │
+│ - ls logic              │
+│ - Memory: ls data       │
+│ - Code: /bin/ls         │
+└─────────────────────────┘
+
+
+Memory Level'da Ne Oluyor:
+c// Execve öncesi process memory:
+┌──────────────┬──────────────┬──────────────┐
+│  MINISHELL   │   SHELL      │    SHELL     │
+│    CODE      │   STACK      │    HEAP      │
+│              │              │              │
+│ shell_loop() │ variables    │ malloc data  │
+│ main()       │ argc, argv   │ env_list     │  
+│ builtins()   │ local vars   │ cmd_list     │
+└──────────────┴──────────────┴──────────────┘
+
+execve("/bin/ls", argv, envp);  // 💥 TAMAMEN DEĞİŞTİR
+
+// Execve sonrası process memory:
+┌──────────────┬──────────────┬──────────────┐
+│      LS      │     LS       │      LS      │
+│    CODE      │   STACK      │    HEAP      │
+│              │              │              │
+│ ls_main()    │ variables    │ malloc data  │
+│ ls_logic()   │ argc, argv   │ file_list    │
+│ print_files()│ local vars   │ ls_data      │
+└──────────────┴──────────────┴──────────────┘
+
+Execve shell'i öldürür çünkü:
+
+Process replacement yapar - mevcut program'ı tamamen değiştirir
+Code segment değişir (minishell → ls)
+Memory tamamen değişir
+Return imkansız - orijinal program artık yok
+
+Bu yüzden external komutlar için fork zorunlu 
+
+neden process replacement yaparak çalışıyor?
+Her Program = Bir Process
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│     LS      │    │    GREP     │    │     CAT     │
+│             │    │             │    │             │
+│ Tek görev:  │    │ Tek görev:  │    │ Tek görev:  │
+│ Dosya       │    │ Arama       │    │ Dosya       │
+│ listele     │    │ yap         │    │ göster      │
+└─────────────┘    └─────────────┘    └─────────────┘
+Alternative Tasarım Olsaydı (Kötü):
+┌─────────────────────────────────────────────────────┐
+│              MEGA SHELL                             │
+│                                                     │
+│ - built_in_ls()                                     │
+│ - built_in_grep()                                   │
+│ - built_in_cat()                                    │
+│ - built_in_find()                                   │
+│ - built_in_sed()                                    │
+│ - ... 1000+ komut fonksiyon                         │
+│                                                     │
+│ Size: 500MB, Memory: 2GB, Bugs: ∞                   │
+└─────────────────────────────────────────────────────┘
+Memory Efficiency:
+c// Execve ile:
+BEFORE: Shell (50MB) + LS (5MB) = 55MB total
+AFTER:  LS (5MB) only = 5MB total  ✅
+
+// Eğer LS shell içinde çalışsaydı:
+Shell (50MB) + LS logic (5MB) = 55MB sürekli  ❌
+
+Dennis Ritchie'nin Mantığı:
+"Bir process sadece kullanıldığı sürece memory'de olsun.
+İşi bitince tamamen kaybolsun, memory'i başkasına bıraksın."
+
+Mükemmel soru! Bu, işletim sistemlerinin temel tasarım felsefesiyle ilgili. İşte neden:
+
+## 🏗️ Unix Felsefesi: "Do One Thing Well"
+
+### Her Program = Bir Process
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│     LS      │    │    GREP     │    │     CAT     │
+│             │    │             │    │             │
+│ Tek görev:  │    │ Tek görev:  │    │ Tek görev:  │
+│ Dosya       │    │ Arama       │    │ Dosya       │
+│ listele     │    │ yap         │    │ göster      │
+└─────────────┘    └─────────────┘    └─────────────┘
+```
+
+### Alternative Tasarım Olsaydı (Kötü):
+```
+┌─────────────────────────────────────────────────────┐
+│              MEGA SHELL                             │
+│                                                     │
+│ - built_in_ls()                                     │
+│ - built_in_grep()                                   │
+│ - built_in_cat()                                    │
+│ - built_in_find()                                   │
+│ - built_in_sed()                                    │
+│ - ... 1000+ komut fonksiyon                        │
+│                                                     │
+│ Size: 500MB, Memory: 2GB, Bugs: ∞                  │
+└─────────────────────────────────────────────────────┘
+```
+
+process replacement'in avantajları:
+
+### 1. Memory Efficiency:
+```c
+// Execve ile:
+BEFORE: Shell (50MB) + LS (5MB) = 55MB total
+AFTER:  LS (5MB) only = 5MB total  ✅
+
+// Eğer LS shell içinde çalışsaydı:
+Shell (50MB) + LS logic (5MB) = 55MB sürekli  ❌
+```
+
+Shell'in ls, grep, find, sed... hepsini içermesi = Çok büyük
+Her komut ayrı program = Sadece gerekeni yükle
+```
+
+### Dennis Ritchie'nin Mantığı:
+> "Bir process sadece kullanıldığı sürece memory'de olsun. 
+> İşi bitince tamamen kaybolsun, memory'i başkasına bıraksın."
+
+## 🌊 Philosophy:
+
+Unix tasarımcıları şunu düşündü:
+> "Her komut bağımsız bir varlık olsun. Birbirlerini etkilemesinler. 
+> Gerektiğinde kolayca değiştirilebilsinler. Memory'yi minimal kullansınlar."
+
+Bu yüzden:
+- LS ayrı program (100 satır)
+- GREP ayrı program (500 satır)  
+- SHELL ayrı program (koordinatör)
+
+Değil:
+- MEGA-SHELL (100,000 satır everything-included)
+
+Sonuç:
+1. Memory efficiency - Sadece gerekeni yükle
+2. Modularity - Her tool ayrı, değiştirilebilir
+3. Stability - Bir crash diğerini etkilemez  
+4. Simplicity - Clean interface, tek sorumluluk
+5. Flexibility - Yeni tool ekleme kolaylığı
+6. Reliability - Process crashı shell crashı değildir
+
+
+------------------------------FD (fd açmak)------------------------------
+dup / dup2 sonrası yeni bir dosya açmıyoruz, neden close kullanıyoruz?
+	yeni bir dosya açılmıyor. açılan şey File Descriptor denilen bir kaynak
+
+Her process'in kernel'da bir FD tablosu vardır:
+Process 1234'ün FD Tablosu:
+┌────┬──────────────────────────┐
+│ FD │ Nereye Bağlı?            │
+├────┼──────────────────────────┤
+│ 0  │ /dev/pts/0 (terminal)    │
+│ 1  │ /dev/pts/0 (terminal)    │
+│ 2  │ /dev/pts/0 (terminal)    │
+│ 3  │ BOŞ                      │		open / dup / dup2 ile buradaki bir satırı doldurmuş oluyoruz.
+│ 4  │ BOŞ                      │		sonrasında close yaparak bu satırı boşaltıyoruz, kaynağı serbest bırakmış oluyoruz.
+│ 5  │ BOŞ                      │
+│... │ ...                      │
+│1023│ BOŞ                      │
+└────┴──────────────────────────┘
+
+// Kernel'ın içinde (basitleştirilmiş)
+struct fd_table {
+    struct file_descriptor {
+        int flags;           // Okuma/yazma modları
+        off_t offset;        // Dosyada neredeyiz
+        struct inode *inode; // Dosya/cihaz bilgisi
+        int ref_count;       // Kaç FD bu dosyayı gösteriyor
+    } fds[1024];
+};
+!!! Her FD için kernel hafızası ayrılır
+
+
+------------------------------EXIT STATUS------------------------------
+int status;
+waitpid(pid, &status, 0);
+status aslında 16 bitlik özel bir değerdir:
+status = [YÜKSEK 8 BIT: exit kodu] [DÜŞÜK 8 BIT: sinyal bilgisi]
+         |← WEXITSTATUS →|          |← WTERMSIG →|
+Ama direkt okuyamazsınız! Makrolar gerekli.
+
+MAKROLARIN ANLAMI:
+1️⃣ WIFEXITED(status)
+"Process normal mi bitti?"
+cif (WIFEXITED(status))  // "exit() ile mi çıktı?"
+TRUE döner eğer:
+
+exit(0) çağrıldıysa
+return 0 yapıldıysa (main'den)
+Normal sonlanma olduysa
+
+2️⃣ WEXITSTATUS(status)
+"Exit kodu neydi?"
+cint exit_code = WEXITSTATUS(status);  // 0-255 arası
+Örnek:
+c// Child process:
+exit(42);
+
+// Parent process:
+if (WIFEXITED(status))
+    printf("Exit kodu: %d\n", WEXITSTATUS(status));  // "Exit kodu: 42"
+3️⃣ WIFSIGNALED(status)
+"Process sinyal ile mi öldürüldü?"
+cif (WIFSIGNALED(status))  // "Ctrl+C, kill, segfault vs. mi oldu?"
+TRUE döner eğer:
+
+Ctrl+C (SIGINT = 2)
+Ctrl+\ (SIGQUIT = 3)
+Segmentation fault (SIGSEGV = 11)
+kill komutu
+Diğer sinyaller
+
+4️⃣ WTERMSIG(status)
+"Hangi sinyal ile öldü?"
+cint signal_num = WTERMSIG(status);  // Sinyal numarası
+
+🎨 NEDEN 128 + Sinyal?
+Bu Bash standardıdır! Bash'te:
+
+0-125: Normal exit kodları
+126: Komut çalıştırılamadı (permission denied)
+127: Komut bulunamadı
+128+N: Sinyal N ile öldü
+
+
+------------------------------PIPE------------------------------
+Pipe, iki FD'den oluşan tek yönlü bir borudur:
+
+int pipefd[2];
+pipe(pipefd);
+	pipefd[0] = OKUMA UCU (read end) - buradan veri alırsın
+	pipefd[1] = YAZMA UCU (write end) - buraya veri yazarsın
+Görsel:
+        PIPE
+    [0]────[1]
+     ↑      ↑
+  OKUMA  YAZMA
+
+dup2() ile "Bağlama" İşlemi
+dup2(pipefd[1], STDOUT_FILENO);
+Bu satır şunu yapar: "STDOUT'un gittiği yeri değiştir, artık pipe'ın yazma ucuna gitsin!"
+
+
+------------------------------ACCESS------------------------------
+int access(const char *pathname, int mode);
+	UNIX/Linux sistemlerinde dosya ve dizin erişim izinlerini kontrol etmek için kullanılan bir sistem çağrısı. 
+	belirtilen dosya/dizin yolunun var olup olmadığını ve belirtilen izinlere sahip olup olmadığını kontrol eder.
+
+Mode değerleri:
+
+F_OK: Dosya var mı? (existence)
+R_OK: Okuma izni var mı? (readable)
+W_OK: Yazma izni var mı? (writable)
+X_OK: Çalıştırma izni var mı? (executable)
+
+Dönüş değeri:
+
+0: Başarılı (dosya var ve izinler uygun)
+-1: Başarısız (dosya yok veya izin yok)
+
+access(cmd, F_OK) == 0: Dosya var mı?
+access(cmd, X_OK) == 0: Dosya çalıştırılabilir mi?	

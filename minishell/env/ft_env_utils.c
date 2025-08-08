@@ -76,7 +76,16 @@ int	ft_unset_env_value(char *key, t_env **env_list)
 	return (0);
 }
 
+char	**ft_env_to_array(t_env *env_list)
+{
+	char	**envp;
+	int		count;
 
+	count = ft_count_env_vars(env_list);
+	envp = ft_malloc(sizeof(char *) * (count + 1));
+	ft_fill_env_array(env_list, envp);
+	return (envp);
+}
 
 // static int	ft_count_env_vars(t_env *env_list)
 // {

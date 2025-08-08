@@ -1,3 +1,4 @@
+GENEL NOTLAR
 1-	- güncel:
 		hata durumu -> 0
 		başarılı -> 1
@@ -27,6 +28,15 @@ Exit Code | Anlamı
 127       | Komut bulunamadı
 130       | Ctrl+C (SIGINT)
 255       | Geçersiz argüman
+
+4- heredoc işlenmesi
+parser -> heredoc -> executor 
+
+5- File Descriptor, açık bir dosyayı temsil eden bir tam sayıdır:
+0 = STDIN (klavye girişi)
+1 = STDOUT (ekran çıktısı)
+2 = STDERR (hata mesajları)
+3, 4, 5... = Sizin açtığınız dosyalar
 
 GENEL
 1- expander'ı parserdan değil executor'dan çağırmak
@@ -75,3 +85,8 @@ BUILTIN
 
 FREE
 genel olarak gözden geçir / yeniden yaz
+
+
+EXECUTOR 
+1- setup_redirection fonksiyonu kopyala yapıştır, düzenlenecek
+2- ft_execute_mutiple_command dosyasına bak

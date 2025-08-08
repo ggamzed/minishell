@@ -1,0 +1,62 @@
+#include "../minishell.h"
+
+// pipe zincirindeki her komutun input/output bağlantılarını ayarlar.
+/*
+int *pipefd → Şu anki komut ile sonraki arasındaki pipe
+int prev_fd → Önceki pipe'ın okuma ucu (önceki komuttan gelen data)
+t_cmd *cmd → Şu anki komut
+*/
+static void	ft_setup_pipe_connections(int *pipefd, int prev_fd, t_cmd *cmd) //pipe olayı -> executor.txt
+{
+	if (prev_fd != -1) // -1 = ilk komut, önceki pipe yok
+	{
+			dup2(prev_fd, STDIN_FILENO); // STDIN'i önceki pipe'a bağla
+			close(prev_fd);
+	}
+	if (cmd->next) // Sonraki pipe için output
+	{
+			dup2(pipefd[1], STDOUT_FILENO); // STDOUT'u pipe'ın yazma ucuna bağla -> ekrana gidecek çıktıyı pipe'a yönlendirmek
+			close(pipefd[1]);
+			close(pipefd[0]);
+	}
+}
+
+static void	ft_execute_builtin_in_child(t_shell *shell, t_cmd *cmd)
+{
+   int	exit_code;
+
+   exit_code = ft_execute_builtin(shell, cmd, 1);
+   exit(exit_code);
+}
+
+static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
+{
+	char	*executable;
+	char	**envp;
+
+	executable = ft_find_executable(cmd->expanded_argv[0], shell->env_list); //çalıştırılabilir path
+	if (!executable)
+	{
+		printf("minishell: %s: command not found\n", cmd->expanded_argv[0]);
+		exit(127);
+	}
+	envp = ft_env_to_array(shell->env_list);
+	execve(executable, cmd->expanded_argv, envp);
+	printf("minishell: %s: execution failed\n", cmd->expanded_argv[0]);
+	exit(126);
+}
+
+int	ft_execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd, int prev_fd)
+{
+	// default_signals(); // Sinyal fonksiyonu henüz yok
+	ft_setup_pipe_connections(pipefd, prev_fd, cmd);
+	if (setup_redirections(cmd) != 0) // şuan bu fonksiyon yok
+		exit(1);
+	if (!cmd->expanded_argv || !cmd->expanded_argv[0])
+		exit(1);
+	if (ft_is_builtin(cmd->expanded_argv[0])) //multiple_command fonksiyonu da bu fonksiyonu çağıracak o yüzden bu satır gerekli
+		ft_execute_builtin_in_child(shell, cmd);
+	else
+		ft_execute_external_in_child(shell, cmd);
+	return (0); // Buraya hiç ulaşmaz, exit() ile çıkar
+}

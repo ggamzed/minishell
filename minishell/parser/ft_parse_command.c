@@ -6,6 +6,7 @@ t_cmd	*ft_create_command(void)
 
 	cmd = ft_malloc(sizeof(t_cmd));
 	cmd->args = NULL;
+	cmd->expanded_argv = NULL;
 	cmd->input_file = NULL;
 	cmd->input_type = WORD;
 	cmd->output_file = NULL;

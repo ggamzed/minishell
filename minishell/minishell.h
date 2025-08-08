@@ -8,7 +8,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <limits.h>
-# include <sys/wait.h>
+//# include <sys/wait.h>
 
 // PATH_MAX güvenlik kontrolü -> cd fonksiyonunda kullanmak için
 #ifndef PATH_MAX
@@ -55,6 +55,7 @@ typedef struct s_token
 typedef struct s_cmd
 {
 	t_token			*args;              // Linked list of arguments with types
+	char 			**expanded_argv;	// argümanların expand edilmiş bir şekilde tutulduğu hali
 	char			*input_file;        // < input.txt (raw value)
 	t_token_type	input_type;         // Input file token type
 	char			*output_file;       // > output.txt (raw value)  
@@ -102,6 +103,7 @@ char	*ft_strjoin_free(char *s1, char *s2);
 char	*ft_strchr(const char *s, int c);
 int		ft_is_digit(char c);
 int		ft_atoi(const char *str);
+char	**ft_split(char const *s, char c);
 
 //--------------------------------FREE--------------------------------
 void	ft_free_tokens(t_token *tokens);
@@ -123,8 +125,8 @@ int	ft_validate_redirections(char *line);
 
 //--------------------------------PARSER--------------------------------
 t_cmd		*ft_create_command(void);
-t_token		*ft_create_cmd_arg(char *value, t_token_type type);
-void		ft_add_cmd_arg(t_token **args, t_token *new_arg);
+//t_token	*ft_create_cmd_arg(char *value, t_token_type type); //ft_create_token_arg
+//void		ft_add_cmd_arg(t_token **args, t_token *new_arg);	//ft_add_token_to_args
 void		ft_get_cmd_arguments(t_token **current, t_cmd *cmd);
 int			ft_parse_redirections(t_cmd *cmd, t_token **current);
 t_cmd		*ft_parse_command(t_token **current);
@@ -151,6 +153,7 @@ t_env	*ft_init_env(char **envp);
 char	*ft_get_env_value(char *key, t_env *env_list);
 int		ft_set_env_value(char *key, char *value, t_env **env_list);
 int		ft_unset_env_value(char *key, t_env **env_list);
+char	**ft_env_to_array(t_env *env_list);
 
 //--------------------------------BUILTIN--------------------------------
 int	ft_execute_builtin(t_shell *shell, t_cmd *cmd, int in_pipe);

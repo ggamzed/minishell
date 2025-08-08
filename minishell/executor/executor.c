@@ -3,15 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*   By: egokce <eecegokcece@gmail.com>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2025/08/08 03:41:32 by egokce           ###   ########.fr       */
+/*   Updated: 2025/08/08 20:48:02 by egokce           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "minishell.h"
 #include <fcntl.h>
+
+// !!!bu dosya kullanılmaya karar verilirse: handle_heredoc sadece execute_single_command fonksiyonunda var, çoklu komutları çalıştıran fonksiyonda da heredoc ayrıca ele alınmalı.
 
 /* Child process'te komut çalıştırır (fork sonrası)
  * Pipe, redirection ve builtin/external komut işleme
@@ -155,11 +157,35 @@ int	execute_single_command(t_shell *shell, t_cmd *cmd)
 	if (!argv || !argv[0])
 		return (1);
 	
-	// Builtin komut - parent process'te çalıştır
+	// BUILTIN komut - parent process'te çalıştır (FORK YOK!)
+	// echo, cd, pwd, env, export, unset, exit hepsi fork açmaz
 	if (ft_is_builtin(argv[0]))
-		return (ft_execute_builtin(shell, cmd, 0)); // pipe yok
+	{
+		// Redirection'ları builtin için de ayarla
+		int original_stdin = dup(STDIN_FILENO);
+		int original_stdout = dup(STDOUT_FILENO);
+		int result;
+		
+		if (setup_redirections(cmd) != 0)
+		{
+			close(original_stdin);
+			close(original_stdout);
+			return (1);
+		}
+		
+		result = ft_execute_builtin(shell, cmd, 0); // pipe yok, fork yok
+		
+		// Redirection'ları geri al (shell'in stdin/stdout'u koru)
+		dup2(original_stdin, STDIN_FILENO);
+		dup2(original_stdout, STDOUT_FILENO);
+		close(original_stdin);
+		close(original_stdout);
+		
+		return (result);
+	}
 	
-	// External komut - fork ile çalıştır
+	// EXTERNAL komut - fork ile çalıştır
+	// ls, cat, grep, vs. hepsi fork açar
 	pid = fork();
 	if (pid == -1)
 	{
@@ -179,6 +205,24 @@ int	execute_single_command(t_shell *shell, t_cmd *cmd)
 		return (128 + WTERMSIG(status));
 	
 	return (0);
+}
+
+/* Ana execute fonksiyonu - komut sayısına göre pipeline/single çağırır
+ * Parametreler: shell - shell yapısı
+ * Dönüş: komutların exit kodu */
+int	execute_commands(t_shell *shell)
+{
+	int	cmd_count;
+
+	if (!shell->cmd_list || !shell->cmd_list->args || !shell->cmd_list->args->value)
+		return (0);
+	
+	cmd_count = count_commands(shell->cmd_list);
+	
+	if (cmd_count == 1)
+		return (execute_single_command(shell, shell->cmd_list));
+	else
+		return (execute_pipeline(shell));
 }
 
 /* PATH'te executable arar veya absolute path kontrol eder
@@ -336,4 +380,3 @@ char	**env_to_array(t_env *env_list)
 	
 	return (envp);
 }
-

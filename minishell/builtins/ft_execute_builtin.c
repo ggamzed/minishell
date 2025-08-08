@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-int	ft_is_builtin(char *cmd) //verilen komutun builtin olup olmadığını kontrol eder ->utils
+int	ft_is_builtin(char *cmd)
 {
 	if (!cmd)
 		return (0);
@@ -34,38 +34,13 @@ static int	ft_execute_builtin_function(char **argv, t_shell *shell)
 	return (1);
 }
 
-// !pipe durumunda fork kullanır, yoksa parent process'te çalıştırır
 int	ft_execute_builtin(t_shell *shell, t_cmd *cmd, int in_pipe)
 {
 	char	**argv;
-	pid_t	pid;
-	int		status;
-	int		result;
 
-	argv = ft_expand_cmd_arguments(cmd->args, shell); // cmd_arg'ları char** formatına çevir -> expander bitmedi, bu fonksiyona hiç bakılmadı
-	if (!argv)
+	if (!cmd->expanded_argv || !cmd->expanded_argv[0])
+        return (1);
+	if (!ft_is_builtin(argv[0]))
 		return (1);
-	if (!ft_is_builtin(argv[0])) // dönüş değerine bak
-		return (1);
-	if (in_pipe) // pipe içindeyse fork kullan
-	{
-		pid = fork();
-		if (pid == -1)
-		{
-			printf("minishell: fork");
-			return (1);
-		}
-		if (pid == 0) // child process'te builtin çalıştır
-		{
-			result = ft_execute_builtin_function(argv, shell);
-			exit(result); // child process'i bitirir. (exit sadece çağırıldığı process'i bitirir.)
-		}
-		else // parent process child'ı bekler -> fork.txt de açıklıyor
-		{
-			waitpid(pid, &status, 0);
-			if (WIFEXITED(status))
-				return (WEXITSTATUS(status));
-		}
-	}
-	return (ft_execute_builtin_function(argv, shell)); // normal durumda parent process'te çalıştır
+	return (ft_execute_builtin_function(argv, shell));
 }
