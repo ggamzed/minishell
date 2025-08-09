@@ -73,6 +73,17 @@ static char	*ft_expand_double_quoted(char *str, t_shell *shell)
 	i = 0;
 	while (str[i])
 	{
+		// back slash i düsürerek yazmasi icin  (\" \\ \$)
+		if (str[i] == '\\' && str[i + 1] != '\0')
+		{
+			// sadece ", \ ve $ icin
+			if (str[i + 1] == '"' || str[i + 1] == '\\' || str[i + 1] == '$')
+			{
+				result = ft_append_char(result, str[i + 1]);
+				i += 2;
+				continue;
+			}
+		}
 		if (str[i] == '$' && str[i + 1] == '?')
 		{
 			temp = ft_handle_exit_status(shell);

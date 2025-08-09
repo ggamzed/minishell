@@ -12,8 +12,20 @@ int	ft_validate_quotes(char *line)
 		{
 			quote = line[i];
 			i++;
-			while (line[i] && line[i] != quote)
+			//while (line[i] && line[i] != quote)
+			//	i++;
+			while (line[i])
+			{
+				// "" içinde kacis karakterlerine literal gibi davranmasi icin (\\")
+				if (quote == '"' && line[i] == '\\' && line[i + 1] != '\0')
+				{
+					i += 2;
+					continue;
+				}
+				if (line[i] == quote)
+					break;
 				i++;
+			}
 			if (!line[i])
 			{
 				printf("minishell: syntax error: unclosed quote\n");

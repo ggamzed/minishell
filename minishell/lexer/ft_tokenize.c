@@ -45,8 +45,20 @@ char	*ft_get_word(char *line, int *i)
 		quote = line[*i];
 		(*i)++;      // Açılış quote'unu atla
 		start = *i;  // Gerçek içerik başlangıcı
-		while (line[*i] && line[*i] != quote)
+		while (line[*i])
+		{
+			// "" içinde kacis karakterlerine literal gibi davranmasi icin (\\")
+			if (quote == '"' && line[*i] == '\\' && line[*i + 1] != '\0')
+			{
+				*i += 2;
+				continue;
+			}
+			if (line[*i] == quote)
+				break;
 			(*i)++;
+		}
+		//while (line[*i] && line[*i] != quote)
+		//	(*i)++;
 		len = *i - start;  // Quote içindeki uzunluk
 		(*i)++;           // Kapanış quote'unu atla
 	}
