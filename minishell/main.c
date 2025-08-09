@@ -34,7 +34,7 @@ static void	ft_process_line(t_shell *shell, char *line)
 	
 	// Parsing - token'ları command'lara çevir
 	shell->cmd_list = ft_parse_tokens(tokens);
-	ft_free_tokens(tokens);
+	//ft_free_tokens(tokens); // kaldır seg fault
 	
 	if (!shell->cmd_list)
 		return;
@@ -71,6 +71,7 @@ static void	ft_shell_loop(t_shell *shell)
 		// setup_signals();  // TODO: Implement signals
 		
 		line = readline(PROMPT);
+		
 		if (!line)  // EOF (Ctrl+D)
 		{
 			printf("exit\n");
@@ -110,14 +111,14 @@ int	main(int argc, char **argv, char **envp)
 		fprintf(stderr, "minishell: failed to initialize shell\n");
 		return (1);
 	}
-	
+
 	// Main shell loop
 	ft_shell_loop(shell);
 	
 	// Cleanup and exit
 	exit_code = shell->exit_status;
 	ft_free_shell(shell);
-	rl_clear_history();
+	//rl_clear_history();
 	
 	return (exit_code);
 }

@@ -1,0 +1,31 @@
+NOT: rl_clear_history(); bende hata veriyor yorum satırına aldım (main.c)
+----------------------------------
+int	ft_execute_multiple_command(t_shell *shell)
+pipefd[2] = -1; sildim
+
+pipefd[0] = -1;
+pipefd[1] = -1; ile sıfırladım
+
+Belki başka bir şey yapmak istemişsindir diye eski halini de koydum.
+
+----------------------------------
+SEG FAULT
+ft_process_line da free(tokens) yapıp sonradan kullanmaya çalıştığımız için seg fault a sebep oluyordu.
+
+Detaylı Açıklama:
+Kök neden (use-after-free): ft_parse_tokens, tokens listesindeki t_token düğümlerini kopyalamıyor;
+aynen cmd->args içine “taşıyor”. Hemen ardından ft_free_tokens(tokens) çağrılınca,
+cmd->args da aynı düğümleri işaret ettiği için bu düğümler serbest bırakılmış oluyor.
+Sonraki adımda (ft_execute_commands → ft_expand_tokens/echo) bu artık
+geçersiz (dangling) pointer’lar erişilince segfault oluyor.
+
+main.c:
+ft_process_line: kaldırılan satır
+ft_free_tokens(tokens) 
+
+free.c:
+ft_free_commands: eklenen satırlar
+if (current->args)
+	ft_free_tokens(current->args);
+if (current->expanded_argv)
+	ft_free_split(current->expanded_argv);

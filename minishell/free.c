@@ -39,9 +39,12 @@ void	ft_free_commands(t_cmd *commands)
 	while (current)
 	{
 		next = current->next;
-		// ft_free_tokens(current->args);
-		// if (current->expanded_argv)
-        //     ft_free_split(current->expanded_argv);
+		// Serbest bırak: argüman token zinciri (parser bunları komuttaki args'a taşıdı)
+		if (current->args)
+			ft_free_tokens(current->args);
+		// expanded argv serbest bırak
+		if (current->expanded_argv)
+			ft_free_split(current->expanded_argv);
 		free(current->input_file);
 		free(current->output_file);
 		free(current->heredoc_delimiter);

@@ -48,7 +48,8 @@ int	ft_execute_multiple_command(t_shell *shell)
 
 	current = shell->cmd_list;
 	prev_fd = -1;
-	pipefd[2] = -1;
+	pipefd[0] = -1;
+	pipefd[1] = -1;
 	while (current)
 	{
 		if (ft_create_pipe_if_needed(current, pipefd))

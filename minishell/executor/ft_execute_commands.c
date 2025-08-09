@@ -29,7 +29,9 @@ int	ft_execute_commands(t_shell *shell)
 		if (!current->expanded_argv || !current->expanded_argv[0])
 			return (1);
 		current = current->next;
+		
 	}
+	
 	if (ft_count_commands(shell->cmd_list) == 1)
 		return (ft_execute_single_command(shell, shell->cmd_list));
 	else
