@@ -104,8 +104,57 @@ static char	*ft_expand_double_quoted(char *str, t_shell *shell)
 	return (result);
 }
 
+static char *ft_expand_tilde(const char *value, t_shell *shell)
+{
+    char    *base;
+    char    *suffix;
+    char    *expanded;
+
+    if (!value || value[0] != '~')
+        return (NULL);
+
+    // tildeden sonra gelen karakterler bunlar olmali '/' , '+' , or '-'
+    if (value[1] != '\0' && value[1] != '/' && value[1] != '+' && value[1] != '-')
+        return (NULL);
+
+    if (value[1] == '+' || value[1] == '-')
+    {
+        if (value[1] == '+')
+            base = ft_get_env_value("PWD", shell->env_list);
+        else
+            base = ft_get_env_value("OLDPWD", shell->env_list);
+        suffix = (char *)(value + 2);
+    } 
+    else // Diğer durumlar (sadece ~ veya ~/...) → kullanıcının HOME dizini.
+    {
+        base = ft_get_env_value("HOME", shell->env_list);
+        suffix = (char *)(value + 1);
+    }
+
+    // Eğer ortam değişkeni yoksa (örneğin $HOME unset ise)
+    if (!base)
+        return (ft_strdup(value));
+
+    // suffix; ~, ~+, ~-’den sonraki kalan kısım (örn: "/Desktop" gibi).
+    // Eğer suffix boşsa (örn: ~ ya da ~+ tek başına) 
+    if (suffix[0] == '\0')
+        return (ft_strdup(base));
+
+    // Eğer suffix / ile başlıyorsa (örn: ~/Desktop) → base + suffix birleştir.
+    if (suffix[0] == '/')
+        return (ft_strjoin(base, suffix));
+
+    // Kalan durum (Normalde buraya gelinmemeli). sadece /, +, -, veya \0 izin var
+    expanded = ft_strjoin(base, "/");
+    expanded = ft_strjoin_free(expanded, ft_strdup(suffix));
+    return (expanded);
+}
+
+
 char	*ft_expand_token_value(char *value, t_token_type type, t_shell *shell, int is_heredoc_delimiter)
 {
+	char	*tilde;
+	
 	if (!value)
 		return (NULL);
 	
@@ -122,7 +171,12 @@ char	*ft_expand_token_value(char *value, t_token_type type, t_shell *shell, int 
 	else if (type == SINGLE_QUOTED_STRING)
 		return (ft_strdup(value));
 	else if (type == WORD)
+	{
+		tilde = ft_expand_tilde(value, shell);
+		if (tilde)
+			return (tilde);
 		return (ft_strdup(value));
+	}
 	else
 		return (ft_strdup(value));
 }

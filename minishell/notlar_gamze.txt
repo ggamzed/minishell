@@ -51,7 +51,6 @@ while (line[i])
 lexer/ft_tokenize.c ft_get_word: eklendi
 while (line[*i])
 {
-
 	if (quote == '"' && line[*i] == '\\' && line[*i + 1] != '\0')
 	{
 		*i += 2;
@@ -72,5 +71,35 @@ if (str[i] == '\\' && str[i + 1] != '\0')
 	}
 }
 
+-------------------
+Tilde Genişlemesi İçin:
 
+expander.c ft_expand_tilde oluşturuldu
 
+expander.c ft_expand_token_value fonksiyonuna: eklendi
+
+else if (type == WORD)
+{
+    tilde = ft_expand_tilde(value, shell);
+    if (tilde)
+        return (tilde);
+    return (ft_strdup(value));
+}
+
+ft_expand_tilde açıklaması:
+
+static char *ft_expand_tilde(const char *value, t_shell *shell)
+
+value: Tilde genişletmesi yapılacak giriş stringi (örn: "~", "~/Desktop", "~+", "~-/docs").
+shell: Shell’in genel durumu ve ortam değişkenlerine (env_list) erişmek için.
+
+~'den sonra gelen karakter şu dört durumdan biri olmalı:
+\0 (string sonu, yani sadece ~)
+/ (örn: ~/...)
++ (örn: ~+)
+- (örn: ~-)
+Eğer başka bir karakter varsa (örneğin ~foo), genişletme yapmıyoruz
+
+~+ → şu anki dizin (PWD)
+~- → önceki dizin (OLDPWD)
+Diğer durumlar (sadece ~ veya ~/...) → kullanıcının HOME dizini.
