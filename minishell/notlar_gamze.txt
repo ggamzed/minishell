@@ -103,3 +103,7 @@ Eğer başka bir karakter varsa (örneğin ~foo), genişletme yapmıyoruz
 ~+ → şu anki dizin (PWD)
 ~- → önceki dizin (OLDPWD)
 Diğer durumlar (sadece ~ veya ~/...) → kullanıcının HOME dizini.
+
+------------------------------------
+Bebis redirection lara da bakmaya calistim da cok karisik geldi. Kafam asla almiyor su an.
+Yarin uyaninca bakicam. Tatli uykularr.
