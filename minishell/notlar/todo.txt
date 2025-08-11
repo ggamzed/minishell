@@ -98,4 +98,5 @@ EXECUTOR
 
 
 REDIRECTIONS
-kodlar norm kurallarına göre değil sadece çalışıyorlar.
+1- kodlar norm kurallarına göre değil sadece çalışıyorlar.
+2- heredoc da expander çalışmıyor. cat << eof > a.txt de $HOME -> $HOME gibi çalışıyor
