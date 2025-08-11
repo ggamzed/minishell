@@ -14,14 +14,23 @@ int	setup_redirections(t_cmd *cmd)
 			printf("minishell: %s: No such file or directory\n", cmd->input_file);
 			return (1);
 		}
-		dup2(fd, STDIN_FILENO);
+		if (dup2(fd, STDIN_FILENO) == -1)
+		{
+			perror("minishell: dup2 failed");
+			close(fd);
+			return (1);
+		}
 		close(fd);
 	}
 	
 	// Heredoc: << delimiter (main'de önceden işlenmiş)
 	if (cmd->heredoc_fd != -1)
 	{
-		dup2(cmd->heredoc_fd, STDIN_FILENO);
+		if (dup2(cmd->heredoc_fd, STDIN_FILENO) == -1)
+		{
+			perror("minishell: dup2 heredoc failed");
+			return (1);
+		}
 		close(cmd->heredoc_fd);
 	}
 	
@@ -38,7 +47,12 @@ int	setup_redirections(t_cmd *cmd)
 			printf("minishell: %s: Permission denied\n", cmd->output_file);
 			return (1);
 		}
-		dup2(fd, STDOUT_FILENO);
+		if (dup2(fd, STDOUT_FILENO) == -1)
+		{
+			perror("minishell: dup2 output failed");
+			close(fd);
+			return (1);
+		}
 		close(fd);
 	}
 	

@@ -10,8 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 #include <fcntl.h>
+
+// Global signal variable for heredoc handling
+static int g_heredoc_signal = 0;
+
+// Signal handler for heredoc
+static void	heredoc_signal_handler(int sig)
+{
+	if (sig == SIGINT)
+	{
+		g_heredoc_signal = 1;
+		write(STDOUT_FILENO, "\n", 1);
+	}
+}
 
 // !!!bu dosya kullanılmaya karar verilirse: handle_heredoc sadece execute_single_command fonksiyonunda var, çoklu komutları çalıştıran fonksiyonda da heredoc ayrıca ele alınmalı.
 
@@ -46,28 +59,53 @@ static int	execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd, int pr
 	if (setup_redirections(cmd) != 0)
 		exit(1);
 	
-	// Token'ları char** argv'ye çevir
-	argv = ft_expand_tokens(cmd->args, shell);
-	if (!argv || !argv[0])
-		exit(1);
-	
-	// Builtin komut kontrolü
-	if (ft_is_builtin(argv[0]))
-		exit(ft_execute_builtin(shell, cmd, 1)); // pipe modunda
-	
-	// External komut çalıştır
-	executable = find_executable(argv[0], shell->env_list);
-	if (!executable)
+	// Token'ları char** argv'ye çevir (eğer argüman varsa)
+	if (cmd->args)
 	{
-		printf("minishell: %s: command not found\n", argv[0]);
-		exit(127);
+		argv = ft_expand_tokens(cmd->args, shell);
+		if (!argv || !argv[0])
+			exit(1);
+	}
+	else
+	{
+		// Command with only redirects - create empty argv
+		argv = ft_malloc(sizeof(char *));
+		argv[0] = NULL;
 	}
 	
-	envp = env_to_array(shell->env_list);
-	execve(executable, argv, envp);
+	// Builtin komut kontrolü
+	if (argv[0] && ft_is_builtin(argv[0]))
+	{
+		// Create a temporary cmd structure with expanded_argv for builtin execution
+		t_cmd temp_cmd = *cmd;
+		temp_cmd.expanded_argv = argv;
+		exit(ft_execute_builtin(shell, &temp_cmd, 1)); // pipe modunda
+	}
 	
-	printf("minishell: %s: execution failed\n", argv[0]);
-	exit(126);
+	// External komut çalıştır (eğer argüman varsa)
+	if (argv[0])
+	{
+		executable = ft_find_executable(argv[0], shell->env_list);
+		if (!executable)
+		{
+			printf("minishell: %s: command not found\n", argv[0]);
+			ft_free_split(argv);
+			exit(127);
+		}
+		
+		envp = ft_env_to_array(shell->env_list);
+		execve(executable, argv, envp);
+		
+		printf("minishell: %s: execution failed\n", argv[0]);
+		ft_free_split(argv);
+		exit(126);
+	}
+	else
+	{
+		// Command with only redirects - just exit successfully
+		ft_free_split(argv);
+		exit(0);
+	}
 }
 
 /* Pipeline komutlarını çalıştırır (pipe ile bağlı komutlar)
@@ -86,6 +124,21 @@ int	execute_pipeline(t_shell *shell)
 	current = shell->cmd_list;
 	prev_fd = -1;
 	last_status = 0;
+	
+	// Process all heredocs before setting up pipeline
+	current = shell->cmd_list;
+	while (current)
+	{
+		if (current->heredoc_delimiter)
+		{
+			if (handle_heredoc(current) != 0)
+				return (1);
+		}
+		current = current->next;
+	}
+	
+	// Reset current to beginning for pipeline execution
+	current = shell->cmd_list;
 	
 	while (current)
 	{
@@ -106,7 +159,7 @@ int	execute_pipeline(t_shell *shell)
 		
 		// Child process
 		if (pid == 0)
-			execute_child_process(shell, current, pipefd, prev_fd);
+			ft_execute_child_process(shell, current, pipefd, prev_fd);
 		
 		// Parent process - pipe'ları temizle
 		if (prev_fd != -1)
@@ -152,14 +205,23 @@ int	execute_single_command(t_shell *shell, t_cmd *cmd)
 			return (1);
 	}
 	
-	// Token'ları char** argv'ye çevir
-	argv = ft_expand_tokens(cmd->args, shell);
-	if (!argv || !argv[0])
-		return (1);
+	// Token'ları char** argv'ye çevir (eğer argüman varsa)
+	if (cmd->args)
+	{
+		argv = ft_expand_tokens(cmd->args, shell);
+		if (!argv || !argv[0])
+			return (1);
+	}
+	else
+	{
+		// Command with only redirects - create empty argv
+		argv = ft_malloc(sizeof(char *));
+		argv[0] = NULL;
+	}
 	
 	// BUILTIN komut - parent process'te çalıştır (FORK YOK!)
 	// echo, cd, pwd, env, export, unset, exit hepsi fork açmaz
-	if (ft_is_builtin(argv[0]))
+	if (argv[0] && ft_is_builtin(argv[0]))
 	{
 		// Redirection'ları builtin için de ayarla
 		int original_stdin = dup(STDIN_FILENO);
@@ -170,10 +232,14 @@ int	execute_single_command(t_shell *shell, t_cmd *cmd)
 		{
 			close(original_stdin);
 			close(original_stdout);
+			ft_free_split(argv);
 			return (1);
 		}
 		
-		result = ft_execute_builtin(shell, cmd, 0); // pipe yok, fork yok
+		// Create a temporary cmd structure with expanded_argv for builtin execution
+		t_cmd temp_cmd = *cmd;
+		temp_cmd.expanded_argv = argv;
+		result = ft_execute_builtin(shell, &temp_cmd, 0); // pipe yok, fork yok
 		
 		// Redirection'ları geri al (shell'in stdin/stdout'u koru)
 		dup2(original_stdin, STDIN_FILENO);
@@ -181,6 +247,7 @@ int	execute_single_command(t_shell *shell, t_cmd *cmd)
 		close(original_stdin);
 		close(original_stdout);
 		
+		ft_free_split(argv);
 		return (result);
 	}
 	
@@ -190,14 +257,17 @@ int	execute_single_command(t_shell *shell, t_cmd *cmd)
 	if (pid == -1)
 	{
 		perror("minishell: fork");
+		ft_free_split(argv);
 		return (1);
 	}
 	
 	if (pid == 0)
-		execute_child_process(shell, cmd, NULL, -1);
+		ft_execute_child_process(shell, cmd, NULL, -1);
 	
 	// ignore_signals(); // Sinyal fonksiyonu henüz yok
 	waitpid(pid, &status, 0);
+	
+	ft_free_split(argv);
 	
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
@@ -214,10 +284,16 @@ int	execute_commands(t_shell *shell)
 {
 	int	cmd_count;
 
-	if (!shell->cmd_list || !shell->cmd_list->args || !shell->cmd_list->args->value)
+	// Check if command list exists and has valid commands
+	if (!shell->cmd_list)
 		return (0);
 	
-	cmd_count = count_commands(shell->cmd_list);
+	// Check if command has arguments OR redirects (both are valid)
+	if (!shell->cmd_list->args && !shell->cmd_list->input_file 
+		&& !shell->cmd_list->output_file && !shell->cmd_list->heredoc_delimiter)
+		return (0);
+	
+	cmd_count = ft_count_commands(shell->cmd_list);
 	
 	if (cmd_count == 1)
 		return (execute_single_command(shell, shell->cmd_list));
@@ -379,4 +455,79 @@ char	**env_to_array(t_env *env_list)
 	envp[i] = NULL;
 	
 	return (envp);
+}
+
+/* Heredoc işleme fonksiyonu - kullanıcıdan input alır ve temp dosyaya yazar
+ * Parametreler: cmd - komut yapısı
+ * Dönüş: 0 başarılı, 1 hata */
+static int	handle_heredoc(t_cmd *cmd)
+{
+	int		temp_fd;
+	char	*line;
+	char	*delimiter;
+	struct sigaction	sa;
+
+	if (!cmd->heredoc_delimiter)
+		return (0);
+	
+	delimiter = cmd->heredoc_delimiter;
+	g_heredoc_signal = 0;
+	
+	// Signal handler'ı ayarla
+	sa.sa_handler = heredoc_signal_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, NULL);
+	
+	// Temp dosya oluştur
+	temp_fd = open("/tmp/minishell_heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (temp_fd == -1)
+	{
+		perror("minishell: heredoc temp file creation failed");
+		return (1);
+	}
+	
+	// Kullanıcıdan input al
+	while (1)
+	{
+		line = readline("> ");
+		if (!line || g_heredoc_signal) // EOF (Ctrl+D) veya signal
+		{
+			close(temp_fd);
+			if (g_heredoc_signal)
+			{
+				unlink("/tmp/minishell_heredoc");
+				return (1);
+			}
+			return (1);
+		}
+		
+		// Delimiter ile eşleşiyor mu kontrol et
+		if (ft_strcmp(line, delimiter) == 0)
+		{
+			free(line);
+			break;
+		}
+		
+		// Satırı temp dosyaya yaz
+		write(temp_fd, line, ft_strlen(line));
+		write(temp_fd, "\n", 1);
+		free(line);
+	}
+	
+	close(temp_fd);
+	
+	// Temp dosyayı aç ve file descriptor'ı sakla
+	cmd->heredoc_fd = open("/tmp/minishell_heredoc", O_RDONLY);
+	if (cmd->heredoc_fd == -1)
+	{
+		perror("minishell: heredoc temp file open failed");
+		return (1);
+	}
+	
+	// Default signal handler'ı geri yükle
+	sa.sa_handler = SIG_DFL;
+	sigaction(SIGINT, &sa, NULL);
+	
+	return (0);
 }

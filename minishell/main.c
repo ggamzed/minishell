@@ -1,5 +1,11 @@
 #include "minishell.h"
 
+// Cleanup function for temporary files
+static void	ft_cleanup_temp_files(void)
+{
+	unlink("/tmp/minishell_heredoc");
+}
+
 static t_shell	*ft_init_shell(char **envp)
 {
 	t_shell	*shell;
@@ -40,19 +46,22 @@ static void	ft_process_line(t_shell *shell, char *line)
 		return;
 	
 	// Expansion - tüm komutların argv'lerini hazırla
-	// t_cmd *current = shell->cmd_list;
-	// while (current)
-	// {
-	// 	current->expanded_argv = ft_expand_tokens(current->args, shell);
-	// 	if (!current->expanded_argv || !current->expanded_argv[0])
-	// 	{
-	// 		shell->exit_status = 1;
-	// 		ft_free_commands(shell->cmd_list);
-	// 		shell->cmd_list = NULL;
-	// 		return;
-	// 	}
-	// 	current = current->next;
-	// }
+	t_cmd *current = shell->cmd_list;
+	while (current)
+	{
+		if (current->args)
+		{
+			current->expanded_argv = ft_expand_tokens(current->args, shell);
+			if (!current->expanded_argv)
+			{
+				shell->exit_status = 1;
+				ft_free_commands(shell->cmd_list);
+				shell->cmd_list = NULL;
+				return;
+			}
+		}
+		current = current->next;
+	}
 	
 	// Execution - komutları çalıştır
 	shell->exit_status = ft_execute_commands(shell);
@@ -118,6 +127,7 @@ int	main(int argc, char **argv, char **envp)
 	// Cleanup and exit
 	exit_code = shell->exit_status;
 	ft_free_shell(shell);
+	ft_cleanup_temp_files();
 	//rl_clear_history();
 	
 	return (exit_code);
