@@ -8,17 +8,17 @@ t_cmd *cmd → Şu anki komut
 */
 static void	ft_setup_pipe_connections(int *pipefd, int prev_fd, t_cmd *cmd) //pipe olayı -> executor.txt
 {
-	if (prev_fd != -1) // -1 = ilk komut, önceki pipe yok
-	{
-			dup2(prev_fd, STDIN_FILENO); // STDIN'i önceki pipe'a bağla
-			close(prev_fd);
-	}
-	if (cmd->next) // Sonraki pipe için output
-	{
-			dup2(pipefd[1], STDOUT_FILENO); // STDOUT'u pipe'ın yazma ucuna bağla -> ekrana gidecek çıktıyı pipe'a yönlendirmek
-			close(pipefd[1]);
-			close(pipefd[0]);
-	}
+		if (prev_fd != -1) // -1 = ilk komut, önceki pipe yok
+		{
+				dup2(prev_fd, STDIN_FILENO); // STDIN'i önceki pipe'a bağla
+				close(prev_fd);
+		}
+		if (cmd->next) // Sonraki pipe için output
+		{
+				dup2(pipefd[1], STDOUT_FILENO); // STDOUT'u pipe'ın yazma ucuna bağla -> ekrana gidecek çıktıyı pipe'a yönlendirmek
+				close(pipefd[1]);
+				close(pipefd[0]);
+		}
 }
 
 static void	ft_execute_builtin_in_child(t_shell *shell, t_cmd *cmd)
@@ -50,7 +50,7 @@ int	ft_execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd, int prev_f
 {
 	// default_signals(); // Sinyal fonksiyonu henüz yok
 	ft_setup_pipe_connections(pipefd, prev_fd, cmd);
-	if (setup_redirections(cmd) != 0) // şuan bu fonksiyon yok
+	if (ft_handle_redirections(cmd) != 0) // şuan bu fonksiyon yok
 		exit(1);
 	if (!cmd->expanded_argv || !cmd->expanded_argv[0])
 		exit(1);

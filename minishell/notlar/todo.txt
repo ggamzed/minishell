@@ -47,7 +47,6 @@ GENEL
 6- t_cmd_arg struct'ı silindi, onun yerine t_token kullanılıyor. fonksiyon isimlerinde değişiklik? 
 7- lexer'da ilk t_token olarak liste oluşturuyoruz sonrasında parser'da t_cmd içindeki t_token args'a yeniden o listeyi geçiriyoruz. onun yerine leexer da direkt t_cmd->args'ı kullanarak liste oluştursak daha mantıklı olmaz mı?
 
-
 LEXER 
 !!!!! FREE FONKSİYONUNU (garbage collector) SAKIN UNTUMA
 1- ft_validate_syntax ft_tokenize'a gelmeden de yapılabilir, 'bak.
@@ -55,8 +54,9 @@ LEXER
 	return (++(*i), REDIRECT_IN); -> norm mu?
 3- ft_tokenize fonksiyonu +25 satır
 4- ft_get_operator_type fonksiyonunun son return değerine bak
+5- ft_validate_quotes + ft_get_word fonksiyonlarına bak +25 satır
 
-5- cat<eof çalışmamalı syntax kontrolüne ekle !!ÇALIŞIYORMUŞ!!
+cat<eof çalışmamalı syntax kontrolüne ekle !!ÇALIŞIYORMUŞ!!
 
 PARSER
 !!!!! FREE FONKSİYONUNU (garbage collector) SAKIN UNTUMA
@@ -86,7 +86,16 @@ BUILTIN
 FREE
 genel olarak gözden geçir / yeniden yaz
 
+anlık:
+minishell$ exit
+exit
+Segmentation fault (core dumped)
+
 
 EXECUTOR 
 1- setup_redirection fonksiyonu kopyala yapıştır, düzenlenecek
 2- ft_execute_mutiple_command dosyasına bak
+
+
+REDIRECTIONS
+kodlar norm kurallarına göre değil sadece çalışıyorlar.

@@ -13,7 +13,7 @@ static int	ft_handle_builtin_redirections(t_cmd *cmd, int *stdin_backup, int *st
 	backup = 3 oldu diyelim
 	Şimdi hem 1 hem 3 AYNI YERE (ekrana) işaret ediyor!
 	*/
-	if (setup_redirections(cmd) != 0) // bu fonksiyon yok
+	if (ft_handle_redirections(cmd) != 0) // bu fonksiyon yok
 	{
 		close(*stdin_backup);
 		close(*stdout_backup);
@@ -55,7 +55,6 @@ static int	ft_execute_builtin_in_parent(t_shell *shell, t_cmd *cmd)
 
 	if (ft_handle_builtin_redirections(cmd, &original_stdin, &original_stdout) != 0)
 		return (1);
-	
 	result = ft_execute_builtin(shell, cmd, 0);
 	ft_restore_redirections(original_stdin, original_stdout);
 	return (result);

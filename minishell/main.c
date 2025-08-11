@@ -1,11 +1,5 @@
 #include "minishell.h"
 
-// Cleanup function for temporary files
-static void	ft_cleanup_temp_files(void)
-{
-	unlink("/tmp/minishell_heredoc");
-}
-
 static t_shell	*ft_init_shell(char **envp)
 {
 	t_shell	*shell;
@@ -40,34 +34,33 @@ static void	ft_process_line(t_shell *shell, char *line)
 	
 	// Parsing - token'ları command'lara çevir
 	shell->cmd_list = ft_parse_tokens(tokens);
-	//ft_free_tokens(tokens); // kaldır seg fault
+	//ft_free_tokens(tokens);
 	
 	if (!shell->cmd_list)
 		return;
 	
+	 ft_handle_heredoc(shell);
+	
 	// Expansion - tüm komutların argv'lerini hazırla
-	t_cmd *current = shell->cmd_list;
-	while (current)
-	{
-		if (current->args)
-		{
-			current->expanded_argv = ft_expand_tokens(current->args, shell);
-			if (!current->expanded_argv)
-			{
-				shell->exit_status = 1;
-				ft_free_commands(shell->cmd_list);
-				shell->cmd_list = NULL;
-				return;
-			}
-		}
-		current = current->next;
-	}
+	// t_cmd *current = shell->cmd_list;
+	// while (current)
+	// {
+	// 	current->expanded_argv = ft_expand_tokens(current->args, shell);
+	// 	if (!current->expanded_argv || !current->expanded_argv[0])
+	// 	{
+	// 		shell->exit_status = 1;
+	// 		ft_free_commands(shell->cmd_list);
+	// 		shell->cmd_list = NULL;
+	// 		return;
+	// 	}
+	// 	current = current->next;
+	// }
 	
 	// Execution - komutları çalıştır
 	shell->exit_status = ft_execute_commands(shell);
 	
 	// Cleanup
-	ft_free_commands(shell->cmd_list);
+	//ft_free_commands(shell->cmd_list);
 	shell->cmd_list = NULL;
 }
 
@@ -80,7 +73,6 @@ static void	ft_shell_loop(t_shell *shell)
 		// setup_signals();  // TODO: Implement signals
 		
 		line = readline(PROMPT);
-		
 		if (!line)  // EOF (Ctrl+D)
 		{
 			printf("exit\n");
@@ -120,15 +112,14 @@ int	main(int argc, char **argv, char **envp)
 		fprintf(stderr, "minishell: failed to initialize shell\n");
 		return (1);
 	}
-
+	
 	// Main shell loop
 	ft_shell_loop(shell);
 	
 	// Cleanup and exit
 	exit_code = shell->exit_status;
 	ft_free_shell(shell);
-	ft_cleanup_temp_files();
-	//rl_clear_history();
+	rl_clear_history();
 	
 	return (exit_code);
 }

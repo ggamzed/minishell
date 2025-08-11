@@ -8,7 +8,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <limits.h>
-# include <sys/wait.h>
+//# include <sys/wait.h>
 
 // PATH_MAX güvenlik kontrolü -> cd fonksiyonunda kullanmak için
 #ifndef PATH_MAX
@@ -136,10 +136,10 @@ t_cmd		*ft_parse_tokens(t_token *tokens);
 int			ft_is_redirection(t_token_type type);
 int			ft_is_argument_token(t_token_type type);
 int			ft_count_args(t_token *tokens);
-int			ft_handle_redirect_in(t_cmd *cmd, t_token **current);
-int			ft_handle_redirect_out(t_cmd *cmd, t_token **current);
-int			ft_handle_redirect_append(t_cmd *cmd, t_token **current);
-int			ft_handle_heredoc(t_cmd *cmd, t_token **current);
+int			ft_in_parser_handle_redirect_in(t_cmd *cmd, t_token **current);
+int			ft_in_parser_handle_redirect_out(t_cmd *cmd, t_token **current);
+int			ft_in_parser_handle_redirect_append(t_cmd *cmd, t_token **current);
+int			ft_in_parser_handle_heredoc(t_cmd *cmd, t_token **current);
 
 //--------------------------------EXPANDER--------------------------------
 char	**ft_expand_tokens(t_token *args, t_shell *shell);
@@ -173,6 +173,10 @@ int		ft_execute_commands(t_shell *shell);
 int		ft_execute_multiple_command(t_shell *shell);
 int		ft_execute_single_command(t_shell *shell, t_cmd *cmd);
 char	*ft_find_executable(char *cmd, t_env *env_list);
-int		setup_redirections(t_cmd *cmd);
+int		ft_handle_redirections(t_cmd *cmd);
+
+//--------------------------------REDİRECTIONS--------------------------------
+void	ft_handle_heredoc(t_shell *shell);
+int		ft_handle_redirections(t_cmd *cmd);
 
 #endif
