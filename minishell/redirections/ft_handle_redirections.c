@@ -52,7 +52,7 @@ static int	ft_handle_output_redirection(t_cmd *cmd)
 	return (0);
 }
 
-int	ft_handle_redirections(t_cmd *cmd)
+int		ft_handle_redirections(t_cmd *cmd)
 {
 	if (ft_handle_input_redirection(cmd) != 0)
 		return (1);

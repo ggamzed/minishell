@@ -1,7 +1,7 @@
 # Variables
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror -g 
 LDFLAGS = -lreadline
 
 lexer = lexer/
@@ -30,6 +30,8 @@ SRCS = main.c \
 	   $(env)ft_init_env.c \
 	   $(env)ft_parse_env.c \
 	   $(expander)expander.c \
+	   $(expander)expand_double_quoted.c \
+	   $(expander)extract_and_expand.c \
 	   $(builtins)ft_builtin_cd.c \
 	   $(builtins)ft_builtin_echo.c \
 	   $(builtins)ft_builtin_env.c \

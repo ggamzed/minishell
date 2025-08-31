@@ -1,11 +1,20 @@
 #include "minishell.h"
 
-static t_shell	*ft_init_shell(char **envp)
+static t_shell	*ft_init_shell(char **envp, t_mem **mem_tracker)
 {
 	t_shell	*shell;
+	//t_mem *tmp;
 
-	shell = ft_malloc(sizeof(t_shell));
-	shell->env_list = ft_init_env(envp);
+	shell = malloc(sizeof(t_shell)); // burada ft_malloc kullan kendi yazdığın ft_mallocun adını değiştir diğerlerinde onu kullan
+	if (!shell)
+		return (NULL);
+	shell->mem_tracker = mem_tracker;
+	shell->env_list = ft_init_env(envp, shell);
+	if (!shell->env_list)
+	{
+		free(shell);
+		return (NULL);
+	}
 	shell->cmd_list = NULL;
 	shell->line = NULL;
 	shell->exit_status = 0;
@@ -13,7 +22,7 @@ static t_shell	*ft_init_shell(char **envp)
 	return (shell);
 }
 
-static void	ft_process_line(t_shell *shell, char *line)
+static int	ft_process_line(t_shell *shell, char *line)
 {
 	t_token	*tokens;
 
@@ -24,23 +33,22 @@ static void	ft_process_line(t_shell *shell, char *line)
 	{
 		shell->exit_status = 2;  // Syntax error exit code
 		printf("minishell: syntax error\n");
-		return;
+		return (1);
 	}
-	
 	// Tokenization
-	tokens = ft_tokenize(line);
+	tokens = ft_tokenize(line, shell);
 	if (!tokens)
-		return;
-	
+		return (0);
 	// Parsing - token'ları command'lara çevir
-	shell->cmd_list = ft_parse_tokens(tokens);
+	shell->cmd_list = ft_parse_tokens(tokens, shell);
+	if (!shell->cmd_list)
+		return (0);
 	//ft_free_tokens(tokens);
 	
-	if (!shell->cmd_list)
-		return;
-	
-	 ft_handle_heredoc(shell);
-	
+
+	// heredocda douyble free hatası 
+	if (ft_handle_heredoc(shell) == -1)
+		return (0);
 	// Expansion - tüm komutların argv'lerini hazırla
 	// t_cmd *current = shell->cmd_list;
 	// while (current)
@@ -58,10 +66,13 @@ static void	ft_process_line(t_shell *shell, char *line)
 	
 	// Execution - komutları çalıştır
 	shell->exit_status = ft_execute_commands(shell);
+	if (shell->exit_status == -42)
+		return (0);
 	
 	// Cleanup
 	//ft_free_commands(shell->cmd_list);
 	shell->cmd_list = NULL;
+	return (1);
 }
 
 static void	ft_shell_loop(t_shell *shell)
@@ -73,7 +84,7 @@ static void	ft_shell_loop(t_shell *shell)
 		// setup_signals();  // TODO: Implement signals
 		
 		line = readline(PROMPT);
-		if (!line)  // EOF (Ctrl+D)
+		if (!line)  // EOF (Ctrl+D) CTRL+D = NULL döner
 		{
 			printf("exit\n");
 			shell->exit_flag = 1;
@@ -83,9 +94,12 @@ static void	ft_shell_loop(t_shell *shell)
 		if (*line)  // Non-empty line
 		{
 			add_history(line);
-			ft_process_line(shell, line);
+			if (ft_process_line(shell, line) == 0)
+			{
+				free(line);
+				break ;
+			}	
 		}
-		
 		free(line);
 		
 		// TODO: Signal handling
@@ -100,16 +114,22 @@ static void	ft_shell_loop(t_shell *shell)
 int	main(int argc, char **argv, char **envp)
 {
 	t_shell	*shell;
+	t_mem	*mem_tracker;
 	int		exit_code;
 
 	(void)argc;
 	(void)argv;
 	
 	// Shell initialization
-	shell = ft_init_shell(envp);
+	mem_tracker = NULL;
+	shell = ft_init_shell(envp, &mem_tracker);
+	//printf("mem_tracker: %p\n", (void*)&mem_tracker);
+	//printf("shell->mem_tracker: %p\n", (void*)shell->mem_tracker);
 	if (!shell)
 	{
 		fprintf(stderr, "minishell: failed to initialize shell\n");
+		ft_free_mem_tracker(&mem_tracker);
+		free(shell);
 		return (1);
 	}
 	
@@ -118,8 +138,10 @@ int	main(int argc, char **argv, char **envp)
 	
 	// Cleanup and exit
 	exit_code = shell->exit_status;
-	ft_free_shell(shell);
-	rl_clear_history();
+	ft_free_mem_tracker(&mem_tracker);
+	free(shell);
+	//ft_free_shell(shell);
+	//rl_clear_history();
 	
 	return (exit_code);
 }

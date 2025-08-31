@@ -19,7 +19,7 @@ char	*ft_get_env_value(char *key, t_env *env_list)
 }
 
 // environment değişkenini ayarlar veya günceller
-int	ft_set_env_value(char *key, char *value, t_env **env_list)
+int	ft_set_env_value(char *key, char *value, t_env **env_list, t_shell *shell)
 {
 	t_env	*current;
 	t_env	*new_node;
@@ -31,13 +31,13 @@ int	ft_set_env_value(char *key, char *value, t_env **env_list)
 	{
 		if (ft_strcmp(current->key, key) == 0)
 		{
-			free(current->value);
-			current->value = ft_strdup(value);
+			//free(current->value);
+			current->value = ft_strdup(value, shell);
 			return (0);
 		}
 		current = current->next;
 	}
-	new_node = ft_create_env_node(key, value);
+	new_node = ft_create_env_node(key, value, shell);
 	ft_add_env_node(env_list, new_node);
 	return (0);
 }
@@ -48,9 +48,9 @@ static void	ft_remove_env_node(t_env **env_list, t_env *current, t_env *prev)
 		prev->next = current->next;
 	else
 		*env_list = current->next;
-	free(current->key);
-	free(current->value);
-	free(current);
+	//free(current->key);
+	//free(current->value);
+	//free(current);
 }
 
 // environment değişkenini siler
@@ -92,7 +92,7 @@ static int	ft_count_env_vars(t_env *env_list)
 	return (count);
 }
 
-static void	ft_fill_env_array(t_env *env_list, char **envp)
+static void	ft_fill_env_array(t_env *env_list, char **envp, t_shell *shell)
 {
 	t_env	*current;
 	char	*temp;
@@ -104,8 +104,8 @@ static void	ft_fill_env_array(t_env *env_list, char **envp)
 	{
 		if (current->value)
 		{
-			temp = ft_strjoin(current->key, "=");
-			envp[i] = ft_strjoin(temp, current->value);
+			temp = ft_strjoin(current->key, "=", shell);
+			envp[i] = ft_strjoin(temp, current->value, shell);
 			free(temp);
 			i++;
 		}
@@ -114,13 +114,13 @@ static void	ft_fill_env_array(t_env *env_list, char **envp)
 	envp[i] = NULL;
 }
 
-char	**ft_env_to_array(t_env *env_list)
+char	**ft_env_to_array(t_env *env_list, t_shell *shell)
 {
 	char	**envp;
 	int		count;
 
 	count = ft_count_env_vars(env_list);
-	envp = ft_malloc(sizeof(char *) * (count + 1));
-	ft_fill_env_array(env_list, envp);
+	envp = ft_malloc(sizeof(char *) * (count + 1), shell);
+	ft_fill_env_array(env_list, envp, shell);
 	return (envp);
 }

@@ -15,17 +15,21 @@ static int	ft_count_commands(t_cmd *cmd_list)
 	return (count);
 }
 
+// exit status için
+// 0 -> başarı, 1 -> hata, 2 -> signal ile sonlanma
 // ana execute fonksiyonu, pipe sayısına göre çalıştırır
 int	ft_execute_commands(t_shell *shell)
 {
 	t_cmd *current;
 	
 	if (!shell->cmd_list || !shell->cmd_list->args)
-		return (0);
+		return (0); // Boş bir giriş bir hata değildir, yani program normal şekilde çalışmayı tamamlamış sayılır.
 	current = shell->cmd_list;
 	while (current)
 	{
 		current->expanded_argv = ft_expand_tokens(current->args, shell); //tüm komutların argv'lerini expand et //expander bitmediği için bu fonksiyon hazır değil
+		if (!current->expanded_argv)
+			return (-42);
 		if (!current->expanded_argv || !current->expanded_argv[0])
 			return (1);
 		current = current->next;

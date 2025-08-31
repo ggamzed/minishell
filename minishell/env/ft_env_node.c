@@ -1,13 +1,15 @@
 #include "../minishell.h"
 
-t_env	*ft_create_env_node(char *key, char *value)
+t_env	*ft_create_env_node(char *key, char *value, t_shell *shell)
 {
 	t_env	*node;
 
-	node = ft_malloc(sizeof(t_env));
-	node->key = ft_strdup(key);
+	node = ft_malloc(sizeof(t_env), shell);
+	if (!node)
+		return (NULL);
+	node->key = ft_strdup(key, shell);
 	if (value)
-    	node->value = ft_strdup(value);
+    	node->value = ft_strdup(value, shell);
 	else
     	node->value = NULL;
 	node->next = NULL;

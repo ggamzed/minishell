@@ -9,7 +9,7 @@ int	ft_is_space(char c)
 	return (0);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_substr(char const *s, unsigned int start, size_t len, t_shell *shell)
 {
 	char	*substr;
 	size_t	i;
@@ -19,10 +19,12 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 		return (NULL);
 	s_len = ft_strlen(s);
 	if (start >= s_len)
-		return (ft_strdup(""));
+		return (ft_strdup("", shell));
 	if (len > s_len - start)
 		len = s_len - start;
-	substr = ft_malloc(len + 1);
+	substr = ft_malloc(len + 1, shell);
+	if (!substr)
+		return (NULL);
 	i = 0;
 	while (i < len)
 	{
@@ -43,14 +45,17 @@ int	ft_strlen(const char *s)
 	return (len);
 }
 
-char	*ft_strdup(const char *s)
+char	*ft_strdup(const char *s, t_shell *shell)
 {
 	char	*dup;
 	int		len;
 	int		i;
 
 	len = ft_strlen(s);
-	dup = ft_malloc(len + 1);
+	dup = NULL;
+	dup = ft_malloc(len + 1, shell);
+	if (!dup)
+		return (NULL);
 	i = 0;
 	while (i < len)
 	{
@@ -61,14 +66,51 @@ char	*ft_strdup(const char *s)
 	return (dup);
 }
 
-void	*ft_malloc(size_t size)
+void	*ft_malloc(size_t size, t_shell *shell)
 {
 	void	*ptr;
+	t_mem	*mem_node;
 
 	ptr = malloc(size);
 	if (!ptr)
+	{
 		printf("malloc failed");
+		return (NULL);
+	}
+	mem_node = malloc(sizeof(t_mem));
+	if (!mem_node)
+	{
+		printf("malloc for memory tracker failed");
+		free(ptr);
+		return (NULL);
+	}
+	mem_node->ptr = ptr;
+	mem_node->next = *shell->mem_tracker;
+	*shell->mem_tracker = mem_node;
+	
 	return (ptr);
+}
+
+void	ft_free_mem_tracker(t_mem **mem_tracker)
+{
+	t_mem	*curr;
+	t_mem	*tmp;
+	
+	if (!mem_tracker)
+		return ;
+	curr = *mem_tracker;
+	while (curr)
+	{
+		tmp = curr->next;
+		if (curr->ptr)
+		{
+			free(curr->ptr);
+			curr->ptr = NULL;
+		}
+		free(curr);
+		curr = tmp;
+	}
+	*mem_tracker = NULL;
 }
 
 int	ft_isalpha(int c)
@@ -78,7 +120,7 @@ int	ft_isalpha(int c)
 	return (0);
 }
 
-char	*ft_itoa(int n)
+char	*ft_itoa(int n, t_shell *shell)
 {
 	char	*str;
 	int		len;
@@ -95,7 +137,7 @@ char	*ft_itoa(int n)
 	}
 	if (is_negative)
 		len++;
-	str = ft_malloc(len + 1);
+	str = ft_malloc(len + 1, shell);
 	str[len] = '\0';
 	if (n == 0)
 		str[0] = '0';
@@ -115,7 +157,7 @@ char	*ft_itoa(int n)
 	return (str);
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char const *s1, char const *s2, t_shell *shell)
 {
 	char	*joined;
 	int		len1;
@@ -127,7 +169,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		return (NULL);
 	len1 = ft_strlen(s1);
 	len2 = ft_strlen(s2);
-	joined = ft_malloc(len1 + len2 + 1);
+	joined = ft_malloc(len1 + len2 + 1, shell);
 	i = 0;
 	while (i < len1)
 	{
@@ -161,7 +203,7 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
-char	*ft_strjoin_free(char *s1, char *s2)
+char	*ft_strjoin_free(char *s1, char *s2, t_shell *shell)
 {
 	char	*result;
 
@@ -173,9 +215,9 @@ char	*ft_strjoin_free(char *s1, char *s2)
 			free(s2);
 		return (NULL);
 	}
-	result = ft_strjoin(s1, s2);
-	free(s1);
-	free(s2);
+	result = ft_strjoin(s1, s2, shell);
+	//free(s1);
+	//free(s2);
 	return (result);
 }
 
@@ -273,7 +315,7 @@ static int	word_len(char const *s, char c)
 	return (len);
 }
 
-char	**ft_split(char const *s, char c)
+char	**ft_split(char const *s, char c, t_shell *shell)
 {
 	char	**res;
 	int		a;
@@ -281,14 +323,14 @@ char	**ft_split(char const *s, char c)
 
 	a = -1;
 	i = 0;
-	res = (char **)malloc(sizeof(char *) * (word_count(s, c) + 1));
+	res = (char **)ft_malloc(sizeof(char *) * (word_count(s, c) + 1), shell); // freelenen malloc kullan
 	if (!s || !res)
 		return (NULL);
 	while (++a < word_count(s, c))
 	{
 		while (s[i] && s[i] == c)
 			i++;
-		res[a] = ft_substr(s, i, word_len(&s[i], c));
+		res[a] = ft_substr(s, i, word_len(&s[i], c), shell);
 		if (!res[a])
 			return (malloc_error(res, 0));
 		i += word_len(&s[i], c);

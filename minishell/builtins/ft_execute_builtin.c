@@ -20,11 +20,11 @@ static int	ft_execute_builtin_function(char **argv, t_shell *shell)
 	if (ft_strcmp(argv[0], "echo") == 0)
 		return (ft_builtin_echo(argv));
 	else if (ft_strcmp(argv[0], "cd") == 0)
-		return (ft_builtin_cd(argv, shell->env_list));
+		return (ft_builtin_cd(argv, shell->env_list, shell));
 	else if (ft_strcmp(argv[0], "pwd") == 0)
 		return (ft_builtin_pwd());
 	else if (ft_strcmp(argv[0], "export") == 0)
-		return (ft_builtin_export(argv, &shell->env_list));
+		return (ft_builtin_export(argv, &shell->env_list, shell));
 	else if (ft_strcmp(argv[0], "unset") == 0)
 		return (ft_builtin_unset(argv, &shell->env_list));
 	else if (ft_strcmp(argv[0], "env") == 0)

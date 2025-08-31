@@ -250,7 +250,7 @@ char	*find_executable(char *cmd, t_env *env_list)
 		// Her PATH dizininde komut var mı kontrol et
 		temp = ft_strjoin(paths[i], "/");
 		full_path = ft_strjoin(temp, cmd);
-		free(temp);
+		//free(temp);
 		
 		if (access(full_path, F_OK) == 0 && access(full_path, X_OK) == 0)
 		{

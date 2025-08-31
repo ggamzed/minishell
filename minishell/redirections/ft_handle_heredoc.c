@@ -1,22 +1,26 @@
 #include "../minishell.h"
 
 /* Heredoc input'unu kullanıcıdan alır ve FD döndürür */
-int ft_process_heredoc(char *delimiter)
+int ft_process_heredoc(char *delimiter, t_shell *shell, int should_expand)
 {
     char *line;
+	char *expanded_line;
     int pipefd[2];
     
     // Pipe oluştur (veya geçici dosya)
-    if (pipe(pipefd) == -1)
+	// pipefd[0] → okuma ucu
+	// pipefd[1] → yazma ucu
+    if (pipe(pipefd) == -1) // Pipe, kernel’de memory’de geçici bir buffer oluşturur.
     {
         perror("minishell: pipe");
         return (-1);
     }
-    
+ 
     // Kullanıcıdan satır satır input al
     while (1)
     {
-        line = readline("> ");  // Heredoc prompt
+		
+       	line = readline("> ");  // Heredoc prompt
         if (!line)  // EOF (Ctrl+D)
             break;
         
@@ -33,15 +37,37 @@ int ft_process_heredoc(char *delimiter)
         //     break;
         // }
 		
-        // Delimiter'a ulaştık mı?
+        // Delimiter'a ulaştık mı? örn: EOF
         if (ft_strcmp(line, delimiter) == 0)
         {
             free(line);
             break;
         }
-        
+        // Variable expansion kontrolü
+        if (should_expand)
+		{
+			expanded_line = ft_expand_double_quoted(line, shell);
+			if (!expanded_line)
+			{
+				free(line);
+				close(pipefd[1]);
+				close(pipefd[0]);
+				return (-1);
+			}	
+		}  
+        else
+		{
+			expanded_line = ft_strdup(line, shell);
+			if (!expanded_line)
+			{
+				free(line);
+				close(pipefd[1]);
+				close(pipefd[0]);
+				return (-1);
+			}
+		}
         // Pipe'a yaz -> Pipe, kernel'da 64KB'lık bir buffer'dır. Dosya değil, memory'de geçici alan!
-        write(pipefd[1], line, ft_strlen(line));
+        write(pipefd[1], expanded_line, ft_strlen(expanded_line));
         write(pipefd[1], "\n", 1);
         free(line);
     }
@@ -51,22 +77,24 @@ int ft_process_heredoc(char *delimiter)
 }
 
 /* Main'de heredoc'ları işle */
-void ft_handle_heredoc(t_shell *shell)
+int	ft_handle_heredoc(t_shell *shell)
 {
-    t_cmd *current = shell->cmd_list;
-    
+    t_cmd *current;
+	
+	current = shell->cmd_list;
     while (current)
     {
         if (current->heredoc_delimiter)
         {
-            current->heredoc_fd = ft_process_heredoc(current->heredoc_delimiter);
-            if (current->heredoc_fd == -1)
+            current->heredoc_fd = ft_process_heredoc(current->heredoc_delimiter, shell, current->heredoc_should_expand);
+			if (current->heredoc_fd == -1)
             {
                 // Hata durumu
                 shell->exit_status = 1;
-                return;
+                return (0);
             }
         }
         current = current->next;
     }
+	return (1);
 }

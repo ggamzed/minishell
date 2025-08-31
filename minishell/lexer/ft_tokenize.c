@@ -29,10 +29,11 @@ t_token_type	ft_get_operator_type(char *line, int *i)
 			return (REDIRECT_APPEND);
 		return (++(*i), REDIRECT_OUT);
 	}
+	// sanki buna hiç gerek yok çünkü | < veya > ise bu fonksiyona girecek NULL falan dönebilir belki
 	return (ft_get_word_type(line, *i)); //bu return'e bak başka ne olabilir?
 }
 
-char	*ft_get_word(char *line, int *i)
+char	*ft_get_word(char *line, int *i, t_shell *shell)
 {
 	int		start;
 	int		len;
@@ -69,11 +70,13 @@ char	*ft_get_word(char *line, int *i)
 			(*i)++;
 		len = *i - start;
 	}
-	word = ft_substr(line, start, len);
+	word = ft_substr(line, start, len, shell);
+	if (!word)
+		return (NULL);
 	return (word);
 }
 
-t_token	*ft_tokenize(char *line)
+t_token	*ft_tokenize(char *line, t_shell *shell)
 {
 	t_token			*head_of_token;
 	t_token			*token;
@@ -81,8 +84,8 @@ t_token	*ft_tokenize(char *line)
 	char			*word;
 	int				i;
 
-	if (!ft_validate_syntax(line)) //(main process_line'da yapılıyor burada gerek yok?) syntax kontrolü, kapanmamış tırnak var mı? başta yada sonda pipe/redirection yada ekstradan var mı?
-		return (NULL);
+	//if (!ft_validate_syntax(line)) //(main process_line'da yapılıyor burada gerek yok?) syntax kontrolü, kapanmamış tırnak var mı? başta yada sonda pipe/redirection yada ekstradan var mı?
+	//	return (NULL);
 	head_of_token = NULL;
 	i = 0;
 	while (line[i])
@@ -94,19 +97,25 @@ t_token	*ft_tokenize(char *line)
 		if (line[i] == '|' || line[i] == '<' || line[i] == '>')
 		{
 			type = ft_get_operator_type(line, &i);
-			token = ft_create_token(type, NULL); //null -> zaten type da ne olduğunu tutuyoruz
+			token = ft_create_token(type, NULL, shell); //null -> zaten type da ne olduğunu tutuyoruz
+			if (!token)
+				return (NULL);
 			ft_add_token(&head_of_token, token);
 		}
 		else
 		{
 			type = ft_get_word_type(line, i);
-			word = ft_get_word(line, &i);
+			word = ft_get_word(line, &i, shell);
+			if (!word)
+				return (NULL);
 			// if (!word)
 			// {
 			// 	ft_free_tokens(head_of_token);
 			// 	return (NULL);
 			// }
-			token = ft_create_token(type, word);
+			token = ft_create_token(type, word, shell);
+			if (!token)
+				return (NULL);
 			ft_add_token(&head_of_token, token);
 			// free(word); // BU SATIRI KALDIR! Token artık word'ü sahiplenir
 		}

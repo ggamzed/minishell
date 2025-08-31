@@ -18,7 +18,7 @@ static char	*ft_get_cd_path(char **argv, t_env *env_list)
 }
 
 //argüman verilmezse HOME dizinine gider + PWD ve OLDPWD environment değişkenlerini günceller
-int	ft_builtin_cd(char **argv, t_env *env_list)
+int	ft_builtin_cd(char **argv, t_env *env_list, t_shell *shell)
 {
 	char	*path;
 	char	old_cwd[PATH_MAX];
@@ -28,14 +28,14 @@ int	ft_builtin_cd(char **argv, t_env *env_list)
 	if (!path)
 		return (1);
 	if (getcwd(old_cwd, sizeof(old_cwd))) // mevcut dizini kaydet -> getcwd() fonksiyonu mevcut çalışma dizinini string olarak döndüren sistem çağrısıdır.
-		ft_set_env_value("OLDPWD", old_cwd, &env_list);
+		ft_set_env_value("OLDPWD", old_cwd, &env_list, shell);
 	if (chdir(path) != 0) // dizin değiştir
 	{
 		printf("minishell: cd");
 		return (1);
 	}
 	if (getcwd(new_cwd, sizeof(new_cwd))) // yeni dizini al ve PWD'yi güncelle
-		ft_set_env_value("PWD", new_cwd, &env_list);
+		ft_set_env_value("PWD", new_cwd, &env_list, shell);
 	
 	return (0);
 }

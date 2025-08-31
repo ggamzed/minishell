@@ -1,10 +1,12 @@
 #include "../minishell.h"
 
-t_token	*ft_create_token(t_token_type type, char *value)
+t_token	*ft_create_token(t_token_type type, char *value, t_shell *shell)
 {
 	t_token	*token;
 
-	token = ft_malloc(sizeof(t_token));
+	token = ft_malloc(sizeof(t_token), shell);
+	if (!token)
+		return (NULL);
 	token->type = type;
 	token->value = value; // value'yu direkt ata, kopyalama
 	token->next = NULL;
