@@ -1,0 +1,22 @@
+SIGINT (2): Ctrl+C - "Interrupt" - süreci durdurmak için.
+SIGQUIT (3): Ctrl+\ - "Quit" - süreci öldürüp core dump oluşturur.
+
+Ctrl+D bir sinyal göndermez.
+	Ama Ctrl+D farklıdır:
+	Terminal, bulunduğun input stream’e EOF (End Of File) karakteri (^D) gönderir.
+	Yani shell’in readline() ya da read() fonksiyonu çağrısı, “artık daha fazla veri yok” anlamında 0 döner.
+	Bu durumda bash / zsh gibi shell’ler, “kullanıcı çıkmak istiyor” diye yorumlar ve exit yapar.
+
+Signal Handler Türleri:
+
+SIG_DFL: Default davranış (genelde process'i öldürür)
+SIG_IGN: Signal'i ignore et (görmezden gel)
+Custom function: Kendi fonksiyonunu çalıştır
+
+Interactive Mode (kullanıcı komut yazarken):
+	Ctrl+C: Yeni prompt göster, süreci kapatma
+	Ctrl+: Hiçbir şey yapma (bash davranışı)
+Command Execution (komut çalışırken):
+	Parent: Signal'leri ignore et, child'ın bitmesini bekle
+	Child: Default davranış (Ctrl+C ile ölsün)
+Bu yapı sayesinde bash gibi davranırsın: komut yazarken Ctrl+C ile çıkmazsın, ama çalışan komutları Ctrl+C ile durdurabilirsin.
