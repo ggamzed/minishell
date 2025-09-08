@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: egokce <eecegokcece@gmail.com>             +#+  +:+       +#+        */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 00:00:00 by student           #+#    #+#             */
-/*   Updated: 2025/08/08 20:48:02 by egokce           ###   ########.fr       */
+/*   Updated: 2025/09/08 19:56:59 by egokce           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static int	execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd, int pr
 	char	**argv;
 	char	**envp;
 
-	// default_signals(); // Sinyal fonksiyonu henüz yok
+	ft_default_signals();
 	
 	// Önceki pipe'dan gelen input
 	if (prev_fd != -1)
@@ -121,7 +121,7 @@ int	execute_pipeline(t_shell *shell)
 		current = current->next;
 	}
 	
-	// ignore_signals(); // Sinyal fonksiyonu henüz yok
+	ft_ignore_signals();
 	
 	// Tüm child process'leri bekle
 	while (wait(&status) > 0)

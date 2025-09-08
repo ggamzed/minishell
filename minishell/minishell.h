@@ -8,7 +8,8 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <limits.h>
-//# include <sys/wait.h>
+# include <sys/wait.h>
+# include <signal.h>
 
 // PATH_MAX güvenlik kontrolü -> cd fonksiyonunda kullanmak için
 #ifndef PATH_MAX
@@ -19,6 +20,8 @@
 # endif
 #endif
 # define PROMPT "minishell$ "
+
+extern volatile sig_atomic_t g_signal;
 
 //token tipleri
 typedef enum e_token_type
@@ -193,5 +196,12 @@ int		ft_handle_heredoc(t_shell *shell);
 // free
 void	ft_free_mem_tracker(t_mem **mem_tracker);
 void	*ft_malloc(size_t size, t_shell *shell);
+
+// signal
+void	ft_handle_sigint(int sig);
+void	ft_handle_sigquit(int sig);
+void	ft_setup_signals(void);
+void	ft_ignore_signals(void);
+void	ft_default_signals(void);
 
 #endif

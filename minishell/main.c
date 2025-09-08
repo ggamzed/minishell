@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+volatile sig_atomic_t g_signal = 0;
+
 static t_shell	*ft_init_shell(char **envp, t_mem **mem_tracker)
 {
 	t_shell	*shell;
@@ -81,8 +83,7 @@ static void	ft_shell_loop(t_shell *shell)
 	
 	while (!shell->exit_flag)
 	{
-		// setup_signals();  // TODO: Implement signals
-		
+		ft_setup_signals();
 		line = readline(PROMPT);
 		if (!line)  // EOF (Ctrl+D) CTRL+D = NULL döner
 		{
@@ -90,7 +91,6 @@ static void	ft_shell_loop(t_shell *shell)
 			shell->exit_flag = 1;
 			break;
 		}
-		
 		if (*line)  // Non-empty line
 		{
 			add_history(line);
@@ -101,13 +101,11 @@ static void	ft_shell_loop(t_shell *shell)
 			}	
 		}
 		free(line);
-		
-		// TODO: Signal handling
-		// if (g_signal == SIGINT)
-		// {
-		//     shell->exit_status = 130;
-		//     g_signal = 0;
-		// }
+		if (g_signal == SIGINT)
+		{
+			shell->exit_status = 130;
+			g_signal = 0;
+		}
 	}
 }
 

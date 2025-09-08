@@ -74,7 +74,7 @@ static int	ft_execute_external_command(t_shell *shell, t_cmd *cmd)
 	}
 	if (pid == 0)
 		ft_execute_child_process(shell, cmd, NULL, -1);
-	// ignore_signals(); // Sinyal fonksiyonu henüz yok
+	ft_ignore_signals();
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));			//-->> exit status makroları, executor.txt
