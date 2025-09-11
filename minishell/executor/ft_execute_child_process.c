@@ -6,19 +6,25 @@ int *pipefd → Şu anki komut ile sonraki arasındaki pipe
 int prev_fd → Önceki pipe'ın okuma ucu (önceki komuttan gelen data)
 t_cmd *cmd → Şu anki komut
 */
-static void	ft_setup_pipe_connections(int *pipefd, int prev_fd, t_cmd *cmd) //pipe olayı -> executor.txt
+static void	ft_setup_pipe_connections(int *pipefd, int prev_fd, t_cmd *cmd)
 {
-		if (prev_fd != -1) // -1 = ilk komut, önceki pipe yok
-		{
-				dup2(prev_fd, STDIN_FILENO); // STDIN'i önceki pipe'a bağla
-				close(prev_fd);
-		}
-		if (cmd->next) // Sonraki pipe için output
-		{
-				dup2(pipefd[1], STDOUT_FILENO); // STDOUT'u pipe'ın yazma ucuna bağla -> ekrana gidecek çıktıyı pipe'a yönlendirmek
-				close(pipefd[1]);
-				close(pipefd[0]);
-		}
+	if (prev_fd != -1) // Önceki pipe'dan gelen input
+	{
+		dup2(prev_fd, STDIN_FILENO); // STDIN'i önceki pipe'a bağla
+		close(prev_fd); // prev_fd'yi kapat
+	}
+	if (cmd->next) // Sonraki komut için pipe var
+	{
+		dup2(pipefd[1], STDOUT_FILENO); // STDOUT'u pipe'ın yazma ucuna bağla
+		close(pipefd[1]); // yazma ucunu kapat
+		close(pipefd[0]); // okuma ucunu da kapat (child bu ucu kullanmaz)
+	}
+	// Eğer cmd->next yoksa ve pipefd varsa, pipe fd'lerini kapat
+	else if (pipefd)
+	{
+		close(pipefd[0]);
+		close(pipefd[1]);
+	}
 }
 
 static void	ft_execute_builtin_in_child(t_shell *shell, t_cmd *cmd)

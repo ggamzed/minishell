@@ -73,11 +73,14 @@ static int	ft_execute_external_command(t_shell *shell, t_cmd *cmd)
 		return (1);
 	}
 	if (pid == 0)
+	{
 		ft_execute_child_process(shell, cmd, NULL, -1);
+		exit(1); // Bu satırı ekleyin - child process'ten çıkış garantisi
+	}
 	ft_ignore_signals();
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));			//-->> exit status makroları, executor.txt
+		return (WEXITSTATUS(status));		//-->> exit status makroları, executor.txt
 	else if (WIFSIGNALED(status))
 		return (128 + WTERMSIG(status));
 	return (0);

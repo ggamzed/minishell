@@ -33,47 +33,64 @@ static int	ft_process_line(t_shell *shell, char *line)
 	// Input validation
 	if (!ft_validate_syntax(line))
 	{
-		shell->exit_status = 2;  // Syntax error exit code
+		shell->exit_status = 2;
 		printf("minishell: syntax error\n");
 		return (1);
 	}
+	
 	// Tokenization
 	tokens = ft_tokenize(line, shell);
 	if (!tokens)
 		return (0);
+		
 	// Parsing - token'ları command'lara çevir
 	shell->cmd_list = ft_parse_tokens(tokens, shell);
 	if (!shell->cmd_list)
 		return (0);
-	//ft_free_tokens(tokens);
-	
 
-	// heredocda douyble free hatası 
-	if (ft_handle_heredoc(shell) == -1)
+	// Heredoc işleme
+	if (ft_handle_heredoc(shell) == 0)
+	{
+		ft_free_commands(shell->cmd_list);
+		shell->cmd_list = NULL;
 		return (0);
-	// Expansion - tüm komutların argv'lerini hazırla
-	// t_cmd *current = shell->cmd_list;
-	// while (current)
-	// {
-	// 	current->expanded_argv = ft_expand_tokens(current->args, shell);
-	// 	if (!current->expanded_argv || !current->expanded_argv[0])
-	// 	{
-	// 		shell->exit_status = 1;
-	// 		ft_free_commands(shell->cmd_list);
-	// 		shell->cmd_list = NULL;
-	// 		return;
-	// 	}
-	// 	current = current->next;
-	// }
+	}
+	
+	// Expansion - tüm komutların argv'lerini hazırla (SADECE BURADA YAP)
+	t_cmd *current = shell->cmd_list;
+	while (current)
+	{
+		if (current->args) // Null check ekle
+		{
+			current->expanded_argv = ft_expand_tokens(current->args, shell);
+			if (!current->expanded_argv || !current->expanded_argv[0])
+			{
+				shell->exit_status = 1;
+				ft_free_commands(shell->cmd_list);
+				shell->cmd_list = NULL;
+				return (1);
+			}
+		}
+		current = current->next;
+	}
 	
 	// Execution - komutları çalıştır
 	shell->exit_status = ft_execute_commands(shell);
 	if (shell->exit_status == -42)
+	{
+		ft_free_commands(shell->cmd_list);
+		shell->cmd_list = NULL;
 		return (0);
+	}
 	
-	// Cleanup
-	//ft_free_commands(shell->cmd_list);
+	// Cleanup - commands'ı free et
+	ft_free_commands(shell->cmd_list);
 	shell->cmd_list = NULL;
+	
+	// tokens'ı da free et (memory leak'i önlemek için)
+	// Ama dikkat: tokens zaten cmd'lerin içinde referans ediliyorsa
+	// cmd_list free edildiğinde tokens da free edilmiş olur
+	
 	return (1);
 }
 

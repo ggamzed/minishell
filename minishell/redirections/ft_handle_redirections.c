@@ -52,13 +52,22 @@ static int	ft_handle_output_redirection(t_cmd *cmd)
 	return (0);
 }
 
-int		ft_handle_redirections(t_cmd *cmd)
+int ft_handle_redirections(t_cmd *cmd)
 {
-	if (ft_handle_input_redirection(cmd) != 0)
-		return (1);
-	if (ft_handle_heredoc_redirection(cmd) != 0) // Heredoc (input'u override edebilir)
-		return (1);
-	if (ft_handle_output_redirection(cmd) != 0)
-		return (1);
-	return (0);
+    
+    if (ft_handle_input_redirection(cmd) != 0)
+        return (1);
+    if (ft_handle_heredoc_redirection(cmd) != 0)
+        return (1);
+    if (ft_handle_output_redirection(cmd) != 0)
+        return (1);
+    
+    // EKLEME: Eğer heredoc_fd hala açıksa kapat
+    if (cmd->heredoc_fd != -1)
+    {
+        close(cmd->heredoc_fd);
+        cmd->heredoc_fd = -1;
+    }
+    
+    return (0);
 }
