@@ -18,7 +18,7 @@ int	ft_is_builtin(char *cmd)
 static int	ft_execute_builtin_function(char **argv, t_shell *shell)
 {
 	if (ft_strcmp(argv[0], "echo") == 0)
-		return (ft_builtin_echo(argv));
+		return (ft_builtin_echo(argv, shell));
 	else if (ft_strcmp(argv[0], "cd") == 0)
 		return (ft_builtin_cd(argv, shell->env_list, shell));
 	else if (ft_strcmp(argv[0], "pwd") == 0)

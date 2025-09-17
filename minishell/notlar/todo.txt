@@ -147,3 +147,27 @@ fd için olanlar henüz bitmedi.
 EXPANDER AND EXECUTER
 expander ve executerda yaptığım hiçbir şeyi hatırlamıyorum ama oraları da değiştirmiştim.
 Hiçbir işlevi bozmadan yaptım. Her şey olduğu gibi çalışıyor yani.
+
+
+
+
+
+HATA 
+
+minishell$ (space)
+minishell: : execution failed
+	lexer da if(!line) break satırını kapattım normalde direkt çıkıyodu, artık bu şekilde hata veriyor.
+
+minishell$ echo \"echo\"
+\"echo\"
+minishell$ echo \"echo\'
+\"echo\'
+minishell$ echo \'echo\'
+\'echo\'
+	expander/parsing kısmında escape karakteri kaldırılmıyormuş, orayı düzelt
+
+env yanına argüman istemiyo
+
+getcwd null durumu hata mesajı
+
+komutlardaki tırnakları sil

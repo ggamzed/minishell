@@ -11,6 +11,7 @@ env = env/
 builtins = builtins/
 executor = executor/
 redirections = redirections/
+validate_syntax = validate_syntax/
 # Source files
 SRCS = main.c \
        utils.c \
@@ -18,11 +19,11 @@ SRCS = main.c \
 	   signals.c \
        $(lexer)ft_tokenize.c \
        $(lexer)ft_token.c \
-       $(lexer)ft_validate_syntax.c \
-       $(lexer)ft_validate_quotes.c \
-       $(lexer)ft_validate_pipes.c \
-       $(lexer)ft_validate_redirections.c \
        $(lexer)ft_count_args.c \
+       $(validate_syntax)ft_validate_syntax.c \
+       $(validate_syntax)ft_validate_quotes.c \
+       $(validate_syntax)ft_validate_pipes.c \
+       $(validate_syntax)ft_validate_redirections.c \
        $(parser)ft_parse_tokens.c \
 	   $(parser)ft_in_parser_handle_redirections.c \
 	   $(parser)ft_parse_command.c \
