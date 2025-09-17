@@ -44,6 +44,7 @@ static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
 	if (!executable)
 	{
 		printf("minishell: %s: command not found\n", cmd->expanded_argv[0]);
+		ft_free_mem_tracker(shell->mem_tracker);
 		exit(127);
 	}
 	envp = ft_env_to_array(shell->env_list, shell);

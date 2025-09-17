@@ -14,7 +14,7 @@ int	ft_builtin_exit(char **argv, t_shell *shell)
 		{
 			printf("minishell: exit: %s: numeric argument required\n", argv[1]);
 			exit_code = 255;
-		}
+		} // to do: exit 123 123 bash'de dene
 	}
 	printf("exit\n");
 	shell->exit_status = exit_code; // shell'in son komutun exit durumunu tutar = $? -> bu fonksiyon bittikten sonra maine dönülür, exit_flag bir olur, main "return (shell.exit_status);" return eder. bu yüzden exit_code saklıyoruz

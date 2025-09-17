@@ -9,7 +9,7 @@ static char	*ft_get_cd_path(char **argv, t_env *env_list)
 		home = ft_get_env_value("HOME", env_list);
 		if (!home)
 		{
-			printf("minishell: cd: HOME not set\n");
+			perror("minishell: cd: HOME not set");
 			return (NULL);
 		}
 		return (home);
@@ -31,7 +31,7 @@ int	ft_builtin_cd(char **argv, t_env *env_list, t_shell *shell)
 		ft_set_env_value("OLDPWD", old_cwd, &env_list, shell);
 	if (chdir(path) != 0) // dizin değiştir
 	{
-		printf("minishell: cd");
+		perror("minishell: cd");
 		return (1);
 	}
 	if (getcwd(new_cwd, sizeof(new_cwd))) // yeni dizini al ve PWD'yi güncelle
