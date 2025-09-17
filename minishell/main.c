@@ -76,7 +76,7 @@ static int	ft_process_line(t_shell *shell, char *line)
 	
 	// Execution - komutları çalıştır
 	shell->exit_status = ft_execute_commands(shell);
-	if (shell->exit_status == -42)
+	if (shell->exit_status == 1) // -42 idi burası
 	{
 		ft_free_commands(shell->cmd_list);
 		shell->cmd_list = NULL;

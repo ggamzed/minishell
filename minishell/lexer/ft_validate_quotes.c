@@ -8,7 +8,7 @@ int	ft_validate_quotes(char *line)
 	i = 0;
 	while (line[i])
 	{
-		if (line[i] == '\'' || line[i] == '"')
+		if ((line[i] == '\'' || line[i] == '"') && ((i != 0) && (line[i - 1] != '\\')))
 		{
 			quote = line[i];
 			i++;
