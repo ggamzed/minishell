@@ -3,6 +3,15 @@
 static char	*ft_get_cd_path(char **argv, t_env *env_list)
 {
 	char	*home;
+	int		arg_count = 0;
+	
+	while (argv[arg_count])
+		arg_count++;
+	if (arg_count > 2)
+	{
+		write(2, "minishell: cd: too many arguments\n", 34);
+		return (NULL);
+	}
 
 	if (!argv[1]) // argüman kontrolü - yoksa HOME'a git
 	{
