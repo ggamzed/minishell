@@ -29,12 +29,12 @@ int	ft_validate_quotes(char *line)
 			if (!line[i])
 			{
 				printf("minishell: syntax error: unclosed quote\n");
-				return (0);
+				return (1);
 			}
 			i++;
 		}
 		else
 			i++;
 	}
-	return (1);
+	return (0);
 }

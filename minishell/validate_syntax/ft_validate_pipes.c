@@ -14,18 +14,22 @@ static int	ft_check_pipe_boundaries(char *line)
 	if (line[i] == '|' || (j >= 0 && line[j] == '|'))
 	{
 		printf("minishell: syntax error near unexpected token `|'\n");
-		return (0);
+		return (1);
 	}
-	return (1);
+	return (0);
 }
 
 static int	ft_check_double_pipes(char *line)
 {
 	int	i;
+	int	is_quote;
 
 	i = 0;
+	is_quote = 0;
 	while (line[i])
 	{
+		if ((line[i] == '"') || (line[i] == '\''))
+			is_quote++;
 		if (line[i] == '|')
 		{
 			i++;
@@ -33,21 +37,23 @@ static int	ft_check_double_pipes(char *line)
 				i++;
 			if (line[i] == '|')
 			{
+				if (is_quote)
+					return (0);
 				printf("minishell: syntax error near unexpected token `|'\n");
-				return (0);
+				return (1);
 			}
 		}
 		else
 			i++;
 	}
-	return (1);
+	return (0);
 }
 
 int	ft_validate_pipes(char *line)
 {
-	if (!ft_check_pipe_boundaries(line))
-		return (0);
-	if (!ft_check_double_pipes(line))
-		return (0);
-	return (1);
+	if (ft_check_pipe_boundaries(line) == 1)
+		return (1);
+	if (ft_check_double_pipes(line) == 1)
+		return (1);
+	return (0);
 }

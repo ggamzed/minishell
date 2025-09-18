@@ -31,7 +31,7 @@ static int	ft_process_line(t_shell *shell, char *line)
 	shell->line = line;
 	
 	// Input validation
-	if (!ft_validate_syntax(line))
+	if (ft_validate_syntax(line) == 1)
 	{
 		shell->exit_status = 2;
 		printf("minishell: syntax error\n");
