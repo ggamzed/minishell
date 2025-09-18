@@ -103,6 +103,7 @@ typedef struct s_shell
 
 //--------------------------------UTILS--------------------------------
 int		ft_is_space(char c);
+void	ft_putstr_fd(char *s, int fd);
 char	*ft_substr(char const *s, unsigned int start, size_t len, t_shell *shell);
 int		ft_strlen(const char *s);
 char	*ft_strdup(const char *s, t_shell *shell);

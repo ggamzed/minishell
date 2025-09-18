@@ -48,7 +48,7 @@ int	ft_builtin_export(char **argv, t_env **env_list, t_shell *shell)
 	}
 	if (!ft_is_valid_export_var(argv[1]))
 	{
-		fprintf(stderr, "export: not a valid identifier\n");
+		ft_putstr_fd("export: not a valid identifier\n", 2);
 		return (1); // echo $? 1 dönsün
 	}
 	i = 1;

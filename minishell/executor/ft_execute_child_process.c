@@ -43,14 +43,20 @@ static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
 	executable = ft_find_executable(cmd->expanded_argv[0], shell->env_list, shell); //çalıştırılabilir path
 	if (!executable)
 	{
-		printf("minishell: %s: command not found\n", cmd->expanded_argv[0]);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd->expanded_argv[0], 2);
+		ft_putstr_fd(": command not found\n", 2);
 		ft_free_mem_tracker(shell->mem_tracker);
 		free(shell);
 		exit(127);
 	}
 	envp = ft_env_to_array(shell->env_list, shell);
 	execve(executable, cmd->expanded_argv, envp);
-	printf("minishell: %s: execution failed\n", cmd->expanded_argv[0]);
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(cmd->expanded_argv[0], 2);
+	ft_putstr_fd(": execution failed: ", 2);
+	perror("");
+
 	exit(126);
 }
 

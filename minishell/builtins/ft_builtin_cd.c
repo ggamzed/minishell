@@ -9,7 +9,7 @@ static char	*ft_get_cd_path(char **argv, t_env *env_list)
 		arg_count++;
 	if (arg_count > 2)
 	{
-		write(2, "minishell: cd: too many arguments\n", 34);
+		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
 		return (NULL);
 	}
 
@@ -18,7 +18,7 @@ static char	*ft_get_cd_path(char **argv, t_env *env_list)
 		home = ft_get_env_value("HOME", env_list);
 		if (!home)
 		{
-			perror("minishell: cd: HOME not set");
+			ft_putstr_fd("minishell: cd: HOME not set", 2);
 			return (NULL);
 		}
 		return (home);
@@ -45,6 +45,5 @@ int	ft_builtin_cd(char **argv, t_env *env_list, t_shell *shell)
 	}
 	if (getcwd(new_cwd, sizeof(new_cwd))) // yeni dizini al ve PWD'yi güncelle
 		ft_set_env_value("PWD", new_cwd, &env_list, shell);
-	
 	return (0);
 }

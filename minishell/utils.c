@@ -9,6 +9,18 @@ int	ft_is_space(char c)
 	return (0);
 }
 
+void	ft_putstr_fd(char *s, int fd)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (s[i])
+	{
+		write(fd, &s[i], 1);
+		i++;
+	}
+}
+
 char	*ft_substr(char const *s, unsigned int start, size_t len, t_shell *shell)
 {
 	char	*substr;
@@ -74,13 +86,13 @@ void	*ft_malloc(size_t size, t_shell *shell)
 	ptr = malloc(size);
 	if (!ptr)
 	{
-		printf("malloc failed");
+		ft_putstr_fd("malloc failed", 2);
 		return (NULL);
 	}
 	mem_node = malloc(sizeof(t_mem));
 	if (!mem_node)
 	{
-		printf("malloc for memory tracker failed");
+		ft_putstr_fd("malloc for memory tracker failed", 2);
 		free(ptr);
 		return (NULL);
 	}

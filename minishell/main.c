@@ -34,7 +34,7 @@ static int	ft_process_line(t_shell *shell, char *line)
 	if (ft_validate_syntax(line) == 1)
 	{
 		shell->exit_status = 2;
-		printf("minishell: syntax error\n");
+		ft_putstr_fd("minishell: syntax error\n", 2);
 		return (1);
 	}
 	
@@ -142,7 +142,7 @@ int	main(int argc, char **argv, char **envp)
 	//printf("shell->mem_tracker: %p\n", (void*)shell->mem_tracker);
 	if (!shell)
 	{
-		fprintf(stderr, "minishell: failed to initialize shell\n");
+		ft_putstr_fd("minishell: failed to initialize shell\n", 2);
 		ft_free_mem_tracker(&mem_tracker);
 		free(shell);
 		return (1);

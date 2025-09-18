@@ -12,7 +12,9 @@ int	ft_builtin_exit(char **argv, t_shell *shell)
 		exit_code = ft_atoi(argv[1]);
 		if (!ft_is_digit(argv[1][0]) && argv[1][0] != '-' && argv[1][0] != '+')
 		{
-			printf("minishell: exit: %s: numeric argument required\n", argv[1]);
+			ft_putstr_fd("minishell: exit: ", 2);
+			ft_putstr_fd(argv[1], 2);
+			ft_putstr_fd(": numeric argument required\n", 2);
 			exit_code = 2;
 		} // to do: exit 123 123 bash'de dene
 	}

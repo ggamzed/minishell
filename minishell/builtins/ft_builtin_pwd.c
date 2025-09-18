@@ -9,6 +9,6 @@ int	ft_builtin_pwd(void)
 		printf("%s\n", cwd);
 		return (0);
 	}
-	printf("minishell: pwd"); // -> hata durumunda
+	perror("minishell: pwd"); // -> hata durumunda
 	return (1);
 }
