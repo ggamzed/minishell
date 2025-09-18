@@ -229,7 +229,9 @@ t_token	*ft_tokenize(char *line, t_shell *shell)
 		}
 		else
 		{
+			// ÖNCELİKLE TYPE'I BELİRLE (original position'da)
 			type = ft_get_word_type(line, i);
+			// SONRA WORD'Ü AL
 			word = ft_get_word(line, &i, shell);
 			if (!word)
 				return (NULL);

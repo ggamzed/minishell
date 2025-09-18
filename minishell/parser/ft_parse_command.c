@@ -49,7 +49,7 @@ static void	ft_process_redirection(t_cmd *cmd, t_token **current, t_shell *shell
 		ft_in_parser_handle_heredoc(cmd, current, shell);
 }
 
-// token listesinden tek bir komut parse eder, redirection token'larını ayırır, argüman token'larını cmd->args'a bağlar
+//token listesinden tek bir komut parse eder, redirection token'larını ayırır, argüman token'larını cmd->args'a bağlar
 t_cmd	*ft_parse_command(t_token **current, t_shell *shell)
 {
 	t_cmd	*cmd;
@@ -72,3 +72,42 @@ t_cmd	*ft_parse_command(t_token **current, t_shell *shell)
 	}
 	return (cmd);
 }
+
+// t_cmd	*ft_parse_command(t_token **current, t_shell *shell)
+// {
+// 	t_cmd	*cmd;
+// 	t_token	*arg_token;
+
+// 	cmd = ft_create_command(shell);
+// 	if (!cmd)
+// 		return (NULL);
+	
+// 	// DEBUG: Parse başlangıcında token'ları yazdır
+// 	printf("=== PARSING COMMAND ===\n");
+// 	t_token *debug = *current;
+// 	while (debug && debug->type != PIPE) {
+// 		printf("Token Type: %d, Value: '%s'\n", debug->type, debug->value ? debug->value : "NULL");
+// 		debug = debug->next;
+// 	}
+// 	printf("=== END PARSING ===\n");
+	
+// 	while (*current && (*current)->type != PIPE)
+// 	{
+// 		printf("Processing token: Type=%d, Value='%s'\n", (*current)->type, (*current)->value ? (*current)->value : "NULL"); // Her adımda ne işlediğini göster
+		
+// 		if (ft_is_argument_token((*current)->type))
+// 		{	
+// 			printf("-> Adding as ARGUMENT\n");
+// 			arg_token = *current;
+// 			*current = (*current)->next;
+// 			arg_token->next = NULL;
+// 			ft_link_arg_token(cmd, arg_token);
+// 		}
+// 		else
+// 		{
+// 			printf("-> Processing as REDIRECTION\n");
+// 			ft_process_redirection(cmd, current, shell);
+// 		}
+// 	}
+// 	return (cmd);
+// }

@@ -34,8 +34,15 @@ int	ft_count_args(t_token *tokens)
 		else if (ft_is_redirection(current->type)) //redirectionları atla
 		{
 			current = current->next;
-			if (current && current->type == WORD) //filename atla
+			// QUOTED FILENAME'LERİ DE ATLA!
+			if (current && (current->type == WORD || 
+			               current->type == SINGLE_QUOTED_STRING || 
+			               current->type == DOUBLE_QUOTED_STRING))
 				current = current->next;
+		}
+		else
+		{
+			current = current->next; // Bilinmeyen token'ları atla
 		}
 	}
 	return (count);
