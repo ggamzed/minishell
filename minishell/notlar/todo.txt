@@ -19,6 +19,8 @@ echo a" - ok
 	Output: "echo a: command not found"
 
 3- Exit Status Değerleri:
+https://linuxconfig.org/list-of-exit-codes-on-linux
+https://www.cyberciti.biz/faq/linux-bash-exit-status-set-exit-statusin-bash/
 Exit Code | Anlamı
 ----------|----------------------------------
 0         | Başarılı
@@ -26,6 +28,8 @@ Exit Code | Anlamı
 2         | Yanlış kullanım (Syntax hatası)
 126       | İzin yok (Execute permission yok)
 127       | Komut bulunamadı
+128       | Exit komutu için geçersiz argüman
+128 + n   | Sinyal ile sonlandırılan işlemler (n = sinyal numarası)
 130       | Ctrl+C (SIGINT)
 255       | Geçersiz argüman
 
