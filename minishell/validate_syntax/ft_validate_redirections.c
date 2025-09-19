@@ -24,8 +24,7 @@ static int	ft_check_filename_after_redirection(char *line, int i, int is_quote)
 	{
 		if (is_quote)
 			return (0);
-		printf("minishell: syntax error near unexpected token"); //daha düzgün bir hata mesajı yazdır
-		//printf(" `newline'\n"); 
+		ft_putstr_fd("minishell: syntax error near unexpected token\n", 2);//daha düzgün bir hata mesajı yazdır
 		return (1);
 	}
 	return (0);

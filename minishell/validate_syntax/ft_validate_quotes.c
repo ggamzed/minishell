@@ -71,7 +71,7 @@ int	ft_validate_quotes(char *line)
 			}
 			if (in_quote)
 			{
-				printf("minishell: syntax error: unclosed quote\n");
+				ft_putstr_fd("minishell: syntax error: unclosed quote\n", 2);
 				return (1);
 			}
 		}

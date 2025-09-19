@@ -46,7 +46,10 @@ static int	ft_handle_output_redirection(t_cmd *cmd)
 		fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644); // TRUNC: Dosyayı sıfırla, yaz
 	if (fd == -1)
 	{
-		printf("minishell: %s: Permission denied\n", cmd->output_file);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd->output_file, 2);
+		ft_putstr_fd(": ", 2);
+		perror("");
 		return (1);
 	}
 	dup2(fd, STDOUT_FILENO);

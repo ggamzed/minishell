@@ -13,7 +13,7 @@ static int	ft_check_pipe_boundaries(char *line)
 		j--;
 	if (line[i] == '|' || (j >= 0 && line[j] == '|'))
 	{
-		printf("minishell: syntax error near unexpected token `|'\n");
+		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
 		return (1);
 	}
 	return (0);
@@ -39,7 +39,7 @@ static int	ft_check_double_pipes(char *line)
 			{
 				if (is_quote)
 					return (0);
-				printf("minishell: syntax error near unexpected token `|'\n");
+				ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
 				return (1);
 			}
 		}
