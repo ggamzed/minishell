@@ -102,6 +102,7 @@ typedef struct s_shell
 {
 	t_mem	**mem_tracker;
 	t_env	*env_list;		// environment değişkenleri ($HOME, $USER...)
+	t_env	*export_list;
 	t_cmd	*cmd_list;		// parse edilmiş komut listesi
 	char	*line;			// kullanıcının girdiği raw input
 	int		exit_status;	// son komutun exit code'u ($?)
