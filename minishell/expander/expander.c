@@ -5,10 +5,56 @@ char	*ft_handle_exit_status(t_shell *shell)
 	return (ft_itoa(shell->exit_status, shell));
 }
 
+static char *ft_expand_tilde(const char *value, t_shell *shell)
+{
+    char    *base;
+    char    *suffix;
+    char    *expanded;
+
+    if (!value || value[0] != '~')
+        return (NULL);
+
+    // tildeden sonra gelen karakterler bunlar olmali '/' , '+' , or '-'
+    if (value[1] != '\0' && value[1] != '/' && value[1] != '+' && value[1] != '-')
+        return (NULL);
+
+    if (value[1] == '+' || value[1] == '-')
+    {
+        if (value[1] == '+')
+            base = ft_get_env_value("PWD", shell->env_list);
+        else
+            base = ft_get_env_value("OLDPWD", shell->env_list);
+        suffix = (char *)(value + 2);
+    } 
+    else // Diğer durumlar (sadece ~ veya ~/...) → kullanıcının HOME dizini.
+    {
+        base = ft_get_env_value("HOME", shell->env_list);
+        suffix = (char *)(value + 1);
+    }
+
+    // Eğer ortam değişkeni yoksa (örneğin $HOME unset ise)
+    if (!base)
+        return (ft_strdup(value, shell));
+
+    // suffix; ~, ~+, ~-’den sonraki kalan kısım (örn: "/Desktop" gibi).
+    // Eğer suffix boşsa (örn: ~ ya da ~+ tek başına) 
+    if (suffix[0] == '\0')
+        return (ft_strdup(base, shell));
+
+    // Eğer suffix / ile başlıyorsa (örn: ~/Desktop) → base + suffix birleştir.
+    if (suffix[0] == '/')
+        return (ft_strjoin(base, suffix, shell));
+
+    // Kalan durum (Normalde buraya gelinmemeli). sadece /, +, -, veya \0 izin var
+    expanded = ft_strjoin(base, "/", shell);
+    expanded = ft_strjoin_free(expanded, ft_strdup(suffix, shell), shell);
+    return (expanded);
+}
 
 static char	*ft_expand_token_value(char *value, t_token_type type, t_shell *shell, int is_heredoc_delimiter)
 {
 	int	i;
+	char *tilde;
 
 	i = 0;
 	if (!value)
@@ -26,7 +72,12 @@ static char	*ft_expand_token_value(char *value, t_token_type type, t_shell *shel
 	else if (type == SINGLE_QUOTED_STRING)
 		return (ft_strdup(value, shell));
 	else if (type == WORD)
+	{
+		tilde = ft_expand_tilde(value, shell);
+		if (tilde)
+			return (tilde);
 		return (ft_strdup(value, shell));
+	}
 	else
 		return (ft_strdup(value, shell));
 }

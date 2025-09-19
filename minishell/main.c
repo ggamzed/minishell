@@ -2,6 +2,18 @@
 
 volatile sig_atomic_t g_signal = 0;
 
+void	ft_init_export_list(t_shell *shell)
+{
+	t_env	*curr;
+
+	curr = shell->env_list;
+	while (curr)
+	{
+		ft_set_env_value(curr->key, curr->value, &shell->export_list, shell);
+		curr = curr->next;
+	}
+}
+
 static t_shell	*ft_init_shell(char **envp, t_mem **mem_tracker)
 {
 	t_shell	*shell;
@@ -19,6 +31,8 @@ static t_shell	*ft_init_shell(char **envp, t_mem **mem_tracker)
 	}
 	shell->cmd_list = NULL;
 	shell->line = NULL;
+	shell->export_list = NULL;
+	ft_init_export_list(shell);
 	shell->exit_status = 0;
 	shell->exit_flag = 0;
 	return (shell);
