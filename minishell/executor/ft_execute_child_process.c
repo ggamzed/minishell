@@ -73,3 +73,25 @@ int	ft_execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd, int prev_f
 		ft_execute_external_in_child(shell, cmd);
 	return (0); // Buraya hiç ulaşmaz, exit() ile çıkar
 }
+
+
+
+
+
+int ft_handle_redirections(t_cmd *cmd)
+{
+    if (ft_handle_input_redirection(cmd) != 0)  // STATIC fonksiyon - sadece bu dosyada çağrılabilir
+        return (1);
+    if (ft_handle_heredoc_redirection(cmd) != 0)  // STATIC fonksiyon - sadece bu dosyada çağrılabilir
+        return (1);
+    if (ft_handle_output_redirection(cmd) != 0)  // STATIC fonksiyon - sadece bu dosyada çağrılabilir
+        return (1);
+    
+    // EKLEME: Eğer heredoc_fd hala açıksa kapat
+    if (cmd->heredoc_fd != -1)
+    {
+        close(cmd->heredoc_fd);
+        cmd->heredoc_fd = -1;
+    }
+    return (0);
+}

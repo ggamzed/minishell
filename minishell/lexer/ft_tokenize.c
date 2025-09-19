@@ -228,26 +228,29 @@ t_token	*ft_tokenize(char *line, t_shell *shell)
 				token->space_flag = 0;
 		}
 		else
-		{
-			// ÖNCELİKLE TYPE'I BELİRLE (original position'da)
-			type = ft_get_word_type(line, i);
-			// SONRA WORD'Ü AL
-			word = ft_get_word(line, &i, shell);
-			if (!word)
-				return (NULL);
-			
-			token = ft_create_token(type, word, shell);
-			if (!token)
-				return (NULL);
-			ft_add_token(&head_of_token, token);
-			
-			// Token işlendikten SONRA, bu pozisyonda boşluk var mı kontrol et
-			// line[i] şu anda token'ın hemen sonraki karakteri gösteriyor
-			if (line[i] && ft_is_space(line[i]))
-				token->space_flag = 1;
-			else
-				token->space_flag = 0;
-		}
+    {
+        type = ft_get_word_type(line, i);
+        word = ft_get_word(line, &i, shell);
+        if (!word)
+            return (NULL);
+        
+        // BOŞ STRING KONTROLÜ EKLEYIN
+        if (ft_strlen(word) == 0)
+        {
+            // Boş string'i atla
+            continue;
+        }
+        
+        token = ft_create_token(type, word, shell);
+        if (!token)
+            return (NULL);
+        ft_add_token(&head_of_token, token);
+        
+        if (line[i] && ft_is_space(line[i]))
+            token->space_flag = 1;
+        else
+            token->space_flag = 0;
+    }
 	}
 	return (head_of_token);
 }

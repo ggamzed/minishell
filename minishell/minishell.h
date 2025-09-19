@@ -56,6 +56,15 @@ typedef struct s_token
 // 	struct s_cmd_arg *next;
 // }	t_cmd_arg;
 
+typedef struct s_heredoc
+{
+	char			*delimiter;
+	t_token_type	type;
+	int				should_expand;
+	int				fd;
+	struct s_heredoc *next;
+} t_heredoc;
+
 // command yapısı -> tek bir komutu temsil eder 
 typedef struct s_cmd
 {
@@ -70,6 +79,7 @@ typedef struct s_cmd
 	t_token_type	heredoc_type;       // Delimiter token type
 	int				heredoc_fd;         // heredoc için file descriptor
 	int				heredoc_should_expand; // expand edilsin mi edilmesin mi kontrolü
+	t_heredoc		*heredocs;  // LINKED LIST olarak değiştir
 	struct s_cmd	*next;              // pipe'daki sonraki komut
 } t_cmd;
 
@@ -192,8 +202,13 @@ int		ft_execute_single_command(t_shell *shell, t_cmd *cmd);
 char	*ft_find_executable(char *cmd, t_env *env_list, t_shell *shell);
 int		ft_handle_redirections(t_cmd *cmd);
 
-//--------------------------------REDİRECTIONS--------------------------------
+//--------------------------------REDIRECTIONS--------------------------------
 int		ft_handle_heredoc(t_shell *shell);
+int		ft_process_heredoc(char *delimiter, t_shell *shell, int should_expand); // BU SATIRI EKLEYİN
+
+int	ft_handle_input_redirection(t_cmd *cmd);
+int	ft_handle_heredoc_redirection(t_cmd *cmd);  
+int	ft_handle_output_redirection(t_cmd *cmd);
 
 
 // free
