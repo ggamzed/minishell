@@ -4,6 +4,7 @@ int	ft_builtin_env(t_env *env_list)
 {
 	t_env	*current;
 
+	
 	current = env_list;
 	while (current)
 	{

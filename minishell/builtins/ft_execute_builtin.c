@@ -15,6 +15,16 @@ int	ft_is_builtin(char *cmd)
 	return (0);
 }
 
+static int	ft_is_valid_env_arg(char **argv)
+{
+	if ((argv[1] != NULL) && (ft_strcmp(argv[1], "env") != 0))
+	{
+		printf("env: '%s': No such file or directory\n", argv[1]);
+		return (127);
+	}
+	return (0);
+}
+
 static int	ft_execute_builtin_function(char **argv, t_shell *shell)
 {
 	if (ft_strcmp(argv[0], "echo") == 0)
@@ -28,7 +38,11 @@ static int	ft_execute_builtin_function(char **argv, t_shell *shell)
 	else if (ft_strcmp(argv[0], "unset") == 0)
 		return (ft_builtin_unset(argv, &shell->env_list));
 	else if (ft_strcmp(argv[0], "env") == 0)
+	{
+		if (ft_is_valid_env_arg(argv) == 127)
+			return (127);
 		return (ft_builtin_env(shell->env_list));
+	}	
 	else if (ft_strcmp(argv[0], "exit") == 0)
 		return (ft_builtin_exit(argv, shell));
 	return (1);
