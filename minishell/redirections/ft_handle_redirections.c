@@ -11,8 +11,10 @@ static int	ft_handle_input_redirection(t_cmd *cmd)
 	fd = open(cmd->input_file, O_RDONLY);
 	if (fd == -1)
 	{
-		printf("minishell: %s: No such file or directory\n", 
-			cmd->input_file);
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd->input_file, 2);
+		ft_putstr_fd(": ", 2);
+		perror("");
 		return (1);
 	}
 	dup2(fd, STDIN_FILENO);
