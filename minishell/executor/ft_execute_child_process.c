@@ -52,10 +52,9 @@ static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
 	}
 	envp = ft_env_to_array(shell->env_list, shell);
 	execve(executable, cmd->expanded_argv, envp);
-	ft_putstr_fd("minishell: ", 2);
-	ft_putstr_fd(cmd->expanded_argv[0], 2);
-	ft_putstr_fd(": execution failed: ", 2);
-	perror("");
+	perror("execve");
+	ft_free_mem_tracker(shell->mem_tracker); // unutma
+	free(shell);
 
 	exit(126);
 }
