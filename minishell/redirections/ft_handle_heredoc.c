@@ -25,17 +25,17 @@ int ft_process_heredoc(char *delimiter, t_shell *shell, int should_expand)
 			break;
 		
 		// // Ctrl+C handle
-		// if (g_signal == SIGINT)
-		// {
-		//     close(pipefd[0]);
-		//     close(pipefd[1]);
-		//     return (-1);
-		// }
-		// if (!line)  // Ctrl+D
-		// {
-		//     write(1, "\n", 1);
-		//     break;
-		// }
+		if (g_signal == SIGINT)
+		{
+		    close(pipefd[0]);
+		    close(pipefd[1]);
+		    return (-1);
+		}
+		if (!line)  // Ctrl+D
+		{
+		    write(1, "\n", 1);
+		    break;
+		}
 		
 		// Delimiter'a ulaştık mı? örn: EOF
 		if (ft_strcmp(line, delimiter) == 0)

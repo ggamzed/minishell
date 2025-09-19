@@ -61,7 +61,7 @@ static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
 
 int	ft_execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd, int prev_fd)
 {
-	// default_signals(); // Sinyal fonksiyonu henüz yok
+	ft_default_signals(); // Sinyal fonksiyonu henüz yok
 	ft_setup_pipe_connections(pipefd, prev_fd, cmd);
 	if (ft_handle_redirections(cmd) != 0) // şuan bu fonksiyon yok
 		exit(1);

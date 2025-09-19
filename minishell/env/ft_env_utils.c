@@ -106,7 +106,7 @@ static void	ft_fill_env_array(t_env *env_list, char **envp, t_shell *shell)
 		{
 			temp = ft_strjoin(current->key, "=", shell);
 			envp[i] = ft_strjoin(temp, current->value, shell);
-			free(temp);
+			//free(temp);
 			i++;
 		}
 		current = current->next;
