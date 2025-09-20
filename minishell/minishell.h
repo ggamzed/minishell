@@ -190,7 +190,7 @@ int	ft_is_builtin(char *cmd);
 int	ft_builtin_cd(char **argv, t_env *env_list, t_shell *shell);
 int	ft_builtin_echo(char **argv);
 int	ft_builtin_env(t_env *env_list);
-int	ft_builtin_exit(char **argv, t_shell *shell);
+int	ft_builtin_exit(char **argv, t_shell *shell, int in_pipe);
 int	ft_builtin_export(char **argv, t_env **env_list, t_shell *shell);
 int	ft_builtin_pwd(void);
 int	ft_builtin_unset(char **argv, t_env **env_list);

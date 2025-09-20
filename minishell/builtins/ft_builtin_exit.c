@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-int	ft_builtin_exit(char **argv, t_shell *shell)
+int	ft_builtin_exit(char **argv, t_shell *shell, int in_pipe)
 {
 	int	exit_code; // bu fonksiyonda hesaplanan çıkış kodu, amaç: shell'den çıkış kodu belirlemek
 
@@ -18,7 +18,8 @@ int	ft_builtin_exit(char **argv, t_shell *shell)
 			exit_code = 2;
 		} // to do: exit 123 123 bash'de dene
 	}
-	printf("exit\n");
+	if (!in_pipe) // Pipe içinde değilse "exit" yazdır
+		printf("exit\n");
 	shell->exit_status = exit_code; // shell'in son komutun exit durumunu tutar = $? -> bu fonksiyon bittikten sonra maine dönülür, exit_flag bir olur, main "return (shell.exit_status);" return eder. bu yüzden exit_code saklıyoruz
 	return (exit_code);
 }

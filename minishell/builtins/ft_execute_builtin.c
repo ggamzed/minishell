@@ -25,7 +25,7 @@ static int	ft_is_valid_env_arg(char **argv)
 	return (0);
 }
 
-static int	ft_execute_builtin_function(char **argv, t_shell *shell)
+static int	ft_execute_builtin_function(char **argv, t_shell *shell, int in_pipe)
 {
 	if (ft_strcmp(argv[0], "echo") == 0)
 		return (ft_builtin_echo(argv));
@@ -44,7 +44,7 @@ static int	ft_execute_builtin_function(char **argv, t_shell *shell)
 		return (ft_builtin_env(shell->env_list));
 	}	
 	else if (ft_strcmp(argv[0], "exit") == 0)
-		return (ft_builtin_exit(argv, shell));
+		return (ft_builtin_exit(argv, shell, in_pipe));
 	return (1);
 }
 
@@ -54,7 +54,5 @@ int	ft_execute_builtin(t_shell *shell, t_cmd *cmd, int in_pipe)
         return (1);
 	if (!ft_is_builtin(cmd->expanded_argv[0]))
 		return (1);
-	if (in_pipe && ft_strcmp(cmd->expanded_argv[0], "exit") == 0)
-        return (0);
-	return (ft_execute_builtin_function(cmd->expanded_argv, shell));
+	return (ft_execute_builtin_function(cmd->expanded_argv, shell, in_pipe));
 }
