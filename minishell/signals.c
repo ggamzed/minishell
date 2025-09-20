@@ -4,7 +4,7 @@
 void ft_handle_sigint(int sig)
 {
 	g_signal = sig;              // Global değişkene signal numarasını kaydet (2)
-	write(STDOUT_FILENO, "\n", 1);
+	//write(STDOUT_FILENO, "\n", 1);
 	rl_on_new_line();            // readline'a yeni satıra geçtiğimizi söyle
 	rl_replace_line("", 0);      // Mevcut satırı boş string ile değiştir
 	rl_redisplay();              // Prompt'u yeniden göster (minishell$ )
