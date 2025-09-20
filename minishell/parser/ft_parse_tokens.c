@@ -19,6 +19,7 @@ void	ft_add_command(t_cmd **commands, t_cmd *new_cmd)
 // pipe'larla ayrılmış komutları ayrı t_cmd'lere dönüştürür
 t_cmd	*ft_parse_tokens(t_token *tokens, t_shell *shell)
 {
+	
 	t_cmd	*commands;  //komut listesi
 	t_cmd	*cmd; //tek bir komut
 	t_token	*current;

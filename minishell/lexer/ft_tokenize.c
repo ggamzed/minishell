@@ -202,7 +202,7 @@ t_token	*ft_tokenize(char *line, t_shell *shell)
 	t_token_type	type;
 	char			*word;
 	int				i;
-
+	
 	//if (!ft_validate_syntax(line)) //(main process_line'da yapılıyor burada gerek yok?) syntax kontrolü, kapanmamış tırnak var mı? başta yada sonda pipe/redirection yada ekstradan var mı?
 	//	return (NULL);
 	head_of_token = NULL;

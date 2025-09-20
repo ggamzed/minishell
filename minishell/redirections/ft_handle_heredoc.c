@@ -19,18 +19,16 @@ int ft_process_heredoc(char *delimiter, t_shell *shell, int should_expand)
 	// Kullanıcıdan satır satır input al
 	while (1)
 	{
-		
 		line = readline("> ");  // Heredoc prompt
-		if (!line)  // EOF (Ctrl+D)
-			break;
-		
-		// // Ctrl+C handle
 		if (g_signal == SIGINT)
 		{
 		    close(pipefd[0]);
 		    close(pipefd[1]);
+			free(line);
+			//g_signal = 0;
 		    return (-1);
 		}
+		
 		if (!line)  // Ctrl+D
 		{
 		    write(1, "\n", 1);
@@ -76,59 +74,27 @@ int ft_process_heredoc(char *delimiter, t_shell *shell, int should_expand)
 	return (pipefd[0]); // Okuma ucunu döndür
 }
 
-/* Main'de heredoc'ları işle */
+
+// sanki buna gerek yok gibi, ama bi test ederiz.
 // int	ft_handle_heredoc(t_shell *shell)
 // {
 //     t_cmd *current;
-//     t_cmd *cleanup_cmd;
-	
-// 	current = shell->cmd_list;
+
+//     current = shell->cmd_list;
 //     while (current)
 //     {
-//         if (current->heredoc_delimiter)
+//         // SADECE parse sırasında işlenmemiş heredoc'ları işle
+//         if (current->heredoc_delimiter && current->heredoc_fd == -1)
 //         {
 //             current->heredoc_fd = ft_process_heredoc(current->heredoc_delimiter, shell, current->heredoc_should_expand);
-// 			if (current->heredoc_fd == -1)
+//             if (current->heredoc_fd == -1)
 //             {
-//                 // Hata durumunda önceki tüm heredoc fd'lerini kapat
-//                 cleanup_cmd = shell->cmd_list;
-//                 while (cleanup_cmd != current)
-//                 {
-//                     if (cleanup_cmd->heredoc_fd != -1)
-//                     {
-//                         close(cleanup_cmd->heredoc_fd);
-//                         cleanup_cmd->heredoc_fd = -1;
-//                     }
-//                     cleanup_cmd = cleanup_cmd->next;
-//                 }
 //                 shell->exit_status = 1;
 //                 return (0);
 //             }
 //         }
 //         current = current->next;
 //     }
-// 	return (1);
+//     return (1);
 // }
-
-int	ft_handle_heredoc(t_shell *shell)
-{
-    t_cmd *current;
-    
-    current = shell->cmd_list;
-    while (current)
-    {
-        // SADECE parse sırasında işlenmemiş heredoc'ları işle
-        if (current->heredoc_delimiter && current->heredoc_fd == -1)
-        {
-            current->heredoc_fd = ft_process_heredoc(current->heredoc_delimiter, shell, current->heredoc_should_expand);
-            if (current->heredoc_fd == -1)
-            {
-                shell->exit_status = 1;
-                return (0);
-            }
-        }
-        current = current->next;
-    }
-    return (1);
-}
 

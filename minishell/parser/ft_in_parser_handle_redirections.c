@@ -94,13 +94,12 @@ int	ft_in_parser_handle_heredoc(t_cmd *cmd, t_token **current, t_shell *shell)
 		// Her heredoc için input al ve sadece sonuncusunu tut
 		temp_fd = ft_process_heredoc(joined_delimiter, shell, 
 			(first_type != SINGLE_QUOTED_STRING && first_type != DOUBLE_QUOTED_STRING));
-		
+
 		// Önceki heredoc fd varsa kapat
 		if (cmd->heredoc_fd != -1)
 		{
 			close(cmd->heredoc_fd);
 		}
-		
 		// Yeni fd'yi ata
 		cmd->heredoc_fd = temp_fd;
 		cmd->heredoc_delimiter = joined_delimiter;

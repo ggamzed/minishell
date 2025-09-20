@@ -43,7 +43,6 @@ static int	ft_process_line(t_shell *shell, char *line)
 	t_token	*tokens;
 
 	shell->line = line;
-	
 	// Input validation
 	if (ft_validate_syntax(line) == 1)
 	{
@@ -61,15 +60,20 @@ static int	ft_process_line(t_shell *shell, char *line)
 	shell->cmd_list = ft_parse_tokens(tokens, shell);
 	if (!shell->cmd_list)
 		return (0);
-
-	// Heredoc işleme
-	if (ft_handle_heredoc(shell) == 0)
+	if (g_signal == SIGINT)
 	{
-		ft_free_commands(shell->cmd_list);
-		shell->cmd_list = NULL;
-		return (0);
+		g_signal = 0;
+		return (130);
 	}
-	
+	// Heredoc işleme burası da gereksiz gibi
+	// if (ft_handle_heredoc(shell) == 0)
+	// {
+	// 	printf("TRAP1\n");
+	// 	printf("g_signal: %d\n", g_signal);
+	// 	ft_free_commands(shell->cmd_list);
+	// 	shell->cmd_list = NULL;
+	// 	return (1);
+	// }
 	// Expansion - tüm komutların argv'lerini hazırla (SADECE BURADA YAP)
 	t_cmd *current = shell->cmd_list;
 	while (current)
@@ -87,7 +91,6 @@ static int	ft_process_line(t_shell *shell, char *line)
 		}
 		current = current->next;
 	}
-	
 	// Execution - komutları çalıştır
 	shell->exit_status = ft_execute_commands(shell);
 	if (shell->exit_status == -42) // -42 idi burası
@@ -96,7 +99,6 @@ static int	ft_process_line(t_shell *shell, char *line)
 		shell->cmd_list = NULL;
 		return (0);
 	}
-	
 	// Cleanup - commands'ı free et
 	ft_free_commands(shell->cmd_list);
 	shell->cmd_list = NULL;
@@ -107,6 +109,15 @@ static int	ft_process_line(t_shell *shell, char *line)
 	
 	return (1);
 }
+int my_rl_hook(void)
+{
+    if (g_signal == SIGINT)
+    {
+        printf("\nminishell> ");
+        //g_signal = 0;
+    }
+    return 0;
+}
 
 static void	ft_shell_loop(t_shell *shell)
 {
@@ -115,6 +126,13 @@ static void	ft_shell_loop(t_shell *shell)
 	while (!shell->exit_flag)
 	{
 		ft_setup_signals();
+		rl_event_hook = my_rl_hook;
+		if (g_signal == SIGINT)
+		{
+
+			shell->exit_status = 130;
+			g_signal = 0;
+		}
 		line = readline(PROMPT);
 		if (!line)  // EOF (Ctrl+D) CTRL+D = NULL döner
 		{
@@ -129,14 +147,9 @@ static void	ft_shell_loop(t_shell *shell)
 			{
 				free(line);
 				break ;
-			}	
+			}
 		}
 		free(line);
-		if (g_signal == SIGINT)
-		{
-			shell->exit_status = 130;
-			g_signal = 0;
-		}
 	}
 }
 
@@ -148,7 +161,6 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	
 	// Shell initialization
 	mem_tracker = NULL;
 	shell = ft_init_shell(envp, &mem_tracker);

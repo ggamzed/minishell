@@ -8,6 +8,7 @@ void ft_handle_sigint(int sig)
 	rl_on_new_line();            // readline'a yeni satıra geçtiğimizi söyle
 	rl_replace_line("", 0);      // Mevcut satırı boş string ile değiştir
 	rl_redisplay();              // Prompt'u yeniden göster (minishell$ )
+	rl_done = 1;
 }
 
 /* ctrl+\ */
@@ -22,21 +23,23 @@ void ft_handle_sigquit(int sig)
  */
 void ft_setup_signals(void)
 {
-	struct sigaction sa_int;
-	struct sigaction sa_quit;
-	
-	/* SIGINT için */
-	sa_int.sa_handler = ft_handle_sigint;
-	sigemptyset(&sa_int.sa_mask);
-	sa_int.sa_flags = SA_RESTART; // Kesintiye uğrayan system call'ları yeniden başlat -> neden?
-	sigaction(SIGINT, &sa_int, NULL);
-	
-	/* SIGQUIT için - tamamen ignore et */
-	sa_quit.sa_handler = SIG_IGN;
-	sigemptyset(&sa_quit.sa_mask);
-	sa_quit.sa_flags = 0;
-	sigaction(SIGQUIT, &sa_quit, NULL);
+    struct sigaction sa_int;
+    struct sigaction sa_quit;
+
+    memset(&sa_int, 0, sizeof(sa_int));
+    memset(&sa_quit, 0, sizeof(sa_quit));
+
+    sa_int.sa_handler = ft_handle_sigint;
+    sigemptyset(&sa_int.sa_mask);
+    sa_int.sa_flags = 0;  // SA_RESTART istersen koyabilirsin
+    sigaction(SIGINT, &sa_int, NULL);
+
+    sa_quit.sa_handler = SIG_IGN;
+    sigemptyset(&sa_quit.sa_mask);
+    sa_quit.sa_flags = 0;
+    sigaction(SIGQUIT, &sa_quit, NULL);
 }
+
 
 /*
  * Child Process'ler İçin Signal Ignore
