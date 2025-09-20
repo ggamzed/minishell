@@ -6,7 +6,7 @@ int ft_process_heredoc(char *delimiter, t_shell *shell, int should_expand)
 	char *line;
 	char *expanded_line;
 	int pipefd[2];
-	
+
 	// Pipe oluştur (veya geçici dosya)
 	// pipefd[0] → okuma ucu
 	// pipefd[1] → yazma ucu
