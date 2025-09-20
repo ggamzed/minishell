@@ -55,7 +55,9 @@ static int	ft_process_line(t_shell *shell, char *line)
 	tokens = ft_tokenize(line, shell);
 	if (!tokens)
 		return (0);
-		
+	
+
+
 	// Parsing - token'ları command'lara çevir
 	shell->cmd_list = ft_parse_tokens(tokens, shell);
 	if (!shell->cmd_list)
@@ -81,6 +83,7 @@ static int	ft_process_line(t_shell *shell, char *line)
 		if (current->args) // Null check ekle
 		{
 			current->expanded_argv = ft_expand_tokens(current->args, shell);
+			// ft_expand_tokens sonrası
 			if (!current->expanded_argv || !current->expanded_argv[0])
 			{
 				shell->exit_status = 1;
@@ -113,7 +116,8 @@ int my_rl_hook(void)
 {
     if (g_signal == SIGINT)
     {
-        printf("\nminishell> ");
+		printf("denemee\n");
+        printf("minishell> ");
         //g_signal = 0;
     }
     return 0;

@@ -34,27 +34,61 @@ int	ft_handle_heredoc_redirection(t_cmd *cmd)
 }
 
 /* Output redirection işlemlerini yapar (> file veya >> file) */
-int	ft_handle_output_redirection(t_cmd *cmd)
+int ft_handle_output_redirection(t_cmd *cmd)
 {
-	int	fd;
-
-	if (!cmd->output_file)
-		return (0);
-
-
-	if (cmd->append_mode)
-		fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_APPEND, 0644); // APPEND: Dosyanın sonuna ekle
-	else
-		fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644); // TRUNC: Dosyayı sıfırla, yaz
-	if (fd == -1)
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd->output_file, 2);
-		ft_putstr_fd(": ", 2);
-		perror("");
-		return (1);
-	}
-	dup2(fd, STDOUT_FILENO);
-	close(fd);
-	return (0);
+    int fd;
+    int final_fd = -1;
+    
+    // Önce tüm dosyaları oluştur (bash davranışı)
+    for (int i = 0; i < cmd->output_count; i++)
+    {
+        if (cmd->all_append_modes[i])
+            fd = open(cmd->all_output_files[i], O_WRONLY | O_CREAT | O_APPEND, 0644);
+        else
+            fd = open(cmd->all_output_files[i], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            
+        if (fd == -1)
+        {
+            ft_putstr_fd("minishell: ", 2);
+            ft_putstr_fd(cmd->all_output_files[i], 2);
+            ft_putstr_fd(": ", 2);
+            perror("");
+            return (1);
+        }
+        
+        // Son dosya hariç diğerlerini kapat
+        if (i == cmd->output_count - 1)
+            final_fd = fd;
+        else
+            close(fd);
+    }
+    
+    // Sadece son dosyaya output yönlendir
+    if (final_fd != -1)
+    {
+        dup2(final_fd, STDOUT_FILENO);
+        close(final_fd);
+    }
+    
+    // Fallback: eski davranış (tek output file varsa)
+    if (cmd->output_count == 0 && cmd->output_file)
+    {
+        if (cmd->append_mode)
+            fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+        else
+            fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            
+        if (fd == -1)
+        {
+            ft_putstr_fd("minishell: ", 2);
+            ft_putstr_fd(cmd->output_file, 2);
+            ft_putstr_fd(": ", 2);
+            perror("");
+            return (1);
+        }
+        dup2(fd, STDOUT_FILENO);
+        close(fd);
+    }
+    
+    return (0);
 }

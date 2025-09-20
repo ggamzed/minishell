@@ -44,34 +44,88 @@ int	ft_in_parser_handle_redirect_in(t_cmd *cmd, t_token **current, t_shell *shel
 }
 
 
-int	ft_in_parser_handle_redirect_out(t_cmd *cmd, t_token **current, t_shell *shell)
+int ft_in_parser_handle_redirect_out(t_cmd *cmd, t_token **current, t_shell *shell)
 {
-	*current = (*current)->next;
-	if (*current && ((*current)->type == WORD ||
-			(*current)->type == SINGLE_QUOTED_STRING ||
-			(*current)->type == DOUBLE_QUOTED_STRING))
-	{
-		cmd->output_file = ft_strdup((*current)->value, shell);
-		cmd->output_type = (*current)->type;
-		cmd->append_mode = 0;
-		*current = (*current)->next;
-	}
-	return (1);
+    char **new_files;
+    int *new_modes;
+    
+    *current = (*current)->next;
+    if (*current && ((*current)->type == WORD ||
+            (*current)->type == SINGLE_QUOTED_STRING ||
+            (*current)->type == DOUBLE_QUOTED_STRING))
+    {
+        // Son dosyayı cmd->output_file'a kaydet (mevcut davranış)
+        cmd->output_file = ft_strdup((*current)->value, shell);
+        cmd->output_type = (*current)->type;
+        cmd->append_mode = 0;
+        
+        // Tüm dosyaları all_output_files dizisine ekle
+        new_files = ft_malloc(sizeof(char *) * (cmd->output_count + 1), shell);
+        new_modes = ft_malloc(sizeof(int) * (cmd->output_count + 1), shell);
+        
+        if (!new_files || !new_modes)
+            return (0);
+            
+        // Eski dosyaları kopyala
+        for (int i = 0; i < cmd->output_count; i++)
+        {
+            new_files[i] = cmd->all_output_files[i];
+            new_modes[i] = cmd->all_append_modes[i];
+        }
+        
+        // Yeni dosyayı ekle
+        new_files[cmd->output_count] = ft_strdup((*current)->value, shell);
+        new_modes[cmd->output_count] = 0; // Normal redirect
+        
+        cmd->all_output_files = new_files;
+        cmd->all_append_modes = new_modes;
+        cmd->output_count++;
+        
+        *current = (*current)->next;
+    }
+    return (1);
 }
 
-int	ft_in_parser_handle_redirect_append(t_cmd *cmd, t_token **current, t_shell *shell)
+int ft_in_parser_handle_redirect_append(t_cmd *cmd, t_token **current, t_shell *shell)
 {
-	*current = (*current)->next;
-	if (*current && ((*current)->type == WORD ||
-				(*current)->type == SINGLE_QUOTED_STRING ||
-				(*current)->type == DOUBLE_QUOTED_STRING))
-	{
-		cmd->output_file = ft_strdup((*current)->value, shell);
-		cmd->output_type = (*current)->type;
-		cmd->append_mode = 1;
-		*current = (*current)->next;
-	}
-	return (1);
+    char **new_files;
+    int *new_modes;
+    
+    *current = (*current)->next;
+    if (*current && ((*current)->type == WORD ||
+                (*current)->type == SINGLE_QUOTED_STRING ||
+                (*current)->type == DOUBLE_QUOTED_STRING))
+    {
+        // Son dosyayı cmd->output_file'a kaydet (mevcut davranış)
+        cmd->output_file = ft_strdup((*current)->value, shell);
+        cmd->output_type = (*current)->type;
+        cmd->append_mode = 1;
+        
+        // Tüm dosyaları all_output_files dizisine ekle
+        new_files = ft_malloc(sizeof(char *) * (cmd->output_count + 1), shell);
+        new_modes = ft_malloc(sizeof(int) * (cmd->output_count + 1), shell);
+        
+        if (!new_files || !new_modes)
+            return (0);
+            
+        // Eski dosyaları kopyala
+        for (int i = 0; i < cmd->output_count; i++)
+        {
+            new_files[i] = cmd->all_output_files[i];
+            new_modes[i] = cmd->all_append_modes[i];
+        }
+        
+        // Yeni dosyayı ekle
+        new_files[cmd->output_count] = ft_strdup((*current)->value, shell);
+        new_modes[cmd->output_count] = 1; // Append mode
+        
+        cmd->all_output_files = new_files;
+        cmd->all_append_modes = new_modes;
+        cmd->output_count++;
+        
+        *current = (*current)->next;
+    }
+    return (1);
 }
 
 int	ft_in_parser_handle_heredoc(t_cmd *cmd, t_token **current, t_shell *shell)

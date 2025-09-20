@@ -195,62 +195,63 @@ char	*ft_get_word(char *line, int *i, t_shell *shell)
 	return (word);
 }
 
-t_token	*ft_tokenize(char *line, t_shell *shell)
+t_token *ft_tokenize(char *line, t_shell *shell)
 {
-	t_token			*head_of_token;
-	t_token			*token;
-	t_token_type	type;
-	char			*word;
-	int				i;
-	
-	//if (!ft_validate_syntax(line)) //(main process_line'da yapılıyor burada gerek yok?) syntax kontrolü, kapanmamış tırnak var mı? başta yada sonda pipe/redirection yada ekstradan var mı?
-	//	return (NULL);
-	head_of_token = NULL;
-	i = 0;
-	while (line[i])
-	{
-		while (line[i] && ft_is_space(line[i]))
-			i++;
-		// if (!line[i])
-		// 	break;
-		if (line[i] == '|' || line[i] == '<' || line[i] == '>')
-		{
-			type = ft_get_operator_type(line, &i);
-			token = ft_create_token(type, NULL, shell);
-			if (!token)
-				return (NULL);
-			ft_add_token(&head_of_token, token);
-			
-			// Operator'dan sonra boşluk kontrolü -> gerek var mı?
-			if (line[i] && ft_is_space(line[i]))
-				token->space_flag = 1;
-			else
-				token->space_flag = 0;
-		}
-		else
+    t_token *head_of_token;
+    t_token *token;
+    t_token_type type;
+    char *word;
+    int i;
+    int had_space;
+    
+    head_of_token = NULL;
+    i = 0;
+    had_space = 1; // İlk token'ın önünde her zaman boşluk var sayılır
+    
+    while (line[i])
     {
-        type = ft_get_word_type(line, i);
-        word = ft_get_word(line, &i, shell);
-        if (!word)
-            return (NULL);
-        
-        // BOŞ STRING KONTROLÜ EKLEYIN
-        if (ft_strlen(word) == 0)
+        // Boşlukları atla
+        while (line[i] && ft_is_space(line[i]))
         {
-            // Boş string'i atla
-            continue;
+            had_space = 1;
+            i++;
         }
         
-        token = ft_create_token(type, word, shell);
-        if (!token)
-            return (NULL);
-        ft_add_token(&head_of_token, token);
-        
-        if (line[i] && ft_is_space(line[i]))
-            token->space_flag = 1;
+        if (!line[i])
+            break;
+            
+        if (line[i] == '|' || line[i] == '<' || line[i] == '>')
+        {
+            type = ft_get_operator_type(line, &i);
+            token = ft_create_token(type, NULL, shell);
+            if (!token)
+                return (NULL);
+            
+            token->space_flag = had_space;
+            ft_add_token(&head_of_token, token);
+            had_space = 0; // Operator sonrası boşluk yok varsayımı
+        }
         else
-            token->space_flag = 0;
+        {
+            type = ft_get_word_type(line, i);
+            word = ft_get_word(line, &i, shell);
+            if (!word)
+                return (NULL);
+            
+            // Boş string kontrolü
+            if (ft_strlen(word) == 0)
+            {
+                continue;
+            }
+            
+            token = ft_create_token(type, word, shell);
+            if (!token)
+                return (NULL);
+            
+            token->space_flag = had_space;
+            ft_add_token(&head_of_token, token);
+            had_space = 0; // Word sonrası boşluk yok varsayımı
+        }
     }
-	}
-	return (head_of_token);
+    return (head_of_token);
 }

@@ -97,56 +97,172 @@ static int	count_args(t_token *args)
 	return (count);
 }
 
-static int	ft_count_merged_args(t_token *tokens)
-{
-	t_token	*current;
-	int		count;
 
-	count = 0;
-	current = tokens;
-	while (current)
-	{
-		count++;
-		while (current->next && current->space_flag == 0)
-			current = current->next;
-		current = current->next;
-	}
-	return (count);
+// Word splitting fonksiyonu
+char **ft_split_expanded_word(char *word, t_shell *shell)
+{
+    char **words;
+    int count = 0;
+    int i = 0, j = 0, start;
+    
+    // Kelime sayısını say
+    while (word[i])
+    {
+        while (word[i] && ft_is_space(word[i]))
+            i++;
+        if (word[i])
+        {
+            count++;
+            while (word[i] && !ft_is_space(word[i]))
+                i++;
+        }
+    }
+    
+    if (count == 0)
+        return (NULL);
+        
+    words = ft_malloc(sizeof(char *) * (count + 1), shell);
+    if (!words)
+        return (NULL);
+    
+    i = 0;
+    while (word[i] && j < count)
+    {
+        while (word[i] && ft_is_space(word[i]))
+            i++;
+        start = i;
+        while (word[i] && !ft_is_space(word[i]))
+            i++;
+        if (i > start)
+        {
+            words[j] = ft_substr(word, start, i - start, shell);
+            j++;
+        }
+    }
+    words[j] = NULL;
+    return (words);
 }
 
-void	ft_join_expand_tokens(char ***joined_argv, char **expanded_argv, 
-							t_token *original_tokens, t_shell *shell)
+// Word splitting gerekip gerekmediğini kontrol et
+int should_word_split(t_token *token_group)
 {
-	char	**merged_argv;
-	t_token	*current;
-	int		i;
-	int		j;
+    t_token *current = token_group;
+    
+    // Token grubunda unquoted variable var mı kontrol et
+    while (current)
+    {
+        if (current->type == VARIABLE)
+            return (1); // Unquoted variable varsa split yap
+        if (current->next && current->next->space_flag == 0)
+            current = current->next;
+        else
+            break;
+    }
+    return (0); // Split yapma
+}
 
-	merged_argv = ft_malloc(sizeof(char *) * 
-		(ft_count_merged_args(original_tokens) + 1), shell);
-	if (!merged_argv)
-	{
-		*joined_argv = NULL;
-		return;
-	}
-	current = original_tokens;
-	i = 0;
-	j = 0;
-	while (current)
-	{
-		merged_argv[j] = ft_strdup(expanded_argv[i], shell);
-		while (current->next && current->space_flag == 0)
-		{
-			current = current->next;
-			i++;
-			merged_argv[j] = ft_strjoin_free(merged_argv[j], expanded_argv[i], shell);
-		}
-		j++;
-		i++;
-		current = current->next;
-	}
-	merged_argv[j] = NULL;
-	*joined_argv = merged_argv;
+// Mevcut ft_join_expand_tokens fonksiyonunu bu kodla DEĞİŞTİRİN:
+
+void ft_join_expand_tokens(char ***joined_argv, char **expanded_argv, 
+                            t_token *original_tokens, t_shell *shell)
+{
+    char **final_argv;
+    t_token *current;
+    char **split_words;
+    int final_count = 0;
+    int i, j, k;
+    
+    // İlk geçiş: toplam kelime sayısını hesapla
+    current = original_tokens;
+    i = 0;
+    while (current)
+    {
+        char *merged_word = ft_strdup(expanded_argv[i], shell);
+        t_token *token_start = current;
+        
+        // Bitişik token'ları birleştir
+        while (current->next && current->next->space_flag == 0)
+        {
+            current = current->next;
+            i++;
+            merged_word = ft_strjoin_free(merged_word, expanded_argv[i], shell);
+        }
+        
+        // Word splitting gerekli mi kontrol et
+        if (should_word_split(token_start))
+        {
+            split_words = ft_split_expanded_word(merged_word, shell);
+            if (split_words)
+            {
+                j = 0;
+                while (split_words[j])
+                {
+                    final_count++;
+                    j++;
+                }
+            }
+        }
+        else
+        {
+            final_count++; // Tek kelime olarak say
+        }
+        
+        i++;
+        current = current->next;
+    }
+    
+    // Final argv dizisini oluştur
+    final_argv = ft_malloc(sizeof(char *) * (final_count + 1), shell);
+    if (!final_argv)
+    {
+        *joined_argv = NULL;
+        return;
+    }
+    
+    // İkinci geçiş: kelimeleri kopyala
+    current = original_tokens;
+    i = 0;
+    k = 0;
+    while (current)
+    {
+        char *merged_word = ft_strdup(expanded_argv[i], shell);
+        t_token *token_start = current;
+        
+        // Bitişik token'ları birleştir
+        while (current->next && current->next->space_flag == 0)
+        {
+            current = current->next;
+            i++;
+            merged_word = ft_strjoin_free(merged_word, expanded_argv[i], shell);
+        }
+        
+        // Word splitting gerekli mi kontrol et
+        if (should_word_split(token_start))
+        {
+            split_words = ft_split_expanded_word(merged_word, shell);
+            if (split_words)
+            {
+                j = 0;
+                while (split_words[j])
+                {
+                    final_argv[k] = ft_strdup(split_words[j], shell);
+                    k++;
+                    j++;
+                }
+            }
+        }
+        else
+        {
+            final_argv[k] = ft_strdup(merged_word, shell);
+            k++;
+        }
+        
+        i++;
+        current = current->next;
+    }
+    
+    final_argv[k] = NULL;
+    *joined_argv = final_argv;
 }
 
 char	**ft_expand_tokens(t_token *args, t_shell *shell)

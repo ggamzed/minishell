@@ -68,6 +68,10 @@ typedef struct s_heredoc
 // command yapısı -> tek bir komutu temsil eder 
 typedef struct s_cmd
 {
+	char    **all_output_files;     // Tüm output dosyaları
+    int     *all_append_modes;      // Her dosya için append mode
+    int     output_count;           // Toplam output dosya sayısı
+
 	t_token			*args;              // Linked list of arguments with types
 	char 			**expanded_argv;	// argümanların expand edilmiş bir şekilde tutulduğu hali
 	char			*input_file;        // < input.txt (raw value)

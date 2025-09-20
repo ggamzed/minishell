@@ -7,6 +7,9 @@ t_cmd	*ft_create_command(t_shell *shell)
 	cmd = ft_malloc(sizeof(t_cmd), shell);
 	if (!cmd)
 		return (NULL);
+	cmd->all_output_files = NULL;
+    cmd->all_append_modes = NULL;
+    cmd->output_count = 0;
 	cmd->args = NULL;
 	cmd->expanded_argv = NULL;
 	cmd->input_file = NULL;
