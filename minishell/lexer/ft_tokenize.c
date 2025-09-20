@@ -241,6 +241,7 @@ t_token *ft_tokenize(char *line, t_shell *shell)
             // Boş string kontrolü
             if (ft_strlen(word) == 0)
             {
+				had_space = 0;
                 continue;
             }
             

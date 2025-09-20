@@ -29,6 +29,8 @@ char	*ft_substr(char const *s, unsigned int start, size_t len, t_shell *shell)
 
 	if (!s)
 		return (NULL);
+	if (len == 0)
+        return (ft_strdup("", shell));
 	s_len = ft_strlen(s);
 	if (start >= s_len)
 		return (ft_strdup("", shell));
@@ -89,6 +91,10 @@ void	*ft_malloc(size_t size, t_shell *shell)
 		ft_putstr_fd("malloc failed", 2);
 		return (NULL);
 	}
+	if (!shell || !shell->mem_tracker)
+    {
+        return (ptr);
+    }
 	mem_node = malloc(sizeof(t_mem));
 	if (!mem_node)
 	{

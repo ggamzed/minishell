@@ -54,10 +54,16 @@ static int	ft_process_line(t_shell *shell, char *line)
 	// Tokenization
 	tokens = ft_tokenize(line, shell);
 	if (!tokens)
-		return (0);
+	{
+		if (ft_strchr(line, '"') || ft_strchr(line, '\''))
+   		{
+        	ft_putstr_fd("minishell: : command not found\n", 2);
+        	shell->exit_status = 127;
+    	}
+		return (1);
+	}
+		
 	
-
-
 	// Parsing - token'ları command'lara çevir
 	shell->cmd_list = ft_parse_tokens(tokens, shell);
 	if (!shell->cmd_list)
@@ -98,6 +104,7 @@ static int	ft_process_line(t_shell *shell, char *line)
 	shell->exit_status = ft_execute_commands(shell);
 	if (shell->exit_status == -42) // -42 idi burası
 	{
+		// hiçbir yerde -42 ye set etmiyoruz burayı değiştirmek lazım
 		ft_free_commands(shell->cmd_list);
 		shell->cmd_list = NULL;
 		return (0);
