@@ -1,5 +1,6 @@
 #include "../minishell.h"
 
+#include <sys/stat.h> // ft_execute_external_in_child için
 // pipe zincirindeki her komutun input/output bağlantılarını ayarlar.
 /*
 int *pipefd → Şu anki komut ile sonraki arasındaki pipe
@@ -39,6 +40,7 @@ static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
 {
 	char	*executable;
 	char	**envp;
+	struct stat st;
 
 	executable = ft_find_executable(cmd->expanded_argv[0], shell->env_list, shell); //çalıştırılabilir path
 	if (!executable)
@@ -50,6 +52,15 @@ static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
 		free(shell);
 		exit(127);
 	}
+	if (stat(executable, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
+    {
+        ft_putstr_fd("minishell: ", 2);
+        ft_putstr_fd(cmd->expanded_argv[0], 2);
+        ft_putstr_fd(": is a directory\n", 2);
+        ft_free_mem_tracker(shell->mem_tracker);
+        free(shell);
+        exit(126);
+    }
 	envp = ft_env_to_array(shell->env_list, shell);
 	execve(executable, cmd->expanded_argv, envp);
 	perror("execve");

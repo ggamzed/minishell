@@ -1,15 +1,21 @@
 #include "../minishell.h"
 
 //komutun tam yol ile mi verildiğini kontrol ediyoruz. (/ karakteri varlığından) -> (örnek /bin/ls tam yol, ama sadece ls verildiyse path araması yapılması gerek)
-static char	*ft_check_direct_path(char *cmd, t_shell *shell)
+static char *ft_check_direct_path(char *cmd, t_shell *shell)
 {
-	if (ft_strchr(cmd, '/'))
-	{
-		if (access(cmd, F_OK) == 0 && access(cmd, X_OK) == 0) // access -> executor.txt
-			return (ft_strdup(cmd, shell)); //strdup kullanmasaydık en son ft_find_executable da result free'lenmeye çalışırken orjinal cmd'yi free'lemeye çalışırdı
-		return (NULL);
-	}
-	return (cmd); // Devam etmek için cmd'i geri döndür
+    if (ft_strchr(cmd, '/'))
+    {
+        if (access(cmd, F_OK) == 0)
+        {
+            // Execute permission var mı kontrol et
+            if (access(cmd, X_OK) != 0)
+                return (NULL); // Permission denied -> command not found
+            
+            return (ft_strdup(cmd, shell));
+        }
+        return (NULL);
+    }
+    return (cmd);
 }
 
 // PATH dizinlerinde komut arama
@@ -42,6 +48,8 @@ char	*ft_find_executable(char *cmd, t_env *env_list, t_shell *shell)
 	char	**paths;
 	char	*result;
 
+	if (ft_strcmp(cmd, "..") == 0)
+        return (NULL);
 	result = ft_check_direct_path(cmd, shell);
 	if (result != cmd)
 		return (result);
