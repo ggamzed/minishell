@@ -33,6 +33,8 @@ static void	ft_execute_builtin_in_child(t_shell *shell, t_cmd *cmd)
    int	exit_code;
 
    exit_code = ft_execute_builtin(shell, cmd, 1);
+   ft_free_mem_tracker(shell->mem_tracker);
+   free(shell);
    exit(exit_code);
 }
 
@@ -75,9 +77,17 @@ int	ft_execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd, int prev_f
 	ft_default_signals(); // Sinyal fonksiyonu henüz yok
 	ft_setup_pipe_connections(pipefd, prev_fd, cmd);
 	if (ft_handle_redirections(cmd) != 0) // şuan bu fonksiyon yok
+	{
+		ft_free_mem_tracker(shell->mem_tracker);
+		free(shell);
 		exit(1);
+	}
 	if (!cmd->expanded_argv || !cmd->expanded_argv[0])
+	{
+		ft_free_mem_tracker(shell->mem_tracker);
+		free(shell);
 		exit(1);
+	}
 	if (ft_is_builtin(cmd->expanded_argv[0])) //multiple_command fonksiyonu da bu fonksiyonu çağıracak o yüzden bu satır gerekli
 		ft_execute_builtin_in_child(shell, cmd);
 	else

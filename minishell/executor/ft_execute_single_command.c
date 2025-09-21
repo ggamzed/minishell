@@ -76,6 +76,8 @@ static int	ft_execute_external_command(t_shell *shell, t_cmd *cmd)
 	if (pid == 0)
 	{
 		ft_execute_child_process(shell, cmd, NULL, -1);
+		ft_free_mem_tracker(shell->mem_tracker);
+		free(shell);
 		exit(1); // Bu satırı ekleyin - child process'ten çıkış garantisi
 	}
 	ft_ignore_signals();
