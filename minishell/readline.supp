@@ -1,23 +1,44 @@
+
 {
-    readline_still_reachable
-    Memcheck:Leak
-    match-leak-kinds: reachable
-    ...
-    obj:*/libreadline.so*
+   readline_leak_1
+   Memcheck:Leak
+   ...
+   obj:*/libreadline.so*
 }
 
 {
-    history_still_reachable
-    Memcheck:Leak
-    match-leak-kinds: reachable
-    ...
-    fun:add_history
+   readline_leak_2
+   Memcheck:Leak
+   ...
+   fun:*readline*
 }
 
 {
-    termcap_still_reachable
-    Memcheck:Leak
-    match-leak-kinds: reachable
-    ...
-    obj:*/libtinfo.so*
+   readline_leak_3
+   Memcheck:Leak
+   ...
+   obj:*/libtinfo.so*
+}
+
+{
+   readline_leak_4
+   Memcheck:Leak
+   ...
+   fun:rl_*
+}
+
+{
+   readline_leak_5
+   Memcheck:Leak
+   ...
+   fun:xmalloc
+   obj:*/libreadline.so*
+}
+
+{
+   readline_leak_6
+   Memcheck:Leak
+   ...
+   fun:xrealloc
+   obj:*/libreadline.so*
 }

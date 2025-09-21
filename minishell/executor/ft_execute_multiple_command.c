@@ -30,8 +30,9 @@ static pid_t	ft_create_child_and_execute(t_shell *shell, t_cmd *cmd,
 static int	ft_wait_all_children(void)
 {
 	int status; //wait status'ün içine yazacağı için garbage value olması önemsiz, başlatmaya gerek yok
-	int last_status = 0;
+	int last_status;
 	int	sig;
+	int	quit_printed;
 	/*
 	wait() nasıl biliyor da -1 döndürüyor?
 	Kernel process tablosuna bakar
@@ -39,6 +40,8 @@ static int	ft_wait_all_children(void)
 	Varsa: Child'ı bekler, PID döner
 	Yoksa: -1 döner
 	*/
+	last_status = 0;
+	quit_printed = 0;
 	while (wait(&status) > 0) //birden fazla child beklenecekse wait ile beklenir. child bittiğinde wait biten child'ın pid'ini döner. bekleyecek child kalmadığında -1 döner
 	{
 		if (WIFEXITED(status)) // WIFEXITED = child normal mi bitti? (exit() veya return) 
@@ -46,8 +49,11 @@ static int	ft_wait_all_children(void)
 		else if (WIFSIGNALED(status)) // WIFSIGNALED = child signal ile bitti mi? (kill, exit, abort, Ctrl+C, segfault) 
 		{
 			sig = WTERMSIG(status);
-			if (sig == SIGQUIT)
-            	ft_putstr_fd("Quit (core dumped)\n", 2);  // stderr'e yaz
+			if (sig == SIGQUIT && !quit_printed) // Sadece ilk seferinde yazdır
+            {
+                ft_putstr_fd("Quit (core dumped)\n", 2);
+                quit_printed = 1; // Flag'i set et
+            }
 			last_status = 128 + WTERMSIG(status); // -> 128 + WTERMSIG(status)
 		}
 	}
