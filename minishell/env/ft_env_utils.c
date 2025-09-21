@@ -25,14 +25,16 @@ int	ft_set_env_value(char *key, char *value, t_env **env_list, t_shell *shell)
 	t_env	*new_node;
 
 	if (!key || !env_list)
-		return (0); //dönüşü kontrol et
+		return (0);
 	current = *env_list;
 	while (current)
 	{
 		if (ft_strcmp(current->key, key) == 0)
 		{
-			//free(current->value);
-			current->value = ft_strdup(value, shell);
+			if (value)
+				current->value = ft_strdup(value, shell);
+			else
+				current->value = NULL; // NULL değeri direkt ata
 			return (0);
 		}
 		current = current->next;

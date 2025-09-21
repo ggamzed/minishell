@@ -15,8 +15,8 @@ static void	ft_set_export_variable(char *arg, t_env **env_list, t_shell *shell)
 		ft_set_env_value(key, value, env_list, shell);
 		ft_set_env_value(key, value, &shell->export_list, shell);
 	}
-	else // Sadece key, boş değer ata
-		ft_set_env_value(arg, "", &shell->export_list, shell);
+	else // Sadece key, değer ataması yok
+		ft_set_env_value(arg, NULL, &shell->export_list, shell);
 }
 
 

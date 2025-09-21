@@ -293,6 +293,21 @@ int	ft_atoi(const char *str)
 }
 
 
+
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
+{
+	size_t	i;
+
+	if (!s1 || !s2 || n == 0)
+		return (0);
+	i = 0;
+	while (i < n && s1[i] && s2[i] && s1[i] == s2[i])
+		i++;
+	if (i == n)
+		return (0);
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+}
+
 //-----------------------SPLIT--------------------
 
 char	**malloc_error(char **arr, size_t i)
@@ -355,6 +370,9 @@ char	**ft_split(char const *s, char c, t_shell *shell)
 	}
 	return (res[a] = NULL, res);
 }
+
+
+
 
 
 char	*ft_strtrim(char const *s1, char const *set)

@@ -18,8 +18,17 @@ int	ft_is_builtin(char *cmd)
 
 static int	ft_is_valid_env_arg(char **argv)
 {
-	if ((argv[1] != NULL) && (ft_strcmp(argv[1], "env") != 0))
+	// env komutunun geçerli parametrelerini kontrol et
+	if (argv[1] != NULL)
 	{
+		// -i flag'i geçerli
+		if (ft_strcmp(argv[1], "-i") == 0)
+			return (0);
+		// env komutu da geçerli (muhtemelen eski test için)
+		if (ft_strcmp(argv[1], "env") == 0)
+			return (0);
+		
+		// Diğer parametreler geçersiz
 		printf("env: '%s': No such file or directory\n", argv[1]);
 		return (127);
 	}
@@ -42,7 +51,7 @@ static int	ft_execute_builtin_function(char **argv, t_shell *shell, int in_pipe)
 	{
 		if (ft_is_valid_env_arg(argv) == 127)
 			return (127);
-		return (ft_builtin_env(shell->env_list));
+		return (ft_builtin_env(argv, shell->env_list, shell));
 	}	
 	else if (ft_strcmp(argv[0], "exit") == 0)
 		return (ft_builtin_exit(argv, shell, in_pipe));
