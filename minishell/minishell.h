@@ -22,6 +22,9 @@
 #endif
 # define PROMPT "minishell$ "
 
+#define S_IFDIR  0040000
+#define S_IFMT  00170000
+
 extern volatile sig_atomic_t g_signal;
 
 //token tipleri
