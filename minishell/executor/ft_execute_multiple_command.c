@@ -31,7 +31,7 @@ static int	ft_wait_all_children(void)
 {
 	int status; //wait status'ün içine yazacağı için garbage value olması önemsiz, başlatmaya gerek yok
 	int last_status = 0;
-
+	int	sig;
 	/*
 	wait() nasıl biliyor da -1 döndürüyor?
 	Kernel process tablosuna bakar
@@ -44,7 +44,12 @@ static int	ft_wait_all_children(void)
 		if (WIFEXITED(status)) // WIFEXITED = child normal mi bitti? (exit() veya return) 
 			last_status = WEXITSTATUS(status); // ->  exit kodu (0-255)
 		else if (WIFSIGNALED(status)) // WIFSIGNALED = child signal ile bitti mi? (kill, exit, abort, Ctrl+C, segfault) 
+		{
+			sig = WTERMSIG(status);
+			if (sig == SIGQUIT)
+            	ft_putstr_fd("Quit (core dumped)\n", 2);  // stderr'e yaz
 			last_status = 128 + WTERMSIG(status); // -> 128 + WTERMSIG(status)
+		}
 	}
 	return (last_status);
 }

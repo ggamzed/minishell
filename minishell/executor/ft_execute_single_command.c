@@ -65,6 +65,7 @@ static int	ft_execute_external_command(t_shell *shell, t_cmd *cmd)
 {
 	pid_t	pid;
 	int		status;
+	int		sig;
 
 	pid = fork();
 	if (pid == -1)
@@ -80,9 +81,14 @@ static int	ft_execute_external_command(t_shell *shell, t_cmd *cmd)
 	ft_ignore_signals();
 	waitpid(pid, &status, 0);
 	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));		//-->> exit status makroları, executor.txt
+    	return (WEXITSTATUS(status));
 	else if (WIFSIGNALED(status))
-		return (128 + WTERMSIG(status));
+	{
+		sig = WTERMSIG(status);
+		if (sig == SIGQUIT)
+			ft_putstr_fd("Quit (core dumped)\n", 2);  // stderr'e yaz
+		return (128 + sig);
+	}
 	return (0);
 }
 
