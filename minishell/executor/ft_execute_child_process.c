@@ -44,6 +44,22 @@ static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
 	char	**envp;
 	struct stat st;
 
+	// En başında bu kontrolü değiştirin
+if (ft_strchr(cmd->expanded_argv[0], '/') && access(cmd->expanded_argv[0], F_OK) == 0)
+{
+	struct stat st;
+	if (stat(cmd->expanded_argv[0], &st) == 0 && S_ISDIR(st.st_mode))
+	{
+		// Error mesajı ekleyin
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd->expanded_argv[0], 2);
+		ft_putstr_fd(": is a directory\n", 2);
+		ft_free_mem_tracker(shell->mem_tracker);
+		free(shell);
+		exit(126); // 1 yerine 126
+	}
+}
+
 	executable = ft_find_executable(cmd->expanded_argv[0], shell->env_list, shell); //çalıştırılabilir path
 	if (!executable)
 	{

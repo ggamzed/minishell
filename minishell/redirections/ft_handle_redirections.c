@@ -51,8 +51,14 @@ int ft_handle_output_redirection(t_cmd *cmd)
         {
             ft_putstr_fd("minishell: ", 2);
             ft_putstr_fd(cmd->all_output_files[i], 2);
-            ft_putstr_fd(": ", 2);
-            perror("");
+            
+            if (errno == EISDIR)
+                ft_putstr_fd(": is a directory\n", 2);
+            else
+            {
+                ft_putstr_fd(": ", 2);
+                perror("");
+            }
             return (1);
         }
         
@@ -82,8 +88,14 @@ int ft_handle_output_redirection(t_cmd *cmd)
         {
             ft_putstr_fd("minishell: ", 2);
             ft_putstr_fd(cmd->output_file, 2);
-            ft_putstr_fd(": ", 2);
-            perror("");
+            
+            if (errno == EISDIR)
+                ft_putstr_fd(": is a directory\n", 2);
+            else
+            {
+                ft_putstr_fd(": ", 2);
+                perror("");
+            }
             return (1);
         }
         dup2(fd, STDOUT_FILENO);

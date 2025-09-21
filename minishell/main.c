@@ -38,6 +38,8 @@ static t_shell	*ft_init_shell(char **envp, t_mem **mem_tracker)
 	return (shell);
 }
 
+
+
 static int	ft_process_line(t_shell *shell, char *line)
 {
 	t_token	*tokens;
@@ -53,6 +55,7 @@ static int	ft_process_line(t_shell *shell, char *line)
 	
 	// Tokenization
 	tokens = ft_tokenize(line, shell);
+	
 	if (!tokens)
 	{
 		if (ft_strchr(line, '"') || ft_strchr(line, '\''))
@@ -84,22 +87,23 @@ static int	ft_process_line(t_shell *shell, char *line)
 	// }
 	// Expansion - tüm komutların argv'lerini hazırla (SADECE BURADA YAP)
 	t_cmd *current = shell->cmd_list;
-	while (current)
-	{
-		if (current->args) // Null check ekle
-		{
-			current->expanded_argv = ft_expand_tokens(current->args, shell);
-			// ft_expand_tokens sonrası
-			if (!current->expanded_argv || !current->expanded_argv[0])
-			{
-				shell->exit_status = 1;
-				ft_free_commands(shell->cmd_list);
-				shell->cmd_list = NULL;
-				return (1);
-			}
-		}
-		current = current->next;
-	}
+while (current)
+{
+    if (current->args) // Null check ekle
+    {
+        current->expanded_argv = ft_expand_tokens(current->args, shell);
+        // ft_expand_tokens sonrası
+        if (!current->expanded_argv || !current->expanded_argv[0] || 
+            ft_strlen(current->expanded_argv[0]) == 0) // BOŞ KOMUT KONTROLÜ EKLE
+        {
+            shell->exit_status = 0; // BASH UYUMLU - 1 yerine 0
+            ft_free_commands(shell->cmd_list);
+            shell->cmd_list = NULL;
+            return (1);
+        }
+    }
+    current = current->next;
+}
 	// Execution - komutları çalıştır
 	shell->exit_status = ft_execute_commands(shell);
 	if (shell->exit_status == -42) // -42 idi burası

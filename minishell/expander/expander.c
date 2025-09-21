@@ -51,6 +51,61 @@ static char *ft_expand_tilde(const char *value, t_shell *shell)
     return (expanded);
 }
 
+char *ft_expand_word_variables(char *str, t_shell *shell)
+{
+    // Eğer sadece "$" ise boş string döndür
+    if (ft_strcmp(str, "$") == 0)
+        return (ft_strdup("", shell));
+    
+    char *result;
+    char *temp;
+    int i;
+
+    result = ft_strdup("", shell);
+    if (!result)
+        return (NULL);
+    
+    i = 0;
+    while (str[i])
+    {
+        // $ ile başlayan variable'ları expand et
+        if (str[i] == '$' && str[i + 1] == '?')
+        {
+            temp = ft_handle_exit_status(shell);
+            result = ft_strjoin_free(result, temp, shell);
+            i += 2;
+        }
+        else if (str[i] == '$' && (ft_isalpha(str[i + 1]) || str[i + 1] == '_'))
+        {
+            temp = ft_extract_and_expand_var(str, &i, shell);
+            result = ft_strjoin_free(result, temp, shell);
+        }
+       else
+{
+    // Escape karakteri kontrolü
+    if (str[i] == '\\' && str[i + 1] != '\0')
+    {
+        // Bir sonraki karakteri literal olarak ekle (escape'i atla)
+        temp = ft_malloc(2, shell);
+        temp[0] = str[i + 1];
+        temp[1] = '\0';
+        result = ft_strjoin_free(result, temp, shell);
+        i += 2; // Hem \ hem de sonraki karakteri atla
+    }
+    else
+    {
+        // Normal karakterleri olduğu gibi ekle
+        temp = ft_malloc(2, shell);
+        temp[0] = str[i];
+        temp[1] = '\0';
+        result = ft_strjoin_free(result, temp, shell);
+        i++;
+    }
+}
+    }
+    return (result);
+}
+
 static char	*ft_expand_token_value(char *value, t_token_type type, t_shell *shell, int is_heredoc_delimiter)
 {
 	int	i;
@@ -72,12 +127,14 @@ static char	*ft_expand_token_value(char *value, t_token_type type, t_shell *shel
 	else if (type == SINGLE_QUOTED_STRING)
 		return (ft_strdup(value, shell));
 	else if (type == WORD)
-	{
-		tilde = ft_expand_tilde(value, shell);
-		if (tilde)
-			return (tilde);
-		return (ft_strdup(value, shell));
-	}
+{
+    tilde = ft_expand_tilde(value, shell);
+    if (tilde)
+        return (tilde);
+    
+    // Variable expansion yap
+    return (ft_expand_word_variables(value, shell)); // ← BURADA ÇAĞIRILIYOR
+}
 	else
 		return (ft_strdup(value, shell));
 }
@@ -264,6 +321,7 @@ void ft_join_expand_tokens(char ***joined_argv, char **expanded_argv,
     final_argv[k] = NULL;
     *joined_argv = final_argv;
 }
+
 
 char	**ft_expand_tokens(t_token *args, t_shell *shell)
 {

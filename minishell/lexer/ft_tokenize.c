@@ -124,6 +124,7 @@ t_token_type	ft_get_operator_type(char *line, int *i)
 // 	return (head_of_token); //parser'a gönderilecek
 // }
 
+
 char	*ft_get_word(char *line, int *i, t_shell *shell)
 {
 	int		start;
@@ -180,14 +181,23 @@ char	*ft_get_word(char *line, int *i, t_shell *shell)
 		}
 	}
 	// Normal kelime
-	else
-	{
-		while (line[*i] && !ft_is_space(line[*i])
-				&& line[*i] != '|' && line[*i] != '<' && line[*i] != '>'
-				&& line[*i] != '\'' && line[*i] != '"' && line[*i] != '$')
-			(*i)++;
-		len = *i - start;
-	}
+	// Normal kelime
+else
+{
+    while (line[*i] && !ft_is_space(line[*i])
+            && line[*i] != '|' && line[*i] != '<' && line[*i] != '>'
+            && line[*i] != '\'' && line[*i] != '"')
+    {
+        // Escape karakteri varsa bir sonrakini de dahil et
+        if (line[*i] == '\\' && line[*i + 1] != '\0')
+            *i += 2;  // Hem \ hem de sonraki karakteri dahil et
+        else if (line[*i] == '$')
+            break;    // $ gördüğünde dur (ayrı token olsun)
+        else
+            (*i)++;
+    }
+    len = *i - start;
+}
 	
 	word = ft_substr(line, start, len, shell);
 	if (!word)
@@ -197,6 +207,7 @@ char	*ft_get_word(char *line, int *i, t_shell *shell)
 
 t_token *ft_tokenize(char *line, t_shell *shell)
 {
+	
     t_token *head_of_token;
     t_token *token;
     t_token_type type;
@@ -239,11 +250,11 @@ t_token *ft_tokenize(char *line, t_shell *shell)
                 return (NULL);
             
             // Boş string kontrolü
-            if (ft_strlen(word) == 0)
-            {
-				had_space = 0;
-                continue;
-            }
+            // if (ft_strlen(word) == 0)
+            // {
+			// 	had_space = 0;
+            //     continue;
+            // }
             
             token = ft_create_token(type, word, shell);
             if (!token)
@@ -254,5 +265,6 @@ t_token *ft_tokenize(char *line, t_shell *shell)
             had_space = 0; // Word sonrası boşluk yok varsayımı
         }
     }
+	
     return (head_of_token);
 }
