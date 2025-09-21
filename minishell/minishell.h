@@ -25,6 +25,15 @@
 #define S_IFDIR  0040000
 #define S_IFMT  00170000
 
+
+
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 1
+# endif
+
+
+
+
 extern volatile sig_atomic_t g_signal;
 
 //token tipleri
@@ -229,5 +238,20 @@ void	ft_handle_sigquit(int sig);
 void	ft_setup_signals(void);
 void	ft_ignore_signals(void);
 void	ft_default_signals(void);
+
+
+
+
+size_t	ft_strlen1(const char *s);
+char	*ft_strdup1(const char *s);
+char	*ft_substr1(char const *s, unsigned int start, size_t len);
+char	*ft_strjoin1(char *s1, char *s2);
+char	*get_next_line(int fd);
+char	*ft_strchr1(char *s, int c);
+
+
+char	*ft_strtrim(char const *s1, char const *set);
+size_t	ft_strlcpy1(char *dst, const char *src, size_t dstsize);
+
 
 #endif
