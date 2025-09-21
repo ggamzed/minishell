@@ -1,32 +1,59 @@
 #include "../minishell.h"
 
 // Heredoc delimiter için bitişik token'ları birleştiren fonksiyon
+// static char	*ft_join_heredoc_delimiter(t_token **current, t_shell *shell)
+// {
+// 	char	*delimiter;
+// 	t_token	*temp;
+
+// 	if (!*current)
+// 		return (NULL);
+	
+// 	// İlk token'ı başlangıç olarak al
+// 	delimiter = ft_strdup((*current)->value, shell);
+// 	if (!delimiter)
+// 		return (NULL);
+	
+// 	// space_flag = 0 olan token'ları birleştir
+// 	temp = *current;
+// 	while (temp->next && temp->space_flag == 0)
+// 	{
+// 		temp = temp->next;
+// 		delimiter = ft_strjoin_free(delimiter, temp->value, shell);
+// 		if (!delimiter)
+// 			return (NULL);
+// 	}
+	
+// 	// current pointer'ını güncelle
+// 	*current = temp;
+// 	return (delimiter);
+// }
+
 static char	*ft_join_heredoc_delimiter(t_token **current, t_shell *shell)
 {
-	char	*delimiter;
-	t_token	*temp;
+    char	*delimiter;
+    t_token	*temp;
 
-	if (!*current)
-		return (NULL);
-	
-	// İlk token'ı başlangıç olarak al
-	delimiter = ft_strdup((*current)->value, shell);
-	if (!delimiter)
-		return (NULL);
-	
-	// space_flag = 0 olan token'ları birleştir
-	temp = *current;
-	while (temp->next && temp->space_flag == 0)
-	{
-		temp = temp->next;
-		delimiter = ft_strjoin_free(delimiter, temp->value, shell);
-		if (!delimiter)
-			return (NULL);
-	}
-	
-	// current pointer'ını güncelle
-	*current = temp;
-	return (delimiter);
+    if (!*current)
+        return (NULL);
+    
+    // İlk token'ı başlangıç olarak al
+    delimiter = ft_strdup((*current)->value, shell);
+    if (!delimiter)
+        return (NULL);
+    
+    temp = *current;
+    // SONRAKİ token'ın space_flag'ini kontrol et!
+    while (temp->next && temp->next->space_flag == 0)  // ✅ DOĞRU!
+    {
+        temp = temp->next;
+        delimiter = ft_strjoin_free(delimiter, temp->value, shell);
+        if (!delimiter)
+            return (NULL);
+    }
+    
+    *current = temp;
+    return (delimiter);
 }
 
 int	ft_in_parser_handle_redirect_in(t_cmd *cmd, t_token **current, t_shell *shell)
