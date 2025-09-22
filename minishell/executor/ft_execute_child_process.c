@@ -96,6 +96,9 @@ static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
 	char	*executable;
 	char	**envp;
 	struct stat st;
+	char	*current_shlvl;
+	int		shlvl_value;
+	char	*new_shlvl;
 
 	// İlk kontrol: eğer komut '/' içeriyorsa (tam yol) ve var ise
 	if (ft_strchr(cmd->expanded_argv[0], '/') && access(cmd->expanded_argv[0], F_OK) == 0)
@@ -139,6 +142,21 @@ static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
 			free(shell);
 			exit(126);
 		}
+	}
+
+	// SHLVL'ı artır (execve'den önce)
+	current_shlvl = ft_get_env_value("SHLVL", shell->env_list);
+	if (current_shlvl)
+	{
+		shlvl_value = ft_atoi(current_shlvl);
+		shlvl_value++;
+		new_shlvl = ft_itoa(shlvl_value, shell);
+		ft_set_env_value("SHLVL", new_shlvl, &shell->env_list, shell);
+		free(new_shlvl);
+	}
+	else
+	{
+		ft_set_env_value("SHLVL", "1", &shell->env_list, shell);
 	}
 
 	envp = ft_env_to_array(shell->env_list, shell);

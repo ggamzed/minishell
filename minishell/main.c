@@ -252,7 +252,7 @@ int	main(int argc, char **argv, char **envp)
 	ft_free_mem_tracker(&mem_tracker);
 	free(shell);
 	//ft_free_shell(shell);
-	//rl_clear_history();
+	rl_clear_history();
 	
 	return (exit_code);
 }

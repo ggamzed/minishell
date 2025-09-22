@@ -1,12 +1,47 @@
 #include "../minishell.h"
 
+// static void	ft_set_shlvl(t_env **env_list, t_shell *shell)
+// {
+// 	char	*current_shlvl;
+// 	int		shlvl_value;
+// 	char	*new_shlvl;
+
+// 	current_shlvl = ft_get_env_value("SHLVL", *env_list);
+// 	if (current_shlvl)
+// 	{
+// 		shlvl_value = ft_atoi(current_shlvl);
+// 		shlvl_value++;
+// 		new_shlvl = ft_itoa(shlvl_value, shell);
+// 		ft_set_env_value("SHLVL", new_shlvl, env_list, shell);
+// 		free(new_shlvl);
+// 	}
+// 	else
+// 		ft_set_env_value("SHLVL", "1", env_list, shell);
+// }
+
+static void	ft_set_shlvl(t_env **env_list, t_shell *shell)
+{
+	char	*current_shlvl;
+
+	current_shlvl = ft_get_env_value("SHLVL", *env_list);
+	if (current_shlvl)
+	{
+		// SHLVL mevcut - değiştirme, olduğu gibi bırak
+		// Bash zaten doğru değeri vermiş
+		return;
+	}
+	else
+	{
+		// SHLVL yok - 1 yap (env -i durumu)
+		ft_set_env_value("SHLVL", "1", env_list, shell);
+	}
+}
+
+
 t_env	*ft_init_env(char **envp, t_shell *shell)
 {
 	t_env	*env_list;
 	char	*pwd;
-	char	*current_shlvl;
-	char	*new_shlvl;
-	int		shlvl_value;
 	int		i;
 
 	env_list = NULL;
@@ -22,47 +57,19 @@ t_env	*ft_init_env(char **envp, t_shell *shell)
 	}
 	
 	// PWD ayarla
-	// if (!ft_get_env_value("PWD", env_list))
-	// {
-	// 	pwd = getcwd(NULL, 0);
-	// 	if (pwd)
-	// 	{
-	// 		ft_set_env_value("PWD", pwd, &env_list, shell);
-	// 		//free(pwd);
-	// 	}
-	// }
-	
-	// PWD ayarla - PWD her zaman gerçek directory olmalı
-	pwd = getcwd(NULL, 0);
-	if (pwd)
+	if (!ft_get_env_value("PWD", env_list))
 	{
-		ft_set_env_value("PWD", pwd, &env_list, shell);
-		free(pwd);
-	}
-
-	// SHLVL'ı ayarla - minishell için her zaman 1'den başla, sadece nested minishell'de artır
-	current_shlvl = ft_get_env_value("SHLVL", env_list);
-	if (current_shlvl && ft_atoi(current_shlvl) > 0)
-	{
-		// Eğer SHLVL 0'dan büyükse ve minishell nested ise artır
-		// Basit kontrol: MINISHELL_LEVEL environment variable'ı var mı?
-		char *minishell_level = ft_get_env_value("MINISHELL_LEVEL", env_list);
-		if (minishell_level)
+		pwd = getcwd(NULL, 0);
+		if (pwd)
 		{
-			shlvl_value = ft_atoi(current_shlvl) + 1;
-			new_shlvl = ft_itoa(shlvl_value, shell);
-			ft_set_env_value("SHLVL", new_shlvl, &env_list, shell);
-		}
-		else
-		{
-			ft_set_env_value("SHLVL", "1", &env_list, shell);
+			ft_set_env_value("PWD", pwd, &env_list, shell);
+			free(pwd);
 		}
 	}
-	else
-		ft_set_env_value("SHLVL", "1", &env_list, shell);
 	
-	// Minishell level marker ekle
-	ft_set_env_value("MINISHELL_LEVEL", "1", &env_list, shell);
+	// SHLVL'ı doğru şekilde ayarla
+	ft_set_shlvl(&env_list, shell);
 	
 	return (env_list);
 }
+

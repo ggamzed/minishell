@@ -2,7 +2,7 @@
 
 static int ft_env_with_clean(char **argv, t_shell *shell)
 {
-	char	*clean_envp[4];
+	char	*clean_envp[3];  // PWD, SHLVL, NULL için 3 eleman
 	char	*pwd;
 	pid_t	pid;
 	int		status;
@@ -10,21 +10,21 @@ static int ft_env_with_clean(char **argv, t_shell *shell)
 	if (!argv[2])
 		return (0);
 	
-	// Minimal temiz environment hazırla
+	// PWD ayarla
 	pwd = getcwd(NULL, 0);
-	clean_envp[0] = NULL;
 	if (pwd)
 	{
 		clean_envp[0] = ft_strjoin("PWD=", pwd, shell);
-		clean_envp[1] = ft_strdup("SHLVL=1", shell);
-		clean_envp[2] = NULL;
 		free(pwd);
 	}
 	else
 	{
-		clean_envp[0] = ft_strdup("SHLVL=1", shell);
-		clean_envp[1] = NULL;
+		clean_envp[0] = ft_strdup("PWD=/", shell);
 	}
+	
+	// SHLVL=1 ayarla (env -i durumu)
+	clean_envp[1] = ft_strdup("SHLVL=1", shell);
+	clean_envp[2] = NULL;
 	
 	pid = fork();
 	if (pid == 0)
@@ -40,11 +40,6 @@ static int ft_env_with_clean(char **argv, t_shell *shell)
 	else if (pid > 0)
 	{
 		waitpid(pid, &status, 0);
-		// Memory temizliği
-		// if (clean_envp[0])
-		// 	free(clean_envp[0]);
-		// if (clean_envp[1])
-		// 	free(clean_envp[1]);
 		return (WEXITSTATUS(status));
 	}
 	else
@@ -75,7 +70,7 @@ int	ft_builtin_env(char **argv, t_env *env_list, t_shell *shell)
 	current = env_list;
 	while (current)
 	{
-		if (current->value && ft_strcmp(current->key, "MINISHELL_LEVEL") != 0)
+		if (current->value)
 			printf("%s=%s\n", current->key, current->value);
 		current = current->next;
 	}
