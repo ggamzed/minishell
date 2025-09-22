@@ -16,11 +16,12 @@ static int	ft_count_commands(t_cmd *cmd_list)
 }
 
 
-int ft_execute_redirection_only(t_cmd *cmd)
+int ft_execute_redirection_only(t_cmd *cmd, t_shell *shell)
 {
     if (cmd->output_file)
     {
         int fd;
+		cmd->output_file = ft_expand_double_quoted(cmd->output_file, shell);
         if (cmd->append_mode)
             fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
         else
@@ -52,7 +53,7 @@ int	ft_execute_commands(t_shell *shell)
 		if (shell->cmd_list->output_file || shell->cmd_list->input_file || 
 		    shell->cmd_list->heredoc_fd != -1)
 		{
-			return (ft_execute_redirection_only(shell->cmd_list));
+			return (ft_execute_redirection_only(shell->cmd_list, shell));
 		}
 		return (0);
 	}

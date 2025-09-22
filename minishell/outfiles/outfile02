@@ -1,8 +1,9 @@
 $H
 $HOME
-$USER
 $USER'$USER'
 &1
+asd
+asdd
 builtins
 echo
 env
@@ -37,9 +38,10 @@ utils.o
 validate_syntax
 $H
 $HOME
-$USER
 $USER'$USER'
 &1
+asd
+asdd
 builtins
 echo
 env
@@ -74,9 +76,10 @@ utils.o
 validate_syntax
 $H
 $HOME
-$USER
 $USER'$USER'
 &1
+asd
+asdd
 builtins
 echo
 env

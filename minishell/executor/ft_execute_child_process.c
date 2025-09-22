@@ -178,6 +178,11 @@ int	ft_execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd, int prev_f
 
 int ft_handle_redirections(t_cmd *cmd)
 {
+// 	    printf("DEBUG: cmd->input_file = %s\n", cmd->input_file ? cmd->input_file : "NULL");
+//     printf("DEBUG: cmd->output_file = %s\n", cmd->output_file ? cmd->output_file : "NULL");
+//     printf("DEBUG: cmd->heredoc_fd = %d\n", cmd->heredoc_fd);
+//     printf("DEBUG: cmd->output_count = %d\n", cmd->output_count);
+
     if (ft_handle_input_redirection(cmd) != 0)  // STATIC fonksiyon - sadece bu dosyada çağrılabilir
         return (1);
     if (ft_handle_heredoc_redirection(cmd) != 0)  // STATIC fonksiyon - sadece bu dosyada çağrılabilir
@@ -191,5 +196,6 @@ int ft_handle_redirections(t_cmd *cmd)
         close(cmd->heredoc_fd);
         cmd->heredoc_fd = -1;
     }
+	
     return (0);
 }

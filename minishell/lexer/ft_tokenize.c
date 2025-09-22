@@ -191,11 +191,11 @@ void debug_print_tokens(t_token *tokens)
     t_token *current = tokens;
     int i = 0;
     
-    printf("=== DEBUG: TOKENS ===\n");
+    //printf("=== DEBUG: TOKENS ===\n");
     while (current)
     {
-        printf("Token[%d]: type=%d, value='%s', space_flag=%d\n", 
-               i, current->type, current->value ? current->value : "NULL", current->space_flag);
+      //  printf("Token[%d]: type=%d, value='%s', space_flag=%d\n", 
+    //        i, current->type, current->value ? current->value : "NULL", current->space_flag);
         current = current->next;
         i++;
     }

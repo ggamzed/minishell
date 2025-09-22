@@ -155,12 +155,12 @@ t_cmd	*ft_parse_command(t_token **current, t_shell *shell)
 	
 	while (*current && (*current)->type != PIPE)
 	{
-	//	printf("DEBUG: Processing token type=%d, value='%s'\n", 
-	//		   (*current)->type, (*current)->value ? (*current)->value : "NULL");
+		// printf("DEBUG: Processing token type=%d, value='%s'\n", 
+		// 	   (*current)->type, (*current)->value ? (*current)->value : "NULL");
 			   
 		if (ft_is_argument_token((*current)->type))
 		{	
-	//		printf("DEBUG: Adding as argument\n");
+			//printf("DEBUG: Adding as argument\n");
 			arg_token = *current;
 			*current = (*current)->next;
 			arg_token->next = NULL;
@@ -168,13 +168,13 @@ t_cmd	*ft_parse_command(t_token **current, t_shell *shell)
 		}
 		else if (ft_is_redirection((*current)->type))
 		{
-	//		printf("DEBUG: Processing as redirection\n");
+			// printf("DEBUG: Processing as redirection\n");
 			ft_process_redirection(cmd, current, shell);
 			// Redirection handler'lar zaten current'i ilerletiyor
 		}
 		else
 		{
-	//		printf("DEBUG: Unknown token type, skipping\n");
+			//printf("DEBUG: Unknown token type, skipping\n");
 			// Bilinmeyen token tipi, bir sonrakine geç
 			*current = (*current)->next;
 		}

@@ -173,49 +173,49 @@
 
 // Redirection filename için bitişik token'ları birleştiren fonksiyon
 // Redirection filename için bitişik token'ları birleştiren fonksiyon - TAM DÜZELTME
-static char	*ft_join_redirect_filename(t_token **current, t_shell *shell)
-{
-    char	*filename;
-    char	*temp;
-    t_token	*token_ptr;
+// static char	*ft_join_redirect_filename(t_token **current, t_shell *shell)
+// {
+//     char	*filename;
+//     char	*temp;
+//     t_token	*token_ptr;
 
-    if (!*current)
-        return (NULL);
+//     if (!*current)
+//         return (NULL);
     
-    //printf("DEBUG: ft_join_redirect_filename starting with '%s'\n", (*current)->value);
+//     //printf("DEBUG: ft_join_redirect_filename starting with '%s'\n", (*current)->value);
     
-    // İlk token'ı başlangıç olarak al
-    filename = ft_strdup((*current)->value, shell);
-    if (!filename)
-        return (NULL);
+//     // İlk token'ı başlangıç olarak al
+//     filename = ft_strdup((*current)->value, shell);
+//     if (!filename)
+//         return (NULL);
     
-    token_ptr = *current;
+//     token_ptr = *current;
     
-    // SONRAKİ token'ın space_flag'ini kontrol et ve REDIRECTION olmadığından emin ol
-    while (token_ptr->next && 
-           token_ptr->next->space_flag == 0 &&
-           token_ptr->next->type != PIPE &&           // Pipe değil
-           token_ptr->next->type != REDIRECT_IN &&    // Redirection değil
-           token_ptr->next->type != REDIRECT_OUT &&
-           token_ptr->next->type != REDIRECT_APPEND &&
-           token_ptr->next->type != HEREDOC)
-    {
-        token_ptr = token_ptr->next;
-        //printf("DEBUG: ft_join_redirect_filename joining '%s'\n", token_ptr->value);
-        temp = ft_strjoin(filename, token_ptr->value, shell);
-        // filename'i manuel free etmeyin - memory tracker halleder
-        filename = temp;
-        if (!filename)
-            return (NULL);
-    }
+//     // SONRAKİ token'ın space_flag'ini kontrol et ve REDIRECTION olmadığından emin ol
+//     while (token_ptr->next && 
+//            token_ptr->next->space_flag == 0 &&
+//            token_ptr->next->type != PIPE &&           // Pipe değil
+//            token_ptr->next->type != REDIRECT_IN &&    // Redirection değil
+//            token_ptr->next->type != REDIRECT_OUT &&
+//            token_ptr->next->type != REDIRECT_APPEND &&
+//            token_ptr->next->type != HEREDOC)
+//     {
+//         token_ptr = token_ptr->next;
+//         //printf("DEBUG: ft_join_redirect_filename joining '%s'\n", token_ptr->value);
+//         temp = ft_strjoin(filename, token_ptr->value, shell);
+//         // filename'i manuel free etmeyin - memory tracker halleder
+//         filename = temp;
+//         if (!filename)
+//             return (NULL);
+//     }
     
-    //printf("DEBUG: ft_join_redirect_filename final filename='%s'\n", filename);
-    //printf("DEBUG: ft_join_redirect_filename final token='%s'\n", 
-    //       token_ptr->value ? token_ptr->value : "NULL");
+//     //printf("DEBUG: ft_join_redirect_filename final filename='%s'\n", filename);
+//     //printf("DEBUG: ft_join_redirect_filename final token='%s'\n", 
+//     //       token_ptr->value ? token_ptr->value : "NULL");
     
-    *current = token_ptr;
-    return (filename);
-}
+//     *current = token_ptr;
+//     return (filename);
+// }
 
 // Heredoc delimiter için bitişik token'ları birleştiren fonksiyon
 static char	*ft_join_heredoc_delimiter(t_token **current, t_shell *shell)
@@ -248,38 +248,115 @@ static char	*ft_join_heredoc_delimiter(t_token **current, t_shell *shell)
     return (delimiter);
 }
 
+// Mevcut ft_join_redirect_filename fonksiyonunu bu şekilde değiştir:
+
+static char	*ft_join_redirect_filename(t_token **current, t_shell *shell)
+{
+    char	*filename;
+    char	*temp;
+    char	*expanded_filename;
+    t_token	*token_ptr;
+    t_token_type first_type;
+
+    if (!*current)
+        return (NULL);
+    
+    // İlk token'ın tipini kaydet (expansion için)
+    first_type = (*current)->type;
+    
+    // İlk token'ı başlangıç olarak al
+    filename = ft_strdup((*current)->value, shell);
+    if (!filename)
+        return (NULL);
+    
+    token_ptr = *current;
+    
+    // SONRAKI token'ın space_flag'ini kontrol et ve REDIRECTION olmadığından emin ol
+    while (token_ptr->next && 
+           token_ptr->next->space_flag == 0 &&
+           token_ptr->next->type != PIPE &&           // Pipe değil
+           token_ptr->next->type != REDIRECT_IN &&    // Redirection değil
+           token_ptr->next->type != REDIRECT_OUT &&
+           token_ptr->next->type != REDIRECT_APPEND &&
+           token_ptr->next->type != HEREDOC)
+    {
+        token_ptr = token_ptr->next;
+        temp = ft_strjoin(filename, token_ptr->value, shell);
+        filename = temp;
+        if (!filename)
+            return (NULL);
+    }
+    
+    // *** YENİ: Filename'i expand et ***
+    // Basit expansion logic - tam ft_expand_token_value yerine
+    if (first_type == VARIABLE)
+    {
+        int i = 0;
+        expanded_filename = ft_extract_and_expand_var(filename, &i, shell);
+    }
+    else if (first_type == WORD && filename[0] == '~')
+    {
+        char *home = ft_get_env_value("HOME", shell->env_list);
+        if (home && ft_strcmp(filename, "~") == 0)
+            expanded_filename = ft_strdup(home, shell);
+        else
+            expanded_filename = filename;
+    }
+    else if (first_type == DOUBLE_QUOTED_STRING)
+    {
+        expanded_filename = ft_expand_double_quoted(filename, shell);
+    }
+    else
+    {
+        expanded_filename = filename; // WORD, SINGLE_QUOTED - expansion yok
+    }
+    
+    *current = token_ptr;
+    return (expanded_filename);
+}
+
 int	ft_in_parser_handle_redirect_in(t_cmd *cmd, t_token **current, t_shell *shell)
 {
-	char *joined_filename;
+	char *expanded_filename;
 	t_token_type first_type;
 	
-	*current = (*current)->next; // '>' operatöründen sonraki token'a geç
+	//printf("DEBUG REDIRECT_IN: Before - current type=%d, value='%s'\n", 
+	       //(*current)->type, (*current)->value ? (*current)->value : "NULL");
+	
+	*current = (*current)->next; // '<' operatöründen sonraki token'a geç
+	
+	//printf("DEBUG REDIRECT_IN: After next - current type=%d, value='%s'\n", 
+	      // *current ? (*current)->type : -1, 
+	       //(*current && (*current)->value) ? (*current)->value : "NULL");
+	
 	if (*current && ((*current)->type == WORD ||
 				(*current)->type == SINGLE_QUOTED_STRING ||
-				(*current)->type == DOUBLE_QUOTED_STRING))
+				(*current)->type == DOUBLE_QUOTED_STRING ||
+				(*current)->type == VARIABLE))  // VARIABLE kontrol et
 	{
+		//printf("DEBUG REDIRECT_IN: Processing filename\n");
 		first_type = (*current)->type;
 		
-		//printf("DEBUG: Before ft_join_redirect_filename, current='%s'\n", (*current)->value);
-		
-		// Bitişik token'ları birleştir
-		joined_filename = ft_join_redirect_filename(current, shell);
-		if (!joined_filename)
+		// Bitiştik token'ları birleştir VE expand et
+		expanded_filename = ft_join_redirect_filename(current, shell);
+		if (!expanded_filename)
 			return (0);
-		
-		//printf("DEBUG: After ft_join_redirect_filename, current='%s', joined='%s'\n", 
-		//	   (*current)->value ? (*current)->value : "NULL", joined_filename);
 			
-		cmd->input_file = joined_filename;
+		cmd->input_file = expanded_filename;
 		cmd->input_type = first_type;
 		
-		// ft_join_redirect_filename zaten current'i son filename token'ına getiriyor
-		// Bir sonraki token'a geç (bu önemli!)
+		//printf("DEBUG REDIRECT_IN: Set input_file='%s'\n", cmd->input_file);
+		
 		*current = (*current)->next;
 		
-		//printf("DEBUG: Final current after redirect_in='%s'\n", 
-		//	   (*current && (*current)->value) ? (*current)->value : "NULL");
+		//printf("DEBUG REDIRECT_IN: Final current type=%d, value='%s'\n", 
+		  //     *current ? (*current)->type : -1, 
+		    //   (*current && (*current)->value) ? (*current)->value : "NULL");
 	}
+	// else
+	// {
+	// 	printf("DEBUG REDIRECT_IN: No valid filename token found\n");
+	// }
 	return (1);
 }
 
@@ -345,6 +422,7 @@ int ft_in_parser_handle_redirect_append(t_cmd *cmd, t_token **current, t_shell *
     *current = (*current)->next;
     if (*current && ((*current)->type == WORD ||
                 (*current)->type == SINGLE_QUOTED_STRING ||
+                (*current)->type == VARIABLE ||
                 (*current)->type == DOUBLE_QUOTED_STRING))
     {
         first_type = (*current)->type;

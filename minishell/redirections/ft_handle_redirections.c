@@ -1,13 +1,49 @@
 #include "../minishell.h"
 #include <fcntl.h>
+#include <sys/stat.h>
 
 /* Input redirection işlemlerini yapar (< file) */
+// int	ft_handle_input_redirection(t_cmd *cmd)
+// {
+// 	int	fd;
+
+// 	if (!cmd->input_file)
+// 		return (0);
+// 	printf("TEST POINT 3\n");
+// 	fd = open(cmd->input_file, O_RDONLY);
+// 	if (fd == -1)
+// 	{
+// 		ft_putstr_fd("minishell: ", 2);
+// 		ft_putstr_fd(cmd->input_file, 2);
+// 		ft_putstr_fd(": ", 2);
+// 		perror("");
+// 		return (1);
+// 	}
+// 	dup2(fd, STDIN_FILENO);
+// 	close(fd);
+// 	return (0);
+// }
+
 int	ft_handle_input_redirection(t_cmd *cmd)
 {
 	int	fd;
+	struct stat st;
 
 	if (!cmd->input_file)
 		return (0);
+	
+	// Önce dosyanın directory olup olmadığını kontrol et
+	if (stat(cmd->input_file, &st) == 0)
+	{
+		if ((st.st_mode & S_IFMT) == S_IFDIR)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->input_file, 2);
+			ft_putstr_fd(": Is a directory\n", 2);
+			return (1);
+		}
+	}
+	
 	fd = open(cmd->input_file, O_RDONLY);
 	if (fd == -1)
 	{
@@ -39,6 +75,7 @@ int ft_handle_output_redirection(t_cmd *cmd)
     int fd;
     int final_fd = -1;
     
+		//printf("TEST POINT 1\n");
     // Önce tüm dosyaları oluştur (bash davranışı)
     for (int i = 0; i < cmd->output_count; i++)
     {
@@ -79,6 +116,8 @@ int ft_handle_output_redirection(t_cmd *cmd)
     // Fallback: eski davranış (tek output file varsa)
     if (cmd->output_count == 0 && cmd->output_file)
     {
+		//printf("TEST POINT 5\n");
+
         if (cmd->append_mode)
             fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
         else
