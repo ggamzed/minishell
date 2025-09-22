@@ -18,7 +18,7 @@ static int ft_env_with_clean(char **argv, t_shell *shell)
 		clean_envp[0] = ft_strjoin("PWD=", pwd, shell);
 		clean_envp[1] = ft_strdup("SHLVL=1", shell);
 		clean_envp[2] = NULL;
-		//free(pwd);
+		free(pwd);
 	}
 	else
 	{

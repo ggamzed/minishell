@@ -37,7 +37,7 @@ t_env	*ft_init_env(char **envp, t_shell *shell)
 	if (pwd)
 	{
 		ft_set_env_value("PWD", pwd, &env_list, shell);
-		//free(pwd);
+		free(pwd);
 	}
 
 	// SHLVL'ı ayarla - minishell için her zaman 1'den başla, sadece nested minishell'de artır
