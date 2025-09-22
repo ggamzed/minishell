@@ -139,40 +139,6 @@ int my_rl_hook(void)
     return 0;
 }
 
-// static void	ft_shell_loop(t_shell *shell)
-// {
-// 	char	*line;
-	
-// 	while (!shell->exit_flag)
-// 	{
-// 		ft_setup_signals();
-// 		rl_event_hook = my_rl_hook;
-// 		if (g_signal == SIGINT)
-// 		{
-
-// 			shell->exit_status = 130;
-// 			g_signal = 0;
-// 		}
-// 		line = readline(PROMPT);
-// 		if (!line)  // EOF (Ctrl+D) CTRL+D = NULL döner
-// 		{
-// 			printf("exit\n");
-// 			shell->exit_flag = 1;
-// 			break;
-// 		}
-// 		if (*line)  // Non-empty line
-// 		{
-// 			add_history(line);
-// 			if (ft_process_line(shell, line) == 0)
-// 			{
-// 				free(line);
-// 				break ;
-// 			}
-// 		}
-// 		free(line);
-// 	}
-// }
-
 static void	ft_shell_loop(t_shell *shell)
 {
 	char	*line;
@@ -183,36 +149,20 @@ static void	ft_shell_loop(t_shell *shell)
 		rl_event_hook = my_rl_hook;
 		if (g_signal == SIGINT)
 		{
+
 			shell->exit_status = 130;
 			g_signal = 0;
 		}
-		
-		// Terminal'den mi yoksa pipe/file'dan mı input alıyoruz kontrol et
-		if (isatty(fileno(stdin)))
-			line = readline(PROMPT);
-		else
-		{
-			char *raw_line;
-			raw_line = get_next_line(fileno(stdin));
-			if (raw_line)
-			{
-				line = ft_strtrim(raw_line, "\n");
-				free(raw_line);
-			}
-			else
-				line = NULL;
-		}
-		
+		line = readline(PROMPT);
 		if (!line)  // EOF (Ctrl+D) CTRL+D = NULL döner
 		{
-			//printf("exit\n");  // <-- BU PRINTF'İ COMMENT OUT ET
+			printf("exit\n");
 			shell->exit_flag = 1;
 			break;
 		}
 		if (*line)  // Non-empty line
 		{
-			if (isatty(fileno(stdin)))  // Sadece interactive modda history'ye ekle
-				add_history(line);
+			add_history(line);
 			if (ft_process_line(shell, line) == 0)
 			{
 				free(line);
@@ -222,6 +172,56 @@ static void	ft_shell_loop(t_shell *shell)
 		free(line);
 	}
 }
+
+// static void	ft_shell_loop(t_shell *shell)
+// {
+// 	char	*line;
+	
+// 	while (!shell->exit_flag)
+// 	{
+// 		ft_setup_signals();
+// 		rl_event_hook = my_rl_hook;
+// 		if (g_signal == SIGINT)
+// 		{
+// 			shell->exit_status = 130;
+// 			g_signal = 0;
+// 		}
+		
+// 		// Terminal'den mi yoksa pipe/file'dan mı input alıyoruz kontrol et
+// 		if (isatty(fileno(stdin)))
+// 			line = readline(PROMPT);
+// 		else
+// 		{
+// 			char *raw_line;
+// 			raw_line = get_next_line(fileno(stdin));
+// 			if (raw_line)
+// 			{
+// 				line = ft_strtrim(raw_line, "\n");
+// 				free(raw_line);
+// 			}
+// 			else
+// 				line = NULL;
+// 		}
+		
+// 		if (!line)  // EOF (Ctrl+D) CTRL+D = NULL döner
+// 		{
+// 			//printf("exit\n");  // <-- BU PRINTF'İ COMMENT OUT ET
+// 			shell->exit_flag = 1;
+// 			break;
+// 		}
+// 		if (*line)  // Non-empty line
+// 		{
+// 			if (isatty(fileno(stdin)))  // Sadece interactive modda history'ye ekle
+// 				add_history(line);
+// 			if (ft_process_line(shell, line) == 0)
+// 			{
+// 				free(line);
+// 				break ;
+// 			}
+// 		}
+// 		free(line);
+// 	}
+// }
 
 int	main(int argc, char **argv, char **envp)
 {
