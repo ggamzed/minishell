@@ -218,7 +218,7 @@
 // }
 
 // Heredoc delimiter için bitişik token'ları birleştiren fonksiyon
-static char	*ft_join_heredoc_delimiter(t_token **current, t_shell *shell)
+static char	*ft_join_heredoc_delimiter(t_token **current, t_shell *shell, int *has_quotes)
 {
     char	*delimiter;
     char	*temp;
@@ -227,18 +227,26 @@ static char	*ft_join_heredoc_delimiter(t_token **current, t_shell *shell)
     if (!*current)
         return (NULL);
     
-    // İlk token'ı başlangıç olarak al
+    *has_quotes = 0; // Initialize
+    
+    // İlk token quoted mi kontrol et
+    if ((*current)->type == SINGLE_QUOTED_STRING || (*current)->type == DOUBLE_QUOTED_STRING)
+        *has_quotes = 1;
+    
     delimiter = ft_strdup((*current)->value, shell);
     if (!delimiter)
         return (NULL);
     
     token_ptr = *current;
-    // SONRAKİ token'ın space_flag'ini kontrol et!
     while (token_ptr->next && token_ptr->next->space_flag == 0)
     {
         token_ptr = token_ptr->next;
+        
+        // Herhangi bir token quoted ise has_quotes = 1
+        if (token_ptr->type == SINGLE_QUOTED_STRING || token_ptr->type == DOUBLE_QUOTED_STRING)
+            *has_quotes = 1;
+            
         temp = ft_strjoin(delimiter, token_ptr->value, shell);
-        // delimiter'ı manuel free etmeyin - memory tracker halleder
         delimiter = temp;
         if (!delimiter)
             return (NULL);
@@ -247,7 +255,6 @@ static char	*ft_join_heredoc_delimiter(t_token **current, t_shell *shell)
     *current = token_ptr;
     return (delimiter);
 }
-
 // Mevcut ft_join_redirect_filename fonksiyonunu bu şekilde değiştir:
 
 static char	*ft_join_redirect_filename(t_token **current, t_shell *shell)
@@ -470,6 +477,7 @@ int	ft_in_parser_handle_heredoc(t_cmd *cmd, t_token **current, t_shell *shell)
 	int temp_fd;
 	char *joined_delimiter;
 	t_token_type first_type;
+    int has_quotes;
 
 	*current = (*current)->next;
 	if (*current)
@@ -478,13 +486,12 @@ int	ft_in_parser_handle_heredoc(t_cmd *cmd, t_token **current, t_shell *shell)
 		first_type = (*current)->type;
 		
 		// Bitişik token'ları birleştir
-		joined_delimiter = ft_join_heredoc_delimiter(current, shell);
+		joined_delimiter = ft_join_heredoc_delimiter(current, shell, &has_quotes);
 		if (!joined_delimiter)
 			return (0);
 		
 		// Her heredoc için input al ve sadece sonuncusunu tut
-		temp_fd = ft_process_heredoc(joined_delimiter, shell, 
-			(first_type != SINGLE_QUOTED_STRING && first_type != DOUBLE_QUOTED_STRING));
+		temp_fd = ft_process_heredoc(joined_delimiter, shell, !has_quotes);
 
 		// Önceki heredoc fd varsa kapat
 		if (cmd->heredoc_fd != -1)
@@ -495,7 +502,7 @@ int	ft_in_parser_handle_heredoc(t_cmd *cmd, t_token **current, t_shell *shell)
 		cmd->heredoc_fd = temp_fd;
 		cmd->heredoc_delimiter = joined_delimiter;
 		cmd->heredoc_type = first_type;
-		cmd->heredoc_should_expand = (first_type != SINGLE_QUOTED_STRING && first_type != DOUBLE_QUOTED_STRING);
+		cmd->heredoc_should_expand = !has_quotes;
 		
 		// ft_join_heredoc_delimiter zaten current'i son token'a getiriyor
 		*current = (*current)->next;

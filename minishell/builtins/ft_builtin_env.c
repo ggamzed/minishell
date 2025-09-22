@@ -32,6 +32,8 @@ static int ft_env_with_clean(char **argv, t_shell *shell)
 		if (execve(argv[2], &argv[2], clean_envp) == -1)
 		{
 			perror("env");
+			ft_free_mem_tracker(shell->mem_tracker);
+			free(shell);
 			exit(1);
 		}
 	}

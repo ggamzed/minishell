@@ -18,7 +18,7 @@ static char    *ft_get_cd_path(char **argv, t_env *env_list)
         home = ft_get_env_value("HOME", env_list);
         if (!home)
         {
-            ft_putstr_fd("minishell: cd: HOME not set", 2);
+            ft_putstr_fd("minishell: cd: HOME not set\n", 2);
             return (NULL);
         }
         return (home);

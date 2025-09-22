@@ -49,7 +49,7 @@ static int	ft_process_line(t_shell *shell, char *line)
 	if (ft_validate_syntax(line) == 1)
 	{
 		shell->exit_status = 2;
-		ft_putstr_fd("minishell: syntax error\n", 2);
+		//ft_putstr_fd("minishell: syntax error\n", 2);
 		return (1);
 	}
 	
@@ -118,13 +118,7 @@ while (current)
 }
 	// Execution - komutları çalıştır
 	shell->exit_status = ft_execute_commands(shell);
-	if (shell->exit_status == -42) // -42 idi burası
-	{
-		// hiçbir yerde -42 ye set etmiyoruz burayı değiştirmek lazım
-		ft_free_commands(shell->cmd_list);
-		shell->cmd_list = NULL;
-		return (0);
-	}
+	
 	// Cleanup - commands'ı free et
 	ft_free_commands(shell->cmd_list);
 	shell->cmd_list = NULL;
@@ -211,7 +205,7 @@ static void	ft_shell_loop(t_shell *shell)
 		
 		if (!line)  // EOF (Ctrl+D) CTRL+D = NULL döner
 		{
-			// printf("exit\n");  // <-- BU PRINTF'İ COMMENT OUT ET
+			//printf("exit\n");  // <-- BU PRINTF'İ COMMENT OUT ET
 			shell->exit_flag = 1;
 			break;
 		}
