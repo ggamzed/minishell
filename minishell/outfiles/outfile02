@@ -1,4 +1,5 @@
 $H
+$HOME
 $USER
 $USER'$USER'
 &1
@@ -35,6 +36,7 @@ utils.c
 utils.o
 validate_syntax
 $H
+$HOME
 $USER
 $USER'$USER'
 &1
@@ -71,6 +73,7 @@ utils.c
 utils.o
 validate_syntax
 $H
+$HOME
 $USER
 $USER'$USER'
 &1

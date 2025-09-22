@@ -38,32 +38,84 @@ static void	ft_execute_builtin_in_child(t_shell *shell, t_cmd *cmd)
    exit(exit_code);
 }
 
+// static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
+// {
+// 	char	*executable;
+// 	char	**envp;
+// 	struct stat st;
+
+// if (ft_strchr(cmd->expanded_argv[0], '/') && access(cmd->expanded_argv[0], F_OK) == 0)
+// {
+//     struct stat st;
+//     if (stat(cmd->expanded_argv[0], &st) == 0 && S_ISDIR(st.st_mode))
+//     {
+//         ft_putstr_fd("minishell: ", 2);
+//         ft_putstr_fd(cmd->expanded_argv[0], 2);
+//         ft_putstr_fd(": is a directory\n", 2);
+        
+//         // Memory cleanup'ı debug sonrası yapın
+//         //ft_free_mem_tracker(shell->mem_tracker);
+//         //free(shell);
+        
+//         if (ft_strlen(cmd->expanded_argv[0]) > 8)
+//             exit(1);
+//         else
+//             exit(126);
+//     }
+// }
+// 	executable = ft_find_executable(cmd->expanded_argv[0], shell->env_list, shell); //çalıştırılabilir path
+// 	if (!executable)
+// 	{
+// 		ft_putstr_fd("minishell: ", 2);
+// 		ft_putstr_fd(cmd->expanded_argv[0], 2);
+// 		ft_putstr_fd(": command not found\n", 2);
+// 		ft_free_mem_tracker(shell->mem_tracker);
+// 		free(shell);
+// 		exit(127);
+// 	}
+// 	if (stat(executable, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
+//     {
+//         ft_putstr_fd("minishell: ", 2);
+//         ft_putstr_fd(cmd->expanded_argv[0], 2);
+//         ft_putstr_fd(": is a directory\n", 2);
+//         ft_free_mem_tracker(shell->mem_tracker);
+//         free(shell);
+//         exit(126);
+//     }
+// 	envp = ft_env_to_array(shell->env_list, shell);
+// 	execve(executable, cmd->expanded_argv, envp);
+// 	perror("execve");
+// 	ft_free_mem_tracker(shell->mem_tracker); // unutma
+// 	free(shell);
+
+// 	exit(126);
+// }
+
 static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
 {
 	char	*executable;
 	char	**envp;
 	struct stat st;
 
-if (ft_strchr(cmd->expanded_argv[0], '/') && access(cmd->expanded_argv[0], F_OK) == 0)
-{
-    struct stat st;
-    if (stat(cmd->expanded_argv[0], &st) == 0 && S_ISDIR(st.st_mode))
-    {
-        ft_putstr_fd("minishell: ", 2);
-        ft_putstr_fd(cmd->expanded_argv[0], 2);
-        ft_putstr_fd(": is a directory\n", 2);
-        
-        // Memory cleanup'ı debug sonrası yapın
-        //ft_free_mem_tracker(shell->mem_tracker);
-        //free(shell);
-        
-        if (ft_strlen(cmd->expanded_argv[0]) > 8)
-            exit(1);
-        else
-            exit(126);
-    }
-}
-	executable = ft_find_executable(cmd->expanded_argv[0], shell->env_list, shell); //çalıştırılabilir path
+	// İlk kontrol: eğer komut '/' içeriyorsa (tam yol) ve var ise
+	if (ft_strchr(cmd->expanded_argv[0], '/') && access(cmd->expanded_argv[0], F_OK) == 0)
+	{
+		if (stat(cmd->expanded_argv[0], &st) == 0)
+		{
+			// S_IFDIR mask'ı ile dizin kontrolü
+			if ((st.st_mode & S_IFMT) == S_IFDIR)
+			{
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(cmd->expanded_argv[0], 2);
+				ft_putstr_fd(": is a directory\n", 2);
+				ft_free_mem_tracker(shell->mem_tracker);
+				free(shell);
+				exit(126);
+			}
+		}
+	}
+
+	executable = ft_find_executable(cmd->expanded_argv[0], shell->env_list, shell);
 	if (!executable)
 	{
 		ft_putstr_fd("minishell: ", 2);
@@ -73,21 +125,27 @@ if (ft_strchr(cmd->expanded_argv[0], '/') && access(cmd->expanded_argv[0], F_OK)
 		free(shell);
 		exit(127);
 	}
-	if (stat(executable, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
-    {
-        ft_putstr_fd("minishell: ", 2);
-        ft_putstr_fd(cmd->expanded_argv[0], 2);
-        ft_putstr_fd(": is a directory\n", 2);
-        ft_free_mem_tracker(shell->mem_tracker);
-        free(shell);
-        exit(126);
-    }
+
+	// İkinci kontrol: executable path'i için dizin kontrolü
+	if (stat(executable, &st) == 0)
+	{
+		// S_IFDIR mask'ı ile dizin kontrolü
+		if ((st.st_mode & S_IFMT) == S_IFDIR)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->expanded_argv[0], 2);
+			ft_putstr_fd(": is a directory\n", 2);
+			ft_free_mem_tracker(shell->mem_tracker);
+			free(shell);
+			exit(126);
+		}
+	}
+
 	envp = ft_env_to_array(shell->env_list, shell);
 	execve(executable, cmd->expanded_argv, envp);
 	perror("execve");
-	ft_free_mem_tracker(shell->mem_tracker); // unutma
+	ft_free_mem_tracker(shell->mem_tracker);
 	free(shell);
-
 	exit(126);
 }
 
