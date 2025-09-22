@@ -39,10 +39,10 @@ static int ft_env_with_clean(char **argv, t_shell *shell)
 	{
 		waitpid(pid, &status, 0);
 		// Memory temizliği
-		if (clean_envp[0])
-			free(clean_envp[0]);
-		if (clean_envp[1])
-			free(clean_envp[1]);
+		// if (clean_envp[0])
+		// 	free(clean_envp[0]);
+		// if (clean_envp[1])
+		// 	free(clean_envp[1]);
 		return (WEXITSTATUS(status));
 	}
 	else

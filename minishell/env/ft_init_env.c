@@ -22,16 +22,24 @@ t_env	*ft_init_env(char **envp, t_shell *shell)
 	}
 	
 	// PWD ayarla
-	if (!ft_get_env_value("PWD", env_list))
-	{
-		pwd = getcwd(NULL, 0);
-		if (pwd)
-		{
-			ft_set_env_value("PWD", pwd, &env_list, shell);
-			free(pwd);
-		}
-	}
+	// if (!ft_get_env_value("PWD", env_list))
+	// {
+	// 	pwd = getcwd(NULL, 0);
+	// 	if (pwd)
+	// 	{
+	// 		ft_set_env_value("PWD", pwd, &env_list, shell);
+	// 		//free(pwd);
+	// 	}
+	// }
 	
+	// PWD ayarla - PWD her zaman gerçek directory olmalı
+	pwd = getcwd(NULL, 0);
+	if (pwd)
+	{
+		ft_set_env_value("PWD", pwd, &env_list, shell);
+		//free(pwd);
+	}
+
 	// SHLVL'ı ayarla - minishell için her zaman 1'den başla, sadece nested minishell'de artır
 	current_shlvl = ft_get_env_value("SHLVL", env_list);
 	if (current_shlvl && ft_atoi(current_shlvl) > 0)
