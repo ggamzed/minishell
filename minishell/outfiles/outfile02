@@ -1,6 +1,8 @@
 $H
+$USER
+$USER'$USER'
+&1
 builtins
-deneme.sh
 echo
 env
 executor
@@ -17,6 +19,7 @@ minishell
 minishell.h
 notlar
 outfiles
+out.txt
 parser
 pipe-test
 readline111.supp
@@ -32,8 +35,10 @@ utils.c
 utils.o
 validate_syntax
 $H
+$USER
+$USER'$USER'
+&1
 builtins
-deneme.sh
 echo
 env
 executor
@@ -50,6 +55,7 @@ minishell
 minishell.h
 notlar
 outfiles
+out.txt
 parser
 pipe-test
 readline111.supp
@@ -65,8 +71,10 @@ utils.c
 utils.o
 validate_syntax
 $H
+$USER
+$USER'$USER'
+&1
 builtins
-deneme.sh
 echo
 env
 executor
@@ -83,6 +91,7 @@ minishell
 minishell.h
 notlar
 outfiles
+out.txt
 parser
 pipe-test
 readline111.supp

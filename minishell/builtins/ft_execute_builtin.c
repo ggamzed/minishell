@@ -46,7 +46,7 @@ static int	ft_execute_builtin_function(char **argv, t_shell *shell, int in_pipe)
 	else if (ft_strcmp(argv[0], "export") == 0)
 		return (ft_builtin_export(argv, &shell->env_list, shell));
 	else if (ft_strcmp(argv[0], "unset") == 0)
-		return (ft_builtin_unset(argv, &shell->env_list));
+		return (ft_builtin_unset(argv, &shell->env_list, shell));
 	else if (ft_strcmp(argv[0], "env") == 0)
 	{
 		if (ft_is_valid_env_arg(argv) == 127)

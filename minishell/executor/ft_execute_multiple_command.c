@@ -29,32 +29,35 @@ static pid_t	ft_create_child_and_execute(t_shell *shell, t_cmd *cmd,
 
 static int	ft_wait_all_children(void)
 {
-	int status; //wait status'ün içine yazacağı için garbage value olması önemsiz, başlatmaya gerek yok
+	int status;
 	int last_status;
 	int	sig;
 	int	quit_printed;
-	/*
-	wait() nasıl biliyor da -1 döndürüyor?
-	Kernel process tablosuna bakar
-	Parent PID'si caller'a eşit child arar
-	Varsa: Child'ı bekler, PID döner
-	Yoksa: -1 döner
-	*/
+	
 	last_status = 0;
 	quit_printed = 0;
-	while (wait(&status) > 0) //birden fazla child beklenecekse wait ile beklenir. child bittiğinde wait biten child'ın pid'ini döner. bekleyecek child kalmadığında -1 döner
+	while (wait(&status) > 0)
 	{
-		if (WIFEXITED(status)) // WIFEXITED = child normal mi bitti? (exit() veya return) 
-			last_status = WEXITSTATUS(status); // ->  exit kodu (0-255)
-		else if (WIFSIGNALED(status)) // WIFSIGNALED = child signal ile bitti mi? (kill, exit, abort, Ctrl+C, segfault) 
+		if (WIFEXITED(status))
+			last_status = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
 		{
 			sig = WTERMSIG(status);
-			if (sig == SIGQUIT && !quit_printed) // Sadece ilk seferinde yazdır
-            {
-                ft_putstr_fd("Quit (core dumped)\n", 2);
-                quit_printed = 1; // Flag'i set et
-            }
-			last_status = 128 + WTERMSIG(status); // -> 128 + WTERMSIG(status)
+			
+			// SIGPIPE'ı ignore et (pipe'da normal durum)
+			if (sig == SIGPIPE)
+			{
+				// SIGPIPE durumunda last_status'u değiştirme
+				// Son child'ın exit status'unu koru
+				continue;
+			}
+			
+			if (sig == SIGQUIT && !quit_printed)
+			{
+				ft_putstr_fd("Quit (core dumped)\n", 2);
+				quit_printed = 1;
+			}
+			last_status = 128 + WTERMSIG(status);
 		}
 	}
 	return (last_status);

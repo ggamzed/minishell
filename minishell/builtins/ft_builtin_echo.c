@@ -24,8 +24,8 @@ int	ft_builtin_echo(char **argv)
 
 	newline = 1; // varsayılan olarak newline yazdır
 	i = 1;
-	while (argv[i] && argv[i][0] == '\0')
-		i++;
+	// while (argv[i] && argv[i][0] == '\0')
+	// 	i++;
 	while (argv[i] && ft_is_valid_n(argv[i]) == 0) // -n parametresi kontrolü ->-n parametresi ile newline karakteri bastırılmaz
 	{
 		newline = 0; // newline yazdırma

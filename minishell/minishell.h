@@ -210,7 +210,7 @@ int	ft_builtin_env(char **argv, t_env *env_list, t_shell *shell);
 int	ft_builtin_exit(char **argv, t_shell *shell, int in_pipe);
 int	ft_builtin_export(char **argv, t_env **env_list, t_shell *shell);
 int	ft_builtin_pwd(void);
-int	ft_builtin_unset(char **argv, t_env **env_list);
+int ft_builtin_unset(char **argv, t_env **env_list, t_shell *shell);
 
 //--------------------------------EXECUTOR--------------------------------
 int		ft_execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd, int prev_fd);

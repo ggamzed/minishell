@@ -94,13 +94,25 @@ while (current)
         current->expanded_argv = ft_expand_tokens(current->args, shell);
         // ft_expand_tokens sonrası
         if (!current->expanded_argv || !current->expanded_argv[0] || 
-            ft_strlen(current->expanded_argv[0]) == 0) // BOŞ KOMUT KONTROLÜ EKLE
-        {
-            shell->exit_status = 0; // BASH UYUMLU - 1 yerine 0
-            ft_free_commands(shell->cmd_list);
-            shell->cmd_list = NULL;
-            return (1);
-        }
+    ft_strlen(current->expanded_argv[0]) == 0)
+{
+    // Eğer orijinal token VARIABLE ise → undefined variable (exit 0)
+    if (current->args && current->args->type == VARIABLE)
+    {
+        shell->exit_status = 0; // Undefined variable için 0
+    }
+    else
+    {
+        // Empty command için 127
+        ft_putstr_fd("minishell: ", 2);
+        ft_putstr_fd("", 2);
+        ft_putstr_fd(": command not found\n", 2);
+        shell->exit_status = 127;
+    }
+    ft_free_commands(shell->cmd_list);
+    shell->cmd_list = NULL;
+    return (1);
+}
     }
     current = current->next;
 }
