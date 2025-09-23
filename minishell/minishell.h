@@ -155,6 +155,7 @@ void	ft_free_split(char **split);
 
 //--------------------------------LEXER--------------------------------
 t_token_type	ft_get_operator_type(char *line, int *i);
+t_token_type	ft_get_word_type(char *line, int i);
 char	*ft_get_word(char *line, int *i, t_shell *shell);
 t_token	*ft_tokenize(char *line, t_shell *shell);
 t_token	*ft_create_token(t_token_type type, char *value, t_shell *shell);
@@ -239,20 +240,6 @@ void	ft_handle_sigquit(int sig);
 void	ft_setup_signals(void);
 void	ft_ignore_signals(void);
 void	ft_default_signals(void);
-
-
-
-
-size_t	ft_strlen1(const char *s);
-char	*ft_strdup1(const char *s);
-char	*ft_substr1(char const *s, unsigned int start, size_t len);
-char	*ft_strjoin1(char *s1, char *s2);
-char	*get_next_line(int fd);
-char	*ft_strchr1(char *s, int c);
-
-
-char	*ft_strtrim(char const *s1, char const *set);
-size_t	ft_strlcpy1(char *dst, const char *src, size_t dstsize);
 
 
 #endif

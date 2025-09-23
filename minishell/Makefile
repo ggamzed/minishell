@@ -20,6 +20,7 @@ SRCS = main.c \
 		signals.c \
 		$(lexer)ft_tokenize.c \
 		$(lexer)ft_token.c \
+		$(lexer)ft_get_word.c \
 		$(lexer)ft_count_args.c \
 		$(validate_syntax)ft_validate_syntax.c \
 		$(validate_syntax)ft_validate_quotes.c \
@@ -49,9 +50,7 @@ SRCS = main.c \
 		$(executor)ft_execute_single_command.c \
 		$(executor)ft_find_executable.c \
 		$(redirections)ft_handle_redirections.c \
-		$(redirections)ft_handle_heredoc.c \
-		$(get)get_next_line_bonus.c \
-		$(get)get_next_line_utils_bonus.c
+		$(redirections)ft_handle_heredoc.c
 
 
 # Object files
