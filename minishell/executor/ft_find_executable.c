@@ -1,47 +1,46 @@
 #include "../minishell.h"
 #include <sys/stat.h>
 
-static char *ft_check_direct_path(char *cmd, t_shell *shell)
+static char	*ft_check_direct_path(char *cmd, t_shell *shell)
 {
-    struct stat st;
-    
-    if (!ft_strchr(cmd, '/'))
-        return (cmd);
-    if (access(cmd, F_OK) != 0)
-        return (NULL);
-    if (stat(cmd, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
-        return (NULL);
-    if (access(cmd, X_OK) != 0)
-        return (NULL);
-    return (ft_strdup(cmd, shell));
+	struct stat	st;
+
+	if (!ft_strchr(cmd, '/'))
+		return (cmd);
+	if (access(cmd, F_OK) != 0)
+		return (NULL);
+	if (stat(cmd, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
+		return (NULL);
+	if (access(cmd, X_OK) != 0)
+		return (NULL);
+	return (ft_strdup(cmd, shell));
 }
 
-static char *ft_search_in_paths(char *cmd, char **paths, t_shell *shell)
+static char	*ft_search_in_paths(char *cmd, char **paths, t_shell *shell)
 {
-    char *temp;
-    char *full_path;
-    struct stat st;
-    int i;
+	char		*temp;
+	char		*full_path;
+	struct stat	st;
+	int			i;
 
-    i = 0;
-    while (paths[i])
-    {
-        temp = ft_strjoin(paths[i], "/", shell);
-        full_path = ft_strjoin(temp, cmd, shell);
-        
-        if (access(full_path, F_OK) == 0)
-        {
-            if (stat(full_path, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
-            {
-                i++;
-                continue;
-            }
-            if (access(full_path, X_OK) == 0)
-                return (full_path);
-        }
-        i++;
-    }
-    return (NULL);
+	i = 0;
+	while (paths[i])
+	{
+		temp = ft_strjoin(paths[i], "/", shell);
+		full_path = ft_strjoin(temp, cmd, shell);
+		if (access(full_path, F_OK) == 0)
+		{
+			if (stat(full_path, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
+			{
+				i++;
+				continue ;
+			}
+			if (access(full_path, X_OK) == 0)
+				return (full_path);
+		}
+		i++;
+	}
+	return (NULL);
 }
 
 char	*ft_find_executable(char *cmd, t_env *env_list, t_shell *shell)
@@ -51,7 +50,7 @@ char	*ft_find_executable(char *cmd, t_env *env_list, t_shell *shell)
 	char	*result;
 
 	if (ft_strcmp(cmd, "..") == 0)
-        return (NULL);
+		return (NULL);
 	result = ft_check_direct_path(cmd, shell);
 	if (result != cmd)
 		return (result);
