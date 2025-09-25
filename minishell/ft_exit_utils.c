@@ -1,0 +1,63 @@
+#include "minishell.h"
+
+void	ft_cleanup_and_exit(t_shell *shell, int exit_code)
+{
+	ft_free_mem_tracker(shell->mem_tracker);
+	free(shell);
+	exit(exit_code);
+}
+
+void	ft_print_error_msg(char *cmd, char *msg)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(cmd, 2);
+	ft_putstr_fd(msg, 2);
+}
+
+void	*ft_malloc(size_t size, t_shell *shell)
+{
+	void	*ptr;
+	t_mem	*mem_node;
+
+	ptr = malloc(size);
+	if (!ptr)
+	{
+		ft_putstr_fd("malloc failed", 2);
+		return (NULL);
+	}
+	if (!shell || !shell->mem_tracker)
+        return (ptr);
+	mem_node = malloc(sizeof(t_mem));
+	if (!mem_node)
+	{
+		ft_putstr_fd("malloc for memory tracker failed", 2);
+		free(ptr);
+		return (NULL);
+	}
+	mem_node->ptr = ptr;
+	mem_node->next = *shell->mem_tracker;
+	*shell->mem_tracker = mem_node;
+	return (ptr);
+}
+
+void	ft_free_mem_tracker(t_mem **mem_tracker)
+{
+	t_mem	*curr;
+	t_mem	*tmp;
+	
+	if (!mem_tracker)
+		return ;
+	curr = *mem_tracker;
+	while (curr)
+	{
+		tmp = curr->next;
+		if (curr->ptr)
+		{
+			free(curr->ptr);
+			curr->ptr = NULL;
+		}
+		free(curr);
+		curr = tmp;
+	}
+	*mem_tracker = NULL;
+}

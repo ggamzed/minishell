@@ -1,13 +1,13 @@
 #include "../minishell.h"
 
-static void	ft_skip_token_group(t_token **current)
+void	ft_skip_token_group(t_token **current)
 {
 	while ((*current)->next && (*current)->next->space_flag == 0)
 		*current = (*current)->next;
 	*current = (*current)->next;
 }
 
-static int	ft_count_split_words(char **split_words)
+int	ft_count_split_words(char **split_words)
 {
 	int	count;
 

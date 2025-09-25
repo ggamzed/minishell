@@ -1,7 +1,7 @@
 #include "../minishell.h"
 #include <sys/stat.h>
 
-static void	ft_setup_pipe_connections(int *pipefd, int prev_fd, t_cmd *cmd)
+void	ft_setup_pipe_connections(int *pipefd, int prev_fd, t_cmd *cmd)
 {
 	if (prev_fd != -1)
 	{
@@ -21,7 +21,7 @@ static void	ft_setup_pipe_connections(int *pipefd, int prev_fd, t_cmd *cmd)
 	}
 }
 
-static void	ft_update_shlvl(t_shell *shell)
+void	ft_update_shlvl(t_shell *shell)
 {
 	char	*current_shlvl;
 	int		shlvl_value;
@@ -40,7 +40,7 @@ static void	ft_update_shlvl(t_shell *shell)
 		ft_set_env_value("SHLVL", "1", &shell->env_list, shell);
 }
 
-static void	ft_exec_error(t_shell *shell, char *cmd)
+void	ft_exec_error(t_shell *shell, char *cmd)
 {
 	struct stat	st;
 

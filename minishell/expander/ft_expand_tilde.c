@@ -18,7 +18,7 @@ static char	*ft_handle_tilde_base(const char *value, char **suffix,
 	}
 }
 
-static char	*ft_expand_tilde(const char *value, t_shell *shell)
+char	*ft_expand_tilde(const char *value, t_shell *shell)
 {
 	char	*base;
 	char	*suffix;

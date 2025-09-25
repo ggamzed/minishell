@@ -80,54 +80,6 @@ char	*ft_strdup(const char *s, t_shell *shell)
 	return (dup);
 }
 
-void	*ft_malloc(size_t size, t_shell *shell)
-{
-	void	*ptr;
-	t_mem	*mem_node;
-
-	ptr = malloc(size);
-	if (!ptr)
-	{
-		ft_putstr_fd("malloc failed", 2);
-		return (NULL);
-	}
-	if (!shell || !shell->mem_tracker)
-        return (ptr);
-	mem_node = malloc(sizeof(t_mem));
-	if (!mem_node)
-	{
-		ft_putstr_fd("malloc for memory tracker failed", 2);
-		free(ptr);
-		return (NULL);
-	}
-	mem_node->ptr = ptr;
-	mem_node->next = *shell->mem_tracker;
-	*shell->mem_tracker = mem_node;
-	return (ptr);
-}
-
-void	ft_free_mem_tracker(t_mem **mem_tracker)
-{
-	t_mem	*curr;
-	t_mem	*tmp;
-	
-	if (!mem_tracker)
-		return ;
-	curr = *mem_tracker;
-	while (curr)
-	{
-		tmp = curr->next;
-		if (curr->ptr)
-		{
-			free(curr->ptr);
-			curr->ptr = NULL;
-		}
-		free(curr);
-		curr = tmp;
-	}
-	*mem_tracker = NULL;
-}
-
 int	ft_isalpha(int c)
 {
 	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))

@@ -40,7 +40,7 @@ char	*ft_expand_word_variables(char *str, t_shell *shell)
 	return (result);
 }
 
-static char	*ft_handle_word(char *value, t_shell *shell)
+char	*ft_handle_word(char *value, t_shell *shell)
 {
 	char	*tilde;
 

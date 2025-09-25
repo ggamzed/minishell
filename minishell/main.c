@@ -38,8 +38,6 @@ static t_shell	*ft_init_shell(char **envp, t_mem **mem_tracker)
 	return (shell);
 }
 
-
-
 static int	ft_process_line(t_shell *shell, char *line)
 {
 	t_token	*tokens;

@@ -16,6 +16,7 @@ SRCS = main.c \
 		utils.c \
 		free.c \
 		signals.c \
+		ft_exit_utils.c \
 		$(lexer)ft_get_type.c \
 		$(lexer)ft_get_word.c \
 		$(lexer)ft_tokenize.c \
@@ -26,7 +27,7 @@ SRCS = main.c \
 		$(validate_syntax)ft_validate_redirections.c \
 		$(parser)ft_in_parser_handle_redirect_input.c \
 		$(parser)ft_in_parser_handle_redirect_output.c \
-		$(parser)ft_is.c \
+		$(parser)ft_check.c \
 		$(parser)ft_join_redirect_filename.c \
 		$(parser)ft_parse_tokens.c \
 		$(parser)ft_parse_command.c \
@@ -37,6 +38,11 @@ SRCS = main.c \
 		$(expander)expander.c \
 		$(expander)expand_double_quoted.c \
 		$(expander)extract_and_expand.c \
+		$(expander)ft_expand_tilde.c \
+		$(expander)ft_expand_var.c \
+		$(expander)ft_join_tokens.c \
+		$(expander)ft_word_split_utils.c \
+		$(expander)ft_word_split.c \
 		$(builtins)ft_builtin_cd.c \
 		$(builtins)ft_builtin_echo.c \
 		$(builtins)ft_builtin_env.c \
@@ -51,6 +57,9 @@ SRCS = main.c \
 		$(executor)ft_execute_multiple_command.c \
 		$(executor)ft_execute_single_command.c \
 		$(executor)ft_find_executable.c \
+		$(executor)ft_child_utils.c \
+		$(executor)ft_multiple_command_utils.c \
+		$(executor)ft_single_command_utils.c \
 		$(redirections)ft_handle_redirections.c \
 		$(redirections)ft_handle_heredoc.c
 

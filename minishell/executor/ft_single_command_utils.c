@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-static int	ft_handle_builtin_redirections(t_cmd *cmd, int *stdin_backup,
+int	ft_handle_builtin_redirections(t_cmd *cmd, int *stdin_backup,
 					int *stdout_backup)
 {
 	*stdin_backup = dup(STDIN_FILENO);
@@ -14,7 +14,7 @@ static int	ft_handle_builtin_redirections(t_cmd *cmd, int *stdin_backup,
 	return (0);
 }
 
-static void	ft_restore_redirections(int stdin_backup, int stdout_backup)
+void	ft_restore_redirections(int stdin_backup, int stdout_backup)
 {
 	dup2(stdin_backup, STDIN_FILENO);
 	dup2(stdout_backup, STDOUT_FILENO);
@@ -22,7 +22,7 @@ static void	ft_restore_redirections(int stdin_backup, int stdout_backup)
 	close(stdout_backup);
 }
 
-static int	ft_check_only_child_status(int status)
+int	ft_check_only_child_status(int status)
 {
 	int	sig;
 

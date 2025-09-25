@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-static int	ft_create_pipe(t_cmd *cmd, int pipefd[2])
+int	ft_create_pipe(t_cmd *cmd, int pipefd[2])
 {
 	if (cmd->next)
 	{
@@ -43,7 +43,7 @@ static int	ft_check_child_status(int status, pid_t last_pid,
 	return (-1);
 }
 
-static int	ft_wait_all_children(pid_t last_pid)
+int	ft_wait_all_children(pid_t last_pid)
 {
 	int		status;
 	int		last_status;
@@ -65,7 +65,7 @@ static int	ft_wait_all_children(pid_t last_pid)
 	return (last_status);
 }
 
-static void	ft_handle_pipe_fds(t_cmd *current, int *pipefd, int *prev_fd)
+void	ft_handle_pipe_fds(t_cmd *current, int *pipefd, int *prev_fd)
 {
 	if (*prev_fd != -1)
 		close(*prev_fd);

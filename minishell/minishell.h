@@ -190,6 +190,13 @@ char	**ft_expand_tokens(t_token *args, t_shell *shell);
 char	*ft_expand_double_quoted(char *str, t_shell *shell);
 char	*ft_extract_and_expand_var(char *str, int *i, t_shell *shell);
 char	*ft_handle_exit_status(t_shell *shell);
+char	*ft_handle_word(char *value, t_shell *shell);
+char	**ft_join_tokens_back(char **expanded_argv, t_token *seperate_tokens, t_shell *shell);
+char	**ft_handle_word_split(char **joined_argv, t_token *org_tokens, t_shell *shell);
+char	*ft_expand_tilde(const char *value, t_shell *shell);
+char	*ft_append_char(char *str, char c, t_shell *shell);
+int		ft_count_split_words(char **split_words);
+void	ft_skip_token_group(t_token **current);
 
 //--------------------------------ENVIRONMENT--------------------------------
 t_env	*ft_create_env_node(char *key, char *value, t_shell *shell);
@@ -222,6 +229,15 @@ int		ft_execute_multiple_command(t_shell *shell);
 int		ft_execute_single_command(t_shell *shell, t_cmd *cmd);
 char	*ft_find_executable(char *cmd, t_env *env_list, t_shell *shell);
 int		ft_handle_redirections(t_cmd *cmd);
+void	ft_exec_error(t_shell *shell, char *cmd);
+void	ft_update_shlvl(t_shell *shell);
+void	ft_setup_pipe_connections(int *pipefd, int prev_fd, t_cmd *cmd);
+int	ft_create_pipe(t_cmd *cmd, int pipefd[2]);
+void	ft_handle_pipe_fds(t_cmd *current, int *pipefd, int *prev_fd);
+int	ft_wait_all_children(pid_t last_pid);
+int	ft_check_only_child_status(int status);
+void	ft_restore_redirections(int stdin_backup, int stdout_backup);
+int	ft_handle_builtin_redirections(t_cmd *cmd, int *stdin_backup, int *stdout_backup);
 
 //--------------------------------REDIRECTIONS--------------------------------
 int		ft_handle_heredoc(t_shell *shell);
@@ -235,6 +251,8 @@ int	ft_handle_output_redirection(t_cmd *cmd);
 // free
 void	ft_free_mem_tracker(t_mem **mem_tracker);
 void	*ft_malloc(size_t size, t_shell *shell);
+void	ft_cleanup_and_exit(t_shell *shell, int exit_code);
+void	ft_print_error_msg(char *cmd, char *msg);
 
 // signal
 void	ft_handle_sigint(int sig);
