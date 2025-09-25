@@ -4,7 +4,7 @@ static int	ft_create_pipe(t_cmd *cmd, int pipefd[2])
 {
 	if (cmd->next)
 	{
-		if (pipe(pipefd) == -1) //pipe hazır bir fonksiyon. pipefd[0]=okuma ucu | pipefd[1]=yazma ucu
+		if (pipe(pipefd) == -1)
 		{
 			perror("minishell: pipe");
 			return (1);
@@ -35,50 +35,32 @@ static int	ft_wait_all_children(pid_t last_pid)
 	int quit_printed = 0;
 	pid_t waited_pid;
 	
-	/*
-	wait() nasıl biliyor da -1 döndürüyor?
-	Kernel process tablosuna bakar
-	Parent PID'si caller'a eşit child arar
-	Varsa: Child'ı bekler, PID döner
-	Yoksa: -1 döner
-	*/
-	
-	// Tüm child'ları bekle
 	while ((waited_pid = wait(&status)) > 0)
 	{
-		if (WIFEXITED(status)) // WIFEXITED = child normal mi bitti? (exit() veya return)
+		if (WIFEXITED(status))
 		{
-			// Son process ise veya hiç last_pid belirtilmemişse exit status'u kaydet
 			if (last_pid == -1 || waited_pid == last_pid)
-				last_status = WEXITSTATUS(status); // exit kodu (0-255)
+				last_status = WEXITSTATUS(status);
 		}
-		else if (WIFSIGNALED(status)) // WIFSIGNALED = child signal ile bitti mi? (kill, exit, abort, Ctrl+C, segfault)
+		else if (WIFSIGNALED(status))
 		{
 			sig = WTERMSIG(status);
 			
-			// SIGPIPE'ı ignore et (pipe'da normal durum)
 			if (sig == SIGPIPE)
 			{
-				// SIGPIPE durumunda sadece son process ise last_status'u güncelle
 				if (last_pid == -1 || waited_pid == last_pid)
 				{
-					// SIGPIPE için özel durum: genelde 0 döndürülür
-					// Ancak pipeline davranışını korumak için mevcut last_status'u koru
 					continue;
 				}
 				continue;
 			}
-			
-			// SIGQUIT mesajını sadece bir kez yazdır
 			if (sig == SIGQUIT && !quit_printed)
 			{
 				ft_putstr_fd("Quit (core dumped)\n", 2);
 				quit_printed = 1;
 			}
-			
-			// Son process ise veya hiç last_pid belirtilmemişse exit status'u kaydet
 			if (last_pid == -1 || waited_pid == last_pid)
-				last_status = 128 + sig; // 128 + WTERMSIG(status)
+				last_status = 128 + sig;
 		}
 	}
 	return (last_status);
@@ -90,7 +72,7 @@ int	ft_execute_multiple_command(t_shell *shell)
 	int		pipefd[2];
 	int		prev_fd;
 	pid_t	pid;
-	pid_t	last_pid = -1; // Son process'in PID'ini tutacağız
+	pid_t	last_pid = -1;
 
 	current = shell->cmd_list;
 	prev_fd = -1;
@@ -104,11 +86,8 @@ int	ft_execute_multiple_command(t_shell *shell)
 		pid = ft_create_child_and_execute(shell, current, pipefd, prev_fd);
 		if (pid == -1)
 			return (1);
-			
-		// Son komut mu kontrol et
 		if (!current->next)
 			last_pid = pid;
-			
 		if (prev_fd != -1)
 			close(prev_fd);
 		if (current->next)
@@ -121,34 +100,3 @@ int	ft_execute_multiple_command(t_shell *shell)
 	
 	return (ft_wait_all_children(last_pid));
 }
-
-/*
-ÖRNEK SENARYO: ls | grep txt | wc -l
-
-İterasyon 1: ls
-prev_fd = -1 (yok)
-pipe() → pipefd[0]=4, pipefd[1]=5
-fork() → child: ls çalışır, STDOUT→5
-parent: close(5), prev_fd=4
-
-İterasyon 2: grep
-prev_fd = 4 (ls'ten gelen)
-pipe() → pipefd[0]=6, pipefd[1]=7
-fork() → child: grep çalışır, STDIN→4, STDOUT→7
-parent: close(4), close(7), prev_fd=6
-
-İterasyon 3: wc
-prev_fd = 6 (grep'ten gelen)
-pipe() → OLUŞTURULMAZ (son komut)
-fork() → child: wc çalışır, STDIN→6, STDOUT→ekran
-parent: close(6)
-
-PIPE1        PIPE2
-    [4][5]       [6][7]
-ls ───5→ grep ←4───7→ wc ←6─── ekran
-    ↑              ↑
- child1         child2      child3
-
-last_pid = wc'nin PID'i
-ft_wait_all_children() sadece wc'nin exit status'unu döndürür
-*/

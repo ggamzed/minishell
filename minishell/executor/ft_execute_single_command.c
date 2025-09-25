@@ -1,19 +1,10 @@
 #include "../minishell.h"
 
-//fd olayı -> executor.txt
-
-// tek komut çalıştırır. builtin -> parent / external -> fork
-/* Builtin komut için redirection setup ve cleanup yapar */
 static int	ft_handle_builtin_redirections(t_cmd *cmd, int *stdin_backup, int *stdout_backup)
 {
-	*stdin_backup = dup(STDIN_FILENO); // klavyenin kopyasını al //Var olan bir file descriptor'ın kopyasını oluşturur.
-	*stdout_backup = dup(STDOUT_FILENO); // ekranın(terminal) kopyasını al
-	/*
-	int backup = dup(STDOUT_FILENO);  // STDOUT_FILENO = 1
-	backup = 3 oldu diyelim
-	Şimdi hem 1 hem 3 AYNI YERE (ekrana) işaret ediyor!
-	*/
-	if (ft_handle_redirections(cmd) != 0) // bu fonksiyon yok
+	*stdin_backup = dup(STDIN_FILENO);
+	*stdout_backup = dup(STDOUT_FILENO);
+	if (ft_handle_redirections(cmd) != 0)
 	{
 		close(*stdin_backup);
 		close(*stdout_backup);
@@ -22,31 +13,14 @@ static int	ft_handle_builtin_redirections(t_cmd *cmd, int *stdin_backup, int *st
 	return (0);
 }
 
-/* Builtin komut sonrası original fd'leri restore eder */
-/*
-neden restore yapıyoruz?
-fork açılmadığı için:
-1. echo "hello" > file.txt çalışıyor
-2. Shell'in STDOUT'u file.txt'ye yönlendiriliyor
-3. echo çalışıyor, "hello" file.txt'ye yazılıyor
-4. AMA STDOUT hala file.txt'yi gösteriyor
-5. pwd komutunu yazdığınızda → EKRANA DEĞİL, file.txt'ye yazılır
-6. Bundan sonraki TÜM komutlar file.txt'ye gider
-*/
 static void	ft_restore_redirections(int stdin_backup, int stdout_backup)
 {
-	dup2(stdin_backup, STDIN_FILENO); //dup2(int oldfd, int newfd); newfd'yi oldfd'nin gösterdiği yere yönlendirir.
+	dup2(stdin_backup, STDIN_FILENO);
 	dup2(stdout_backup, STDOUT_FILENO);
-	/*
-	int file_fd = open("output.txt", O_WRONLY);  // file_fd = 4 diyelim
-	dup2(file_fd, STDOUT_FILENO);  // STDOUT'u (1) file'a yönlendir
-	Artık printf() ekrana değil, output.txt'ye yazacak!
-	*/
 	close(stdin_backup);
 	close(stdout_backup);
 }
 
-/* Builtin komutu parent process'te çalıştırır */
 static int	ft_execute_builtin_in_parent(t_shell *shell, t_cmd *cmd)
 {
 	int	original_stdin;
@@ -60,7 +34,6 @@ static int	ft_execute_builtin_in_parent(t_shell *shell, t_cmd *cmd)
 	return (result);
 }
 
-/* External komut için fork yapar ve child process'i başlatır */
 static int	ft_execute_external_command(t_shell *shell, t_cmd *cmd)
 {
 	pid_t	pid;
@@ -78,7 +51,7 @@ static int	ft_execute_external_command(t_shell *shell, t_cmd *cmd)
 		ft_execute_child_process(shell, cmd, NULL, -1);
 		ft_free_mem_tracker(shell->mem_tracker);
 		free(shell);
-		exit(1); // Bu satırı ekleyin - child process'ten çıkış garantisi
+		exit(1);
 	}
 	ft_ignore_signals();
 	waitpid(pid, &status, 0);
@@ -88,13 +61,12 @@ static int	ft_execute_external_command(t_shell *shell, t_cmd *cmd)
 	{
 		sig = WTERMSIG(status);
 		if (sig == SIGQUIT)
-			ft_putstr_fd("Quit (core dumped)\n", 2);  // stderr'e yaz
+			ft_putstr_fd("Quit (core dumped)\n", 2);
 		return (128 + sig);
 	}
 	return (0);
 }
 
-/* Ana single command executor - builtin veya external komut çalıştırır */
 int	ft_execute_single_command(t_shell *shell, t_cmd *cmd)
 {
 	if (ft_is_builtin(cmd->expanded_argv[0]))

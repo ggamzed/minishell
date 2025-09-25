@@ -1,45 +1,47 @@
 #include "../minishell.h"
+#include <sys/stat.h>
 
-//komutun tam yol ile mi verildiğini kontrol ediyoruz. (/ karakteri varlığından) -> (örnek /bin/ls tam yol, ama sadece ls verildiyse path araması yapılması gerek)
 static char *ft_check_direct_path(char *cmd, t_shell *shell)
 {
-    if (ft_strchr(cmd, '/'))
-    {
-        if (access(cmd, F_OK) == 0)
-        {
-            // Execute permission var mı kontrol et
-            if (access(cmd, X_OK) != 0)
-                return (NULL); // Permission denied -> command not found
-            
-            return (ft_strdup(cmd, shell));
-        }
+    struct stat st;
+    
+    if (!ft_strchr(cmd, '/'))
+        return (cmd);
+    if (access(cmd, F_OK) != 0)
         return (NULL);
-    }
-    return (cmd);
+    if (stat(cmd, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
+        return (NULL);
+    if (access(cmd, X_OK) != 0)
+        return (NULL);
+    return (ft_strdup(cmd, shell));
 }
 
-// PATH dizinlerinde komut arama
-static char	*ft_search_in_paths(char *cmd, char **paths, t_shell *shell)
+static char *ft_search_in_paths(char *cmd, char **paths, t_shell *shell)
 {
-	char	*temp;
-	char	*full_path;
-	int		i;
+    char *temp;
+    char *full_path;
+    struct stat st;
+    int i;
 
-	i = 0;
-	while (paths[i])
-	{
-		temp = ft_strjoin(paths[i], "/", shell);
-		full_path = ft_strjoin(temp, cmd, shell);
-		//free(temp);
-		if (access(full_path, F_OK) == 0 && access(full_path, X_OK) == 0)
-		{
-			//ft_free_split(paths);
-			return (full_path);
-		}
-		//free(full_path);
-		i++;
-	}
-	return (NULL);
+    i = 0;
+    while (paths[i])
+    {
+        temp = ft_strjoin(paths[i], "/", shell);
+        full_path = ft_strjoin(temp, cmd, shell);
+        
+        if (access(full_path, F_OK) == 0)
+        {
+            if (stat(full_path, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
+            {
+                i++;
+                continue;
+            }
+            if (access(full_path, X_OK) == 0)
+                return (full_path);
+        }
+        i++;
+    }
+    return (NULL);
 }
 
 char	*ft_find_executable(char *cmd, t_env *env_list, t_shell *shell)
@@ -53,14 +55,12 @@ char	*ft_find_executable(char *cmd, t_env *env_list, t_shell *shell)
 	result = ft_check_direct_path(cmd, shell);
 	if (result != cmd)
 		return (result);
-	path_env = ft_get_env_value("PATH", env_list); // PATH environment'tan yol listesini al
+	path_env = ft_get_env_value("PATH", env_list);
 	if (!path_env)
 		return (NULL);
-	paths = ft_split(path_env, ':', shell); // PATH'i ':' ile böl
+	paths = ft_split(path_env, ':', shell);
 	if (!paths)
 		return (NULL);
-	result = ft_search_in_paths(cmd, paths, shell); // PATH dizinlerinde ara
-	// if (!result)
-	// 	ft_free_split(paths);
+	result = ft_search_in_paths(cmd, paths, shell);
 	return (result);
 }

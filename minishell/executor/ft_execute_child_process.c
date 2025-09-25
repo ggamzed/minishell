@@ -1,26 +1,19 @@
 #include "../minishell.h"
+#include <sys/stat.h>
 
-#include <sys/stat.h> // ft_execute_external_in_child için
-// pipe zincirindeki her komutun input/output bağlantılarını ayarlar.
-/*
-int *pipefd → Şu anki komut ile sonraki arasındaki pipe
-int prev_fd → Önceki pipe'ın okuma ucu (önceki komuttan gelen data)
-t_cmd *cmd → Şu anki komut
-*/
 static void	ft_setup_pipe_connections(int *pipefd, int prev_fd, t_cmd *cmd)
 {
-	if (prev_fd != -1) // Önceki pipe'dan gelen input
+	if (prev_fd != -1)
 	{
-		dup2(prev_fd, STDIN_FILENO); // STDIN'i önceki pipe'a bağla
-		close(prev_fd); // prev_fd'yi kapat
+		dup2(prev_fd, STDIN_FILENO);
+		close(prev_fd);
 	}
-	if (cmd->next) // Sonraki komut için pipe var
+	if (cmd->next)
 	{
-		dup2(pipefd[1], STDOUT_FILENO); // STDOUT'u pipe'ın yazma ucuna bağla
-		close(pipefd[1]); // yazma ucunu kapat
-		close(pipefd[0]); // okuma ucunu da kapat (child bu ucu kullanmaz)
+		dup2(pipefd[1], STDOUT_FILENO);
+		close(pipefd[1]);
+		close(pipefd[0]);
 	}
-	// Eğer cmd->next yoksa ve pipefd varsa, pipe fd'lerini kapat
 	else if (pipefd)
 	{
 		close(pipefd[0]);
@@ -38,127 +31,67 @@ static void	ft_execute_builtin_in_child(t_shell *shell, t_cmd *cmd)
    exit(exit_code);
 }
 
-// static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
-// {
-// 	char	*executable;
-// 	char	**envp;
-// 	struct stat st;
+static void ft_update_shlvl(t_shell *shell)
+{
+    char *current_shlvl;
+    int shlvl_value;
+    char *new_shlvl;
 
-// if (ft_strchr(cmd->expanded_argv[0], '/') && access(cmd->expanded_argv[0], F_OK) == 0)
-// {
-//     struct stat st;
-//     if (stat(cmd->expanded_argv[0], &st) == 0 && S_ISDIR(st.st_mode))
-//     {
-//         ft_putstr_fd("minishell: ", 2);
-//         ft_putstr_fd(cmd->expanded_argv[0], 2);
-//         ft_putstr_fd(": is a directory\n", 2);
-        
-//         // Memory cleanup'ı debug sonrası yapın
-//         //ft_free_mem_tracker(shell->mem_tracker);
-//         //free(shell);
-        
-//         if (ft_strlen(cmd->expanded_argv[0]) > 8)
-//             exit(1);
-//         else
-//             exit(126);
-//     }
-// }
-// 	executable = ft_find_executable(cmd->expanded_argv[0], shell->env_list, shell); //çalıştırılabilir path
-// 	if (!executable)
-// 	{
-// 		ft_putstr_fd("minishell: ", 2);
-// 		ft_putstr_fd(cmd->expanded_argv[0], 2);
-// 		ft_putstr_fd(": command not found\n", 2);
-// 		ft_free_mem_tracker(shell->mem_tracker);
-// 		free(shell);
-// 		exit(127);
-// 	}
-// 	if (stat(executable, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
-//     {
-//         ft_putstr_fd("minishell: ", 2);
-//         ft_putstr_fd(cmd->expanded_argv[0], 2);
-//         ft_putstr_fd(": is a directory\n", 2);
-//         ft_free_mem_tracker(shell->mem_tracker);
-//         free(shell);
-//         exit(126);
-//     }
-// 	envp = ft_env_to_array(shell->env_list, shell);
-// 	execve(executable, cmd->expanded_argv, envp);
-// 	perror("execve");
-// 	ft_free_mem_tracker(shell->mem_tracker); // unutma
-// 	free(shell);
+    current_shlvl = ft_get_env_value("SHLVL", shell->env_list);
+    if (current_shlvl)
+    {
+        shlvl_value = ft_atoi(current_shlvl);
+        shlvl_value++;
+        new_shlvl = ft_itoa(shlvl_value, shell);
+        ft_set_env_value("SHLVL", new_shlvl, &shell->env_list, shell);
+        free(new_shlvl);
+    }
+    else
+        ft_set_env_value("SHLVL", "1", &shell->env_list, shell);
+}
 
-// 	exit(126);
-// }
+static void	ft_exec_error_msg(t_shell *shell, char *cmd)
+{
+	struct stat st;
+
+    if (ft_strchr(cmd, '/'))
+    {
+        if (access(cmd, F_OK) == 0)
+        {
+            if (stat(cmd, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
+            {
+                ft_putstr_fd("minishell: ", 2);
+                ft_putstr_fd(cmd, 2);
+                ft_putstr_fd(": is a directory\n", 2);
+                ft_free_mem_tracker(shell->mem_tracker);
+                free(shell);
+                exit(126);
+            }
+            ft_putstr_fd("minishell: ", 2);
+            ft_putstr_fd(cmd, 2);
+            ft_putstr_fd(": Permission denied\n", 2);
+            ft_free_mem_tracker(shell->mem_tracker);
+            free(shell);
+            exit(126);
+        }
+    }
+    ft_putstr_fd("minishell: ", 2);
+    ft_putstr_fd(cmd, 2);
+    ft_putstr_fd(": command not found\n", 2);
+    ft_free_mem_tracker(shell->mem_tracker);
+    free(shell);
+    exit(127);
+}
 
 static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
 {
 	char	*executable;
 	char	**envp;
-	struct stat st;
-	char	*current_shlvl;
-	int		shlvl_value;
-	char	*new_shlvl;
-
-	// İlk kontrol: eğer komut '/' içeriyorsa (tam yol) ve var ise
-	if (ft_strchr(cmd->expanded_argv[0], '/') && access(cmd->expanded_argv[0], F_OK) == 0)
-	{
-		if (stat(cmd->expanded_argv[0], &st) == 0)
-		{
-			// S_IFDIR mask'ı ile dizin kontrolü
-			if ((st.st_mode & S_IFMT) == S_IFDIR)
-			{
-				ft_putstr_fd("minishell: ", 2);
-				ft_putstr_fd(cmd->expanded_argv[0], 2);
-				ft_putstr_fd(": is a directory\n", 2);
-				ft_free_mem_tracker(shell->mem_tracker);
-				free(shell);
-				exit(126);
-			}
-		}
-	}
 
 	executable = ft_find_executable(cmd->expanded_argv[0], shell->env_list, shell);
 	if (!executable)
-	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd->expanded_argv[0], 2);
-		ft_putstr_fd(": command not found\n", 2);
-		ft_free_mem_tracker(shell->mem_tracker);
-		free(shell);
-		exit(127);
-	}
-
-	// İkinci kontrol: executable path'i için dizin kontrolü
-	if (stat(executable, &st) == 0)
-	{
-		// S_IFDIR mask'ı ile dizin kontrolü
-		if ((st.st_mode & S_IFMT) == S_IFDIR)
-		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->expanded_argv[0], 2);
-			ft_putstr_fd(": is a directory\n", 2);
-			ft_free_mem_tracker(shell->mem_tracker);
-			free(shell);
-			exit(126);
-		}
-	}
-
-	// SHLVL'ı artır (execve'den önce)
-	current_shlvl = ft_get_env_value("SHLVL", shell->env_list);
-	if (current_shlvl)
-	{
-		shlvl_value = ft_atoi(current_shlvl);
-		shlvl_value++;
-		new_shlvl = ft_itoa(shlvl_value, shell);
-		ft_set_env_value("SHLVL", new_shlvl, &shell->env_list, shell);
-		free(new_shlvl);
-	}
-	else
-	{
-		ft_set_env_value("SHLVL", "1", &shell->env_list, shell);
-	}
-
+        ft_exec_error_msg(shell, cmd->expanded_argv[0]);
+	ft_update_shlvl(shell);
 	envp = ft_env_to_array(shell->env_list, shell);
 	execve(executable, cmd->expanded_argv, envp);
 	perror("execve");
@@ -169,9 +102,9 @@ static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
 
 int	ft_execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd, int prev_fd)
 {
-	ft_default_signals(); // Sinyal fonksiyonu henüz yok
+	ft_default_signals();
 	ft_setup_pipe_connections(pipefd, prev_fd, cmd);
-	if (ft_handle_redirections(cmd) != 0) // şuan bu fonksiyon yok
+	if (ft_handle_redirections(cmd) != 0)
 	{
 		ft_free_mem_tracker(shell->mem_tracker);
 		free(shell);
@@ -183,37 +116,25 @@ int	ft_execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd, int prev_f
 		free(shell);
 		exit(1);
 	}
-	if (ft_is_builtin(cmd->expanded_argv[0])) //multiple_command fonksiyonu da bu fonksiyonu çağıracak o yüzden bu satır gerekli
+	if (ft_is_builtin(cmd->expanded_argv[0]))
 		ft_execute_builtin_in_child(shell, cmd);
 	else
 		ft_execute_external_in_child(shell, cmd);
-	return (0); // Buraya hiç ulaşmaz, exit() ile çıkar
+	return (0);
 }
-
-
-
-
 
 int ft_handle_redirections(t_cmd *cmd)
 {
-// 	    printf("DEBUG: cmd->input_file = %s\n", cmd->input_file ? cmd->input_file : "NULL");
-//     printf("DEBUG: cmd->output_file = %s\n", cmd->output_file ? cmd->output_file : "NULL");
-//     printf("DEBUG: cmd->heredoc_fd = %d\n", cmd->heredoc_fd);
-//     printf("DEBUG: cmd->output_count = %d\n", cmd->output_count);
-
-    if (ft_handle_input_redirection(cmd) != 0)  // STATIC fonksiyon - sadece bu dosyada çağrılabilir
+    if (ft_handle_input_redirection(cmd) != 0)
         return (1);
-    if (ft_handle_heredoc_redirection(cmd) != 0)  // STATIC fonksiyon - sadece bu dosyada çağrılabilir
+    if (ft_handle_heredoc_redirection(cmd) != 0)
         return (1);
-    if (ft_handle_output_redirection(cmd) != 0)  // STATIC fonksiyon - sadece bu dosyada çağrılabilir
+    if (ft_handle_output_redirection(cmd) != 0)
         return (1);
-    
-    // EKLEME: Eğer heredoc_fd hala açıksa kapat
     if (cmd->heredoc_fd != -1)
     {
         close(cmd->heredoc_fd);
         cmd->heredoc_fd = -1;
     }
-	
     return (0);
 }
