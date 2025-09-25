@@ -139,7 +139,6 @@ char	*ft_itoa(int n, t_shell *shell);
 int		ft_isalnum(int c);
 char	*ft_strjoin(char const *s1, char const *s2, t_shell *shell);
 int		ft_strcmp(const char *s1, const char *s2);
-char	*ft_strjoin_free(char *s1, char *s2, t_shell *shell);
 char	*ft_strchr(const char *s, int c);
 int		ft_is_digit(char c);
 int		ft_atoi(const char *str);

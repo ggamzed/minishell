@@ -7,7 +7,7 @@ static char	*ft_handle_var_and_char(char *result, char *str, int *i,
 
 	temp = ft_extract_and_expand_var(str, i, shell);
 	if (temp)
-		result = ft_strjoin_free(result, temp, shell);
+		result = ft_strjoin(result, temp, shell);
 	else
 	{
 		result = ft_append_char(result, str[*i], shell);

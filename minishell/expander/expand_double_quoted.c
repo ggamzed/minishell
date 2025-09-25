@@ -8,7 +8,7 @@ char	*ft_append_char(char *str, char c, t_shell *shell)
 	temp[0] = c;
 	temp[1] = '\0';
 	temp_str = ft_strdup(temp, shell);
-	return (ft_strjoin_free(str, temp_str, shell));
+	return (ft_strjoin(str, temp_str, shell));
 }
 
 char	*ft_expand_double_quoted(char *str, t_shell *shell)
@@ -25,7 +25,7 @@ char	*ft_expand_double_quoted(char *str, t_shell *shell)
 	{
 		temp = ft_extract_and_expand_var(str, &i, shell);
 		if (temp)
-			result = ft_strjoin_free(result, temp, shell);
+			result = ft_strjoin(result, temp, shell);
 		else
 		{
 			result = ft_append_char(result, str[i], shell);

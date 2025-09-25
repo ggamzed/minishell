@@ -174,22 +174,6 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
-char	*ft_strjoin_free(char *s1, char *s2, t_shell *shell)
-{
-	char	*result;
-
-	if (!s1 || !s2)
-	{
-		if (s1)
-			free(s1);
-		if (s2)
-			free(s2);
-		return (NULL);
-	}
-	result = ft_strjoin(s1, s2, shell);
-	return (result);
-}
-
 char	*ft_strchr(const char *s, int c)
 {
 	char	ch;

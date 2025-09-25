@@ -34,7 +34,6 @@ void	ft_update_shlvl(t_shell *shell)
 		shlvl_value++;
 		new_shlvl = ft_itoa(shlvl_value, shell);
 		ft_set_env_value("SHLVL", new_shlvl, &shell->env_list, shell);
-		free(new_shlvl);
 	}
 	else
 		ft_set_env_value("SHLVL", "1", &shell->env_list, shell);
