@@ -45,7 +45,6 @@ Parametreler:
 
 
 //-------------------------------- ENV --------------------------------\\
-
 pwd = getcwd(NULL, 0);
 if (pwd)
 {
@@ -63,3 +62,39 @@ Bu durumda PWD=/ (root directory) kullanılır çünkü:
 	Geçerli bir path'tir
 	Program crash etmez
 Pratikte çok nadir olur, ama güvenlik için gerekli.
+
+
+//-------------------------------- EXIT --------------------------------\\
+isatty() tam olarak file descriptor'ın bir terminal cihazına bağlı olup olmadığını kontrol eder.
+
+Ne Kontrol Eder:
+	File Descriptor'ın Türünü:
+		Terminal/TTY: Klavye, ekran gibi interaktif cihazlar
+		Regular File: Normal dosyalar
+		Pipe: Program arası veri aktarımı
+		Socket: Network bağlantıları
+
+isatty() aslında ioctl() sistem çağrısını kullanır:
+	Kernel'den Bilgi:
+		Kernel her file descriptor için metadata tutar
+		Bu metadata'da cihaz türü bilgisi var
+		ioctl(TCGETS) terminal-specific bir işlem yapar
+		Başarılıysa terminal, başarısızsa değil
+
+Kontrol ettiği: File descriptor'ın terminal cihazı olup olmadığı
+Erişim yöntemi: Kernel'deki file descriptor metadata'sını ioctl() ile sorgular
+Amaç: Program'ın interactive mı batch modda mı çalıştığını anlamak
+
+TTY (Teletypewriter):Terminal/Console demek. Klavye + ekran kombinasyonu. İnteraktif mod.
+
+Batch Mode (Toplu İşlem): Komutları önceden hazırlanmış dosyadan veya script'ten çalıştırma. 
+
+# Interactive (TTY)
+./minishell
+minishell$ ls
+minishell$ exit
+
+# Batch Mode  
+./minishell < commands.txt    # Dosyadan komutlar
+echo "ls; exit" | ./minishell # Pipe ile komutlar
+./script.sh                   # Script çalıştırma

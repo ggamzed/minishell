@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_builtin_env.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <eecegokcece@gmail.com>             +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/25 18:48:12 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/25 18:48:12 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 static int	ft_execute_with_clean_env(char **argv, t_shell *shell)
@@ -28,26 +40,6 @@ static int	ft_execute_with_clean_env(char **argv, t_shell *shell)
 	}
 	return (0);
 }
-
-// static int	ft_env_with_clean(char **argv, t_shell *shell)
-// {
-// 	char	*clean_envp[3];
-// 	char	*pwd;
-
-// 	if (!argv[2])
-// 		return (0);
-// 	pwd = getcwd(NULL, 0);
-// 	if (pwd)
-// 	{
-// 		clean_envp[0] = ft_strjoin("PWD=", pwd, shell);
-// 		free(pwd);
-// 	}
-// 	else
-// 		clean_envp[0] = ft_strdup("PWD=/", shell);
-// 	clean_envp[2] = ft_strdup("SHLVL=1", shell); //bu kapandığında da doğru çalışıyor, test et
-// 	clean_envp[1] = NULL;
-// 	return (ft_execute_with_clean_env(argv, clean_envp, shell));
-// }
 
 int	ft_builtin_env(char **argv, t_env *env_list, t_shell *shell)
 {

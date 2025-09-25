@@ -1,4 +1,3 @@
-# Variables
 NAME = minishell
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -g 
@@ -13,7 +12,6 @@ executor = executor/
 redirections = redirections/
 validate_syntax = validate_syntax/
 get = get_next_line/
-# Source files
 SRCS = main.c \
 		utils.c \
 		free.c \
@@ -44,6 +42,7 @@ SRCS = main.c \
 		$(builtins)ft_builtin_env.c \
 		$(builtins)ft_builtin_exit.c \
 		$(builtins)ft_builtin_export.c \
+		$(builtins)ft_builtin_export_set_variable.c \
 		$(builtins)ft_builtin_pwd.c \
 		$(builtins)ft_builtin_unset.c \
 		$(builtins)ft_execute_builtin.c \
@@ -55,31 +54,22 @@ SRCS = main.c \
 		$(redirections)ft_handle_redirections.c \
 		$(redirections)ft_handle_heredoc.c
 
-
-# Object files
 OBJS = $(SRCS:.c=.o)
 
-# Default target
 all: $(NAME)
 
-# Build executable
 $(NAME): $(OBJS)
 	$(CC) $(OBJS) $(LDFLAGS) -o $(NAME)
 
-# Compile source files
 %.o: %.c minishell.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Clean object files
 clean:
 	rm -f $(OBJS)
 
-# Clean everything
 fclean: clean
 	rm -f $(NAME)
 
-# Rebuild
 re: fclean all
 
-# Phony targets
 .PHONY: all clean fclean re

@@ -211,6 +211,7 @@ int	ft_builtin_echo(char **argv);
 int	ft_builtin_env(char **argv, t_env *env_list, t_shell *shell);
 int	ft_builtin_exit(char **argv, t_shell *shell, int in_pipe);
 int	ft_builtin_export(char **argv, t_env **env_list, t_shell *shell);
+void	ft_set_export_variable(char *arg, t_env **env_list, t_shell *shell);
 int	ft_builtin_pwd(void);
 int ft_builtin_unset(char **argv, t_env **env_list, t_shell *shell);
 

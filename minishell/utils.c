@@ -231,8 +231,6 @@ char	*ft_strjoin_free(char *s1, char *s2, t_shell *shell)
 		return (NULL);
 	}
 	result = ft_strjoin(s1, s2, shell);
-	//free(s1);
-	//free(s2);
 	return (result);
 }
 
@@ -254,7 +252,10 @@ char	*ft_strchr(const char *s, int c)
 
 int	ft_is_digit(char c)
 {
-	return (c >= '0' && c <= '9');
+	if (c >= '0' && c <= '9')
+		return (1);
+	else
+		return (0);
 }
 
 int	ft_atoi(const char *str)

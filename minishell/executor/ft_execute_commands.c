@@ -35,7 +35,7 @@ int ft_execute_redirection_only(t_cmd *cmd, t_shell *shell)
             perror("");
             return (1);
         }
-        close(fd);
+        close(fd);//neden kapandı hemen?
     }
     return (0);
 }

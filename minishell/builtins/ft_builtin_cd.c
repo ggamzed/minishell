@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_builtin_cd.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <eecegokcece@gmail.com>             +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/25 18:46:13 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/25 18:46:13 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 static int	ft_count_args(char **argv)
@@ -58,7 +70,8 @@ static int	ft_validate_path(char *path)
 	return (1);
 }
 
-static int	ft_perform_cd_operation(char *path, t_env **env_list, t_shell *shell)
+static int	ft_perform_cd_operation(char *path, t_env **env_list,
+									t_shell *shell)
 {
 	char	old_cwd[PATH_MAX];
 	char	new_cwd[PATH_MAX];

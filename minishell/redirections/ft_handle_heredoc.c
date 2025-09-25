@@ -1,100 +1,86 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_process_heredoc.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: username <username@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/01/01 00:00:00 by username          #+#    #+#             */
+/*   Updated: 2024/01/01 00:00:00 by username         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-/* Heredoc input'unu kullanıcıdan alır ve FD döndürür */
-int ft_process_heredoc(char *delimiter, t_shell *shell, int should_expand)
+static int	ft_check_heredoc_conditions(char *line, char *delimiter, int *pipefd)
 {
-	char *line;
-	char *expanded_line;
-	int pipefd[2];
+	if (g_signal == SIGINT)
+	{
+		close(pipefd[0]);
+		close(pipefd[1]);
+		free(line);
+		return (-1);
+	}
+	if (!line)//close pi
+	{
+		ft_putstr_fd("minishell: warning: here-document at line 1 ", 2);
+		ft_putstr_fd("delimited by end-of-file (wanted `", 2);
+		ft_putstr_fd(delimiter, 2);
+		ft_putstr_fd("')\n", 2);
+		return (1);
+	}
+	if (ft_strcmp(line, delimiter) == 0)
+	{
+		free(line);
+		return (1);
+	}
+	return (0);
+}
 
-	// Pipe oluştur (veya geçici dosya)
-	// pipefd[0] → okuma ucu
-	// pipefd[1] → yazma ucu
-	if (pipe(pipefd) == -1) // Pipe, kernel’de memory’de geçici bir buffer oluşturur.
+static int	ft_process_and_write_line(char *line, int should_expand, 
+									t_shell *shell, int *pipefd)
+{
+	char	*expanded_line;
+
+	if (should_expand)
+		expanded_line = ft_expand_double_quoted(line, shell);
+	else
+		expanded_line = ft_strdup(line, shell);
+	if (!expanded_line)
+	{
+		free(line);
+		close(pipefd[1]);
+		close(pipefd[0]);
+		return (0);
+	}
+	write(pipefd[1], expanded_line, ft_strlen(expanded_line));
+	write(pipefd[1], "\n", 1);
+	return (1);
+}
+
+int	ft_process_heredoc(char *delimiter, t_shell *shell, int should_expand)
+{
+	char	*line;
+	int		pipefd[2];
+	int		check_result;
+
+	if (pipe(pipefd) == -1)
 	{
 		perror("minishell: pipe");
 		return (-1);
 	}
-
-	// Kullanıcıdan satır satır input al
 	while (1)
 	{
-		line = readline("> ");  // Heredoc prompt
-		if (g_signal == SIGINT)
-		{
-		    close(pipefd[0]);
-		    close(pipefd[1]);
-			free(line);
-			//g_signal = 0;
-		    return (-1);
-		}
-		
-		if (!line)  // Ctrl+D
-		{
-		    write(1, "\n", 1);
-		    break;
-		}
-		
-		// Delimiter'a ulaştık mı? örn: EOF
-		if (ft_strcmp(line, delimiter) == 0)
-		{
-			free(line);
-			break;
-		}
-		// Variable expansion kontrolü
-		if (should_expand)
-		{
-			expanded_line = ft_expand_double_quoted(line, shell);
-			if (!expanded_line)
-			{
-				free(line);
-				close(pipefd[1]);
-				close(pipefd[0]);
-				return (-1);
-			}	
-		}  
-		else
-		{
-			expanded_line = ft_strdup(line, shell);
-			if (!expanded_line)
-			{
-				free(line);
-				close(pipefd[1]);
-				close(pipefd[0]);
-				return (-1);
-			}
-		}
-		// Pipe'a yaz -> Pipe, kernel'da 64KB'lık bir buffer'dır. Dosya değil, memory'de geçici alan!
-		write(pipefd[1], expanded_line, ft_strlen(expanded_line));
-		write(pipefd[1], "\n", 1);
+		line = readline("> ");
+		check_result = ft_check_heredoc_conditions(line, delimiter, pipefd);
+		if (check_result == -1)
+			return (-1);
+		if (check_result == 1)
+			break ;
+		if (!ft_process_and_write_line(line, should_expand, shell, pipefd))
+			return (-1);
 		free(line);
 	}
-	
-	close(pipefd[1]);  // Yazma ucunu kapat
-	return (pipefd[0]); // Okuma ucunu döndür
+	close(pipefd[1]);
+	return (pipefd[0]);
 }
-
-
-// sanki buna gerek yok gibi, ama bi test ederiz.
-// int	ft_handle_heredoc(t_shell *shell)
-// {
-//     t_cmd *current;
-
-//     current = shell->cmd_list;
-//     while (current)
-//     {
-//         // SADECE parse sırasında işlenmemiş heredoc'ları işle
-//         if (current->heredoc_delimiter && current->heredoc_fd == -1)
-//         {
-//             current->heredoc_fd = ft_process_heredoc(current->heredoc_delimiter, shell, current->heredoc_should_expand);
-//             if (current->heredoc_fd == -1)
-//             {
-//                 shell->exit_status = 1;
-//                 return (0);
-//             }
-//         }
-//         current = current->next;
-//     }
-//     return (1);
-// }
-
