@@ -55,7 +55,7 @@ char	**ft_expand_tokens(t_token *args, t_shell *shell)
 	expanded_argv = ft_malloc(sizeof(char *) * (ft_count_args(args) + 1),
 			shell);
 	if (!expanded_argv)
-		return (NULL);
+		ft_cleanup_and_exit(shell, 1);
 	current = args;
 	i = 0;
 	while (current)

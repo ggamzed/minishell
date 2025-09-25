@@ -127,6 +127,8 @@ char	**ft_env_to_array(t_env *env_list, t_shell *shell)
 
 	count = ft_count_env_vars(env_list);
 	envp = ft_malloc(sizeof(char *) * (count + 1), shell);
+	if (!envp)
+		ft_cleanup_and_exit(shell, 1);
 	ft_fill_env_array(env_list, envp, shell);
 	return (envp);
 }

@@ -98,7 +98,7 @@ char	**ft_handle_word_split(char **joined_argv, t_token *org_tokens,
 	argv_count = ft_calculate_final_count(joined_argv, org_tokens, shell);
 	argv = ft_malloc(sizeof(char *) * (argv_count + 1), shell);
 	if (!argv)
-		return (NULL);
+		ft_cleanup_and_exit(shell, 1);
 	check = ft_process_splitting(argv, joined_argv, org_tokens, shell);
 	if (!check)
 		return (NULL);

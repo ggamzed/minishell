@@ -18,7 +18,7 @@ t_token	*ft_create_token(t_token_type type, char *value, t_shell *shell)
 
 	token = ft_malloc(sizeof(t_token), shell);
 	if (!token)
-		return (NULL);
+		ft_cleanup_and_exit(shell, 1);
 	token->type = type;
 	token->value = value;
 	token->next = NULL;

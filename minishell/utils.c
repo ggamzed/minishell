@@ -38,7 +38,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len, t_shell *shell)
 		len = s_len - start;
 	substr = ft_malloc(len + 1, shell);
 	if (!substr)
-		return (NULL);
+		ft_cleanup_and_exit(shell, 1);
 	i = 0;
 	while (i < len)
 	{
@@ -69,7 +69,7 @@ char	*ft_strdup(const char *s, t_shell *shell)
 	dup = NULL;
 	dup = ft_malloc(len + 1, shell);
 	if (!dup)
-		return (NULL);
+		ft_cleanup_and_exit(shell, 1);
 	i = 0;
 	while (i < len)
 	{
@@ -105,6 +105,8 @@ char	*ft_itoa(int n, t_shell *shell)
 	if (is_negative)
 		len++;
 	str = ft_malloc(len + 1, shell);
+	if (!str)
+		ft_cleanup_and_exit(shell, 1);
 	str[len] = '\0';
 	if (n == 0)
 		str[0] = '0';
@@ -137,6 +139,8 @@ char	*ft_strjoin(char const *s1, char const *s2, t_shell *shell)
 	len1 = ft_strlen(s1);
 	len2 = ft_strlen(s2);
 	joined = ft_malloc(len1 + len2 + 1, shell);
+	if (!joined)
+		ft_cleanup_and_exit(shell, 1);
 	i = 0;
 	while (i < len1)
 	{
@@ -260,12 +264,6 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 
 //-----------------------SPLIT--------------------
 
-char	**malloc_error(char **arr, size_t i)
-{
-	while (arr[i])
-		free(arr[i++]);
-	return (free(arr), NULL);
-}
 
 static int	word_count(char const *s, char c)
 {
@@ -308,14 +306,14 @@ char	**ft_split(char const *s, char c, t_shell *shell)
 	i = 0;
 	res = (char **)ft_malloc(sizeof(char *) * (word_count(s, c) + 1), shell); // freelenen malloc kullan
 	if (!s || !res)
-		return (NULL);
+		ft_cleanup_and_exit(shell, 1);
 	while (++a < word_count(s, c))
 	{
 		while (s[i] && s[i] == c)
 			i++;
 		res[a] = ft_substr(s, i, word_len(&s[i], c), shell);
 		if (!res[a])
-			return (malloc_error(res, 0));
+			ft_cleanup_and_exit(shell, 1);
 		i += word_len(&s[i], c);
 	}
 	return (res[a] = NULL, res);

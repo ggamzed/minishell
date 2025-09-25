@@ -14,7 +14,6 @@ validate_syntax = validate_syntax/
 get = get_next_line/
 SRCS = main.c \
 		utils.c \
-		free.c \
 		signals.c \
 		ft_exit_utils.c \
 		$(lexer)ft_get_type.c \

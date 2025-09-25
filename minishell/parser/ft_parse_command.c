@@ -18,7 +18,7 @@ t_cmd	*ft_create_command(t_shell *shell)
 
 	cmd = ft_malloc(sizeof(t_cmd), shell);
 	if (!cmd)
-		return (NULL);
+		ft_cleanup_and_exit(shell, 1);
 	cmd->args = NULL;
 	cmd->expanded_argv = NULL;
 	cmd->input_file = NULL;

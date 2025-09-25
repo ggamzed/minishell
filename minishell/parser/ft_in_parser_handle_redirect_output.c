@@ -22,7 +22,7 @@ static int	ft_add_output_file(t_cmd *cmd, char *filename, int append_mode,
 	new_files = ft_malloc(sizeof(char *) * (cmd->output_count + 1), shell);
 	new_modes = ft_malloc(sizeof(int) * (cmd->output_count + 1), shell);
 	if (!*new_files || !*new_modes)
-		return (0);
+		ft_cleanup_and_exit(shell, 1);
 	i = 0;
 	while (i < cmd->output_count)
 	{

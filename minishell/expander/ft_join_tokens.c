@@ -46,7 +46,7 @@ static char	**ft_allocate_for_joined(int count, t_shell *shell)
 
 	joined_argv = ft_malloc(sizeof(char *) * (count + 1), shell);
 	if (!joined_argv)
-		return (NULL);
+		ft_cleanup_and_exit(shell, 1);
 	return (joined_argv);
 }
 

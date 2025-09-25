@@ -18,7 +18,7 @@ t_env	*ft_create_env_node(char *key, char *value, t_shell *shell)
 
 	node = ft_malloc(sizeof(t_env), shell);
 	if (!node)
-		return (NULL);
+		ft_cleanup_and_exit(shell, 1);
 	node->key = ft_strdup(key, shell);
 	if (value)
 		node->value = ft_strdup(value, shell);
