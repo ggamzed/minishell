@@ -10,7 +10,7 @@ int	ft_builtin_unset(char **argv, t_env **env_list, t_shell *shell)
 	{
 		if (argv[i][0] == '-')
 		{
-			ft_putstr_fd("bash: unset: ", 2);
+			ft_putstr_fd("minishell: unset: ", 2);
 			ft_putstr_fd(argv[i], 2);
 			ft_putstr_fd(": invalid option\n", 2);
 			return (2);

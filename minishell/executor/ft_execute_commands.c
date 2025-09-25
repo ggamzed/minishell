@@ -29,9 +29,7 @@ int	ft_execute_redirection_only(t_cmd *cmd, t_shell *shell)
 			fd = open(cmd->output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		if (fd == -1)
 		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->output_file, 2);
-			ft_putstr_fd(": ", 2);
+			ft_print_error_msg(cmd->output_file, ": ");
 			perror("");
 			return (1);
 		}

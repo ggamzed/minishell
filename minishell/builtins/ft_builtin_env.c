@@ -23,9 +23,7 @@ static int	ft_execute_with_clean_env(char **argv, t_shell *shell)
 		if (execve(argv[2], &argv[2], NULL) == -1)
 		{
 			perror("env");
-			ft_free_mem_tracker(shell->mem_tracker);
-			free(shell);
-			exit(1);
+			ft_cleanup_and_exit(shell, 1);
 		}
 	}
 	else if (pid > 0)

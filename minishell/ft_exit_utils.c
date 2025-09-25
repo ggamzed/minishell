@@ -61,3 +61,21 @@ void	ft_free_mem_tracker(t_mem **mem_tracker)
 	}
 	*mem_tracker = NULL;
 }
+
+void	ft_free_fds(t_cmd *commands)
+{
+	t_cmd	*current;
+	t_cmd	*next;
+
+	current = commands;
+	while (current)
+	{
+		next = current->next;
+		if (current->heredoc_fd != -1)
+		{
+			close(current->heredoc_fd);
+			current->heredoc_fd = -1;
+		}
+		current = next;
+	}
+}

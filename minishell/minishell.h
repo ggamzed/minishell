@@ -253,6 +253,7 @@ void	ft_free_mem_tracker(t_mem **mem_tracker);
 void	*ft_malloc(size_t size, t_shell *shell);
 void	ft_cleanup_and_exit(t_shell *shell, int exit_code);
 void	ft_print_error_msg(char *cmd, char *msg);
+void	ft_free_fds(t_cmd *commands);
 
 // signal
 void	ft_handle_sigint(int sig);

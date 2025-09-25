@@ -37,9 +37,7 @@ int	ft_handle_input_redirection(t_cmd *cmd)
 	{
 		if ((st.st_mode & S_IFMT) == S_IFDIR)
 		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->input_file, 2);
-			ft_putstr_fd(": Is a directory\n", 2);
+			ft_print_error_msg(cmd->input_file, ": Is a directory\n");
 			return (1);
 		}
 	}
@@ -47,9 +45,7 @@ int	ft_handle_input_redirection(t_cmd *cmd)
 	fd = open(cmd->input_file, O_RDONLY);
 	if (fd == -1)
 	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd->input_file, 2);
-		ft_putstr_fd(": ", 2);
+		ft_print_error_msg(cmd->input_file, ": ");
 		perror("");
 		return (1);
 	}

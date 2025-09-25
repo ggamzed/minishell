@@ -20,7 +20,7 @@ static int	ft_handle_export_option(char *option)
 {
 	if (ft_strcmp(option, "-p") == 0)
 		return (0);
-	ft_putstr_fd("bash: export: ", 2);
+	ft_putstr_fd("minishell: export: ", 2);
 	ft_putstr_fd(option, 2);
 	ft_putstr_fd(": invalid option\n", 2);
 	if (option[0] == '-' && option[1] == '-')
