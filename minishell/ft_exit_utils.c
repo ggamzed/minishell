@@ -26,7 +26,7 @@ void	*ft_malloc(size_t size, t_shell *shell)
 		return (NULL);
 	}
 	if (!shell || !shell->mem_tracker)
-        return (ptr);
+		return (ptr);
 	mem_node = malloc(sizeof(t_mem));
 	if (!mem_node)
 	{
@@ -44,7 +44,7 @@ void	ft_free_mem_tracker(t_mem **mem_tracker)
 {
 	t_mem	*curr;
 	t_mem	*tmp;
-	
+
 	if (!mem_tracker)
 		return ;
 	curr = *mem_tracker;

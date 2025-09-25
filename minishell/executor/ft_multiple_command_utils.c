@@ -75,4 +75,3 @@ void	ft_handle_pipe_fds(t_cmd *current, int *pipefd, int *prev_fd)
 		*prev_fd = pipefd[0];
 	}
 }
-
