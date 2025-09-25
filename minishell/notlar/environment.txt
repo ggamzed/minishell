@@ -24,3 +24,16 @@ envp[2] = NULL  // ←← Bu sayede while döngüsü duruyor
 2- Parent process (terminal) kendi environment'ını aktarır
 3- Standart format (KEY=VALUE) sayesinde parse edebiliyoruz
 4- NULL-terminated array olduğu için döngü yapabiliyoruz
+
+ADIM 2: Value'yu çıkar (PATH=/usr/bin → "/usr/bin") + !!Value kontrol edilmemeli çünkü "KEY=" geçerli format
+
+Environment Değişkenleri Nedir?
+Environment değişkenleri, işletim sisteminde çalışan programlara bilgi sağlayan özel değişkenlerdir. Bunları "sistem genelinde erişilebilen ayar dosyaları" gibi düşünebilirsin.
+Basit Bir Benzetme
+Ev adresini düşün. Evindeki herkes (anne, baba, kardeş) bu adresi bilir ve ihtiyaç duyduğunda kullanır. Environment değişkenleri de böyle - sistemdeki tüm programlar bu bilgilere erişebilir.
+
+Neden Var Olurlar?
+1. Bilgi Paylaşımı: Programlar birbirleriyle ve sistemle bilgi paylaşmak için kullanır
+2. Ayar Saklama: Konfigürasyon bilgilerini saklar
+3. Yol Gösterme: Programların nerede olduğunu söyler
+4. Kullanıcı Bilgileri: Kim olduğunu, hangi dili kullandığını saklar

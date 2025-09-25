@@ -1,123 +1,91 @@
 #include "../minishell.h"
 
-static char    *ft_get_cd_path(char **argv, t_env *env_list)
+static int	ft_count_args(char **argv)
 {
-    char    *home;
-    int        arg_count = 0;
+	int	arg_count;
 
-    while (argv[arg_count])
-        arg_count++;
-    if (arg_count > 2)
-    {
-        ft_putstr_fd("minishell: cd: too many arguments\n", 2);
-        return (NULL);
-    }
-
-    if (!argv[1]) // argüman kontrolü - yoksa HOME'a git
-    {
-        home = ft_get_env_value("HOME", env_list);
-        if (!home)
-        {
-            ft_putstr_fd("minishell: cd: HOME not set\n", 2);
-            return (NULL);
-        }
-        return (home);
-    }
-    return (argv[1]); // argüman varsa onu kullan
+	arg_count = 0;
+	while (argv[arg_count])
+		arg_count++;
+	return (arg_count);
 }
 
-//argüman verilmezse HOME dizinine gider + PWD ve OLDPWD environment değişkenlerini günceller
-// int ft_builtin_cd(char **argv, t_env *env_list, t_shell *shell)
-// {
-//     char *path;
-// 	char *new_pwd;
-//     char old_cwd[PATH_MAX];
-//     char new_cwd[PATH_MAX];
-//     char resolved_path[PATH_MAX];
-
-//     path = ft_get_cd_path(argv, env_list);
-//     if (!path)
-//         return (1);
-
-//     // Path'i resolve et çünkü .. zaten var görüyor
-//     if (realpath(path, resolved_path) == NULL)
-//     {
-//         ft_putstr_fd("minishell: cd: ", 2);
-//         ft_putstr_fd(path, 2);
-//         ft_putstr_fd(": No such file or directory\n", 2);
-//         return (1);
-//     }
-
-//     // Resolved path'in varlığını kontrol et
-//     if (access(resolved_path, F_OK) != 0)
-//     {
-//         ft_putstr_fd("minishell: cd: ", 2);
-//         ft_putstr_fd(path, 2);
-//         ft_putstr_fd(": No such file or directory\n", 2);
-//         return (1);
-//     }
-//     if (getcwd(old_cwd, sizeof(old_cwd)))
-//         ft_set_env_value("OLDPWD", old_cwd, &env_list, shell);
-//     if (chdir(path) != 0)
-//     {
-//         ft_putstr_fd("minishell: cd: ", 2);
-//         ft_putstr_fd(path, 2);
-//         ft_putstr_fd(": ", 2);
-//         perror("");
-//         return (1);
-//     }
-//     if (getcwd(new_cwd, sizeof(new_cwd)))
-//         ft_set_env_value("PWD", new_cwd, &env_list, shell);
-//     return (0);
-// }
-
-
-int ft_builtin_cd(char **argv, t_env *env_list, t_shell *shell)
+static char	*ft_get_cd_path(char **argv, t_env *env_list)
 {
-    char *path;
-    char old_cwd[PATH_MAX];
-    char new_cwd[PATH_MAX];
-    char resolved_path[PATH_MAX];
+	char	*home;
+	int		arg_count;
 
-    path = ft_get_cd_path(argv, env_list);
-    if (!path)
-        return (1);
+	arg_count = ft_count_args(argv);
+	if (arg_count > 2)
+	{
+		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
+		return (NULL);
+	}
+	if (!argv[1])
+	{
+		home = ft_get_env_value("HOME", env_list);
+		if (!home)
+		{
+			ft_putstr_fd("minishell: cd: HOME not set\n", 2);
+			return (NULL);
+		}
+		return (home);
+	}
+	return (argv[1]);
+}
 
-    // Path'i resolve et
-    if (realpath(path, resolved_path) == NULL)
-    {
-        ft_putstr_fd("minishell: cd: ", 2);
-        ft_putstr_fd(path, 2);
-        ft_putstr_fd(": No such file or directory\n", 2);
-        return (1);
-    }
+static int	ft_validate_path(char *path)
+{
+	struct stat	path_stat;
 
-    // Resolved path'in varlığını kontrol et
-    if (access(resolved_path, F_OK) != 0)
-    {
-        ft_putstr_fd("minishell: cd: ", 2);
-        ft_putstr_fd(path, 2);
-        ft_putstr_fd(": No such file or directory\n", 2);
-        return (1);
-    }
-    
-    // Eski dizini kaydet
-    if (getcwd(old_cwd, sizeof(old_cwd)))
-        ft_set_env_value("OLDPWD", old_cwd, &env_list, shell);
-    
-    // Directory değiştir
-    if (chdir(resolved_path) != 0)  // resolved_path kullan
-    {
-        ft_putstr_fd("minishell: cd: ", 2);
-        ft_putstr_fd(path, 2);
-        ft_putstr_fd(": ", 2);
-        perror("");
-        return (1);
-    }
-    
-    // Yeni PWD'yi güncelle
-    if (getcwd(new_cwd, sizeof(new_cwd)))
-        ft_set_env_value("PWD", new_cwd, &env_list, shell);
-    
-    return (0);
+	if (stat(path, &path_stat) == 0)
+	{
+		if (S_ISDIR(path_stat.st_mode) == 0)
+		{
+			ft_putstr_fd("minishell: cd: ", 2);
+			ft_putstr_fd(path, 2);
+			ft_putstr_fd(": Not a directory\n", 2);
+			return (0);
+		}
+	}
+	else
+	{
+		ft_putstr_fd("minishell: cd: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		return (0);
+	}
+	return (1);
+}
+
+static int	ft_perform_cd_operation(char *path, t_env **env_list, t_shell *shell)
+{
+	char	old_cwd[PATH_MAX];
+	char	new_cwd[PATH_MAX];
+
+	if (getcwd(old_cwd, sizeof(old_cwd)))
+		ft_set_env_value("OLDPWD", old_cwd, env_list, shell);
+	if (chdir(path) != 0)
+	{
+		ft_putstr_fd("minishell: cd: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": ", 2);
+		perror("");
+		return (1);
+	}
+	if (getcwd(new_cwd, sizeof(new_cwd)))
+		ft_set_env_value("PWD", new_cwd, env_list, shell);
+	return (0);
+}
+
+int	ft_builtin_cd(char **argv, t_env *env_list, t_shell *shell)
+{
+	char	*path;
+
+	path = ft_get_cd_path(argv, env_list);
+	if (!path)
+		return (1);
+	if (!ft_validate_path(path))
+		return (1);
+	return (ft_perform_cd_operation(path, &env_list, shell));
 }

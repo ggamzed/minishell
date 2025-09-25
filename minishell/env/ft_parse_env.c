@@ -1,28 +1,40 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_parse_env.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <eecegokcece@gmail.com>             +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/25 00:18:23 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/25 00:18:23 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-char *ft_parse_env_value(char *env_str, t_shell *shell)
+char	*ft_parse_env_value(char *env_str, t_shell *shell)
 {
-	char *equals_sign;
-	char *value;
+	char	*equals_sign;
+	char	*value;
 
-	equals_sign = ft_strchr(env_str, '='); // ADIM 1: '=' karakterini bul
+	equals_sign = ft_strchr(env_str, '=');
 	if (!equals_sign)
 		return (NULL);
-	value = ft_strdup(equals_sign + 1, shell); // ADIM 2: '=' den sonraki kısmı kopyala
+	value = ft_strdup(equals_sign + 1, shell);
 	if (!value)
 		return (NULL);
 	return (value);
 }
 
-char *ft_parse_env_key(char *env_str, t_shell *shell)
+char	*ft_parse_env_key(char *env_str, t_shell *shell)
 {
-	char *equals_sign;   // '=' karakteri
-	char *key;
+	char	*equals_sign;
+	char	*key;
 
-	equals_sign = ft_strchr(env_str, '='); // ADIM 1: '=' karakterini bul
-	if (!equals_sign)    // '=' yoksa hatalı format
+	equals_sign = ft_strchr(env_str, '=');
+	if (!equals_sign)
 		return (NULL);
-	key = ft_substr(env_str, 0, equals_sign - env_str, shell); // ADIM 2: Başlangıçtan '=' e kadar olan kısmı al
+	key = ft_substr(env_str, 0, equals_sign - env_str, shell);
 	if (!key)
 		return (NULL);
 	return (key);
@@ -34,17 +46,15 @@ int	ft_parsing_env_entry(char *env_str, t_env **env_list, t_shell *shell)
 	char	*key;
 	char	*value;
 
-	key = ft_parse_env_key(env_str, shell); // ADIM 1: Key'i çıkar (PATH=/usr/bin → "PATH")
+	key = ft_parse_env_key(env_str, shell);
 	if (!key)
 		return (0);
-	value = ft_parse_env_value(env_str, shell); // ADIM 2: Value'yu çıkar (PATH=/usr/bin → "/usr/bin") + !!Value kontrol edilmemeli çünkü "KEY=" geçerli format
+	value = ft_parse_env_value(env_str, shell);
 	if (!value)
 		return (0);
 	new_node = ft_create_env_node(key, value, shell);
 	if (!new_node)
 		return (0);
 	ft_add_env_node(env_list, new_node);
-	//(key);
-	//free(value);
 	return (1);
 }

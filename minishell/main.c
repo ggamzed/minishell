@@ -58,11 +58,11 @@ static int	ft_process_line(t_shell *shell, char *line)
 	
 	if (!tokens)
 	{
-		if (ft_strchr(line, '"') || ft_strchr(line, '\''))
-   		{
-        	ft_putstr_fd("minishell: : command not found\n", 2);
-        	shell->exit_status = 127;
-    	}
+		// if (ft_strchr(line, '"') || ft_strchr(line, '\''))
+   		// {
+        // 	ft_putstr_fd("minishell: : command not found\n", 2);
+        // 	shell->exit_status = 127;
+    	// }
 		return (1);
 	}
 		
@@ -87,35 +87,35 @@ static int	ft_process_line(t_shell *shell, char *line)
 	// }
 	// Expansion - tüm komutların argv'lerini hazırla (SADECE BURADA YAP)
 	t_cmd *current = shell->cmd_list;
-while (current)
-{
-    if (current->args) // Null check ekle
-    {
-        current->expanded_argv = ft_expand_tokens(current->args, shell);
-        // ft_expand_tokens sonrası
-        if (!current->expanded_argv || !current->expanded_argv[0] || 
-    ft_strlen(current->expanded_argv[0]) == 0)
-{
-    // Eğer orijinal token VARIABLE ise → undefined variable (exit 0)
-    if (current->args && current->args->type == VARIABLE)
-    {
-        shell->exit_status = 0; // Undefined variable için 0
-    }
-    else
-    {
-        // Empty command için 127
-        ft_putstr_fd("minishell: ", 2);
-        ft_putstr_fd("", 2);
-        ft_putstr_fd(": command not found\n", 2);
-        shell->exit_status = 127;
-    }
-    ft_free_commands(shell->cmd_list);
-    shell->cmd_list = NULL;
-    return (1);
-}
-    }
-    current = current->next;
-}
+	while (current)
+	{
+		if (current->args) // Null check ekle
+		{
+			current->expanded_argv = ft_expand_tokens(current->args, shell);
+			// ft_expand_tokens sonrası
+			if (!current->expanded_argv || !current->expanded_argv[0] || 
+		ft_strlen(current->expanded_argv[0]) == 0)
+	{
+		// Eğer orijinal token VARIABLE ise → undefined variable (exit 0)
+		if (current->args && current->args->type == VARIABLE)
+		{
+			shell->exit_status = 0; // Undefined variable için 0
+		}
+		else
+		{
+			// Empty command için 127
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd("", 2);
+			ft_putstr_fd(": command not found\n", 2);
+			shell->exit_status = 127;
+		}
+		ft_free_commands(shell->cmd_list);
+		shell->cmd_list = NULL;
+		return (1);
+	}
+		}
+		current = current->next;
+	}
 	// Execution - komutları çalıştır
 	shell->exit_status = ft_execute_commands(shell);
 	

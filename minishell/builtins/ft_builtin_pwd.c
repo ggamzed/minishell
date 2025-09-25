@@ -4,11 +4,11 @@ int	ft_builtin_pwd(void)
 {
 	char	cwd[PATH_MAX];
 
-	if (getcwd(cwd, sizeof(cwd)))
+	if (getcwd(cwd, sizeof(cwd)) == NULL)
 	{
-		printf("%s\n", cwd);
-		return (0);
+		perror("minishell: pwd");
+		return (1);	
 	}
-	perror("minishell: pwd"); // -> hata durumunda
-	return (1);
+	printf("%s\n", cwd);
+	return (0);
 }

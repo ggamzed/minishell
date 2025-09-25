@@ -1,7 +1,17 @@
-#include "../minishell.h"
-//yorum satırındaki fonksiyonlar daha hiç kullanılmadı, lazım olabilir diye silmedim
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_env_utils.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <eecegokcece@gmail.com>             +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/25 00:18:43 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/25 00:18:43 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-// environment değişkeninin değerini getirir
+#include "../minishell.h"
+
 char	*ft_get_env_value(char *key, t_env *env_list)
 {
 	t_env	*current;
@@ -18,7 +28,6 @@ char	*ft_get_env_value(char *key, t_env *env_list)
 	return (NULL);
 }
 
-// environment değişkenini ayarlar veya günceller
 int	ft_set_env_value(char *key, char *value, t_env **env_list, t_shell *shell)
 {
 	t_env	*current;
@@ -34,7 +43,7 @@ int	ft_set_env_value(char *key, char *value, t_env **env_list, t_shell *shell)
 			if (value)
 				current->value = ft_strdup(value, shell);
 			else
-				current->value = NULL; // NULL değeri direkt ata
+				current->value = NULL;
 			return (0);
 		}
 		current = current->next;
@@ -50,19 +59,15 @@ static void	ft_remove_env_node(t_env **env_list, t_env *current, t_env *prev)
 		prev->next = current->next;
 	else
 		*env_list = current->next;
-	//free(current->key);
-	//free(current->value);
-	//free(current);
 }
 
-// environment değişkenini siler
 int	ft_unset_env_value(char *key, t_env **env_list)
 {
 	t_env	*current;
 	t_env	*prev;
 
 	if (!key || !env_list || !*env_list)
-		return (0); // dönüşü kontrol et
+		return (0);
 	current = *env_list;
 	prev = NULL;
 	while (current)
@@ -108,7 +113,6 @@ static void	ft_fill_env_array(t_env *env_list, char **envp, t_shell *shell)
 		{
 			temp = ft_strjoin(current->key, "=", shell);
 			envp[i] = ft_strjoin(temp, current->value, shell);
-			//free(temp);
 			i++;
 		}
 		current = current->next;

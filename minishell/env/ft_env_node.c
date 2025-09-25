@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_env_node.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <eecegokcece@gmail.com>             +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/25 00:18:58 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/25 00:18:58 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 t_env	*ft_create_env_node(char *key, char *value, t_shell *shell)
@@ -9,9 +21,9 @@ t_env	*ft_create_env_node(char *key, char *value, t_shell *shell)
 		return (NULL);
 	node->key = ft_strdup(key, shell);
 	if (value)
-    	node->value = ft_strdup(value, shell);
+		node->value = ft_strdup(value, shell);
 	else
-    	node->value = NULL;
+		node->value = NULL;
 	node->next = NULL;
 	return (node);
 }
@@ -23,7 +35,7 @@ void	ft_add_env_node(t_env **env_list, t_env *new_node)
 	if (!*env_list)
 	{
 		*env_list = new_node;
-		return;
+		return ;
 	}
 	current = *env_list;
 	while (current->next)

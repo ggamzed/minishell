@@ -11,7 +11,7 @@
 # include <sys/wait.h>
 # include <signal.h>
 # include <errno.h>
-
+#include <sys/stat.h>
 // PATH_MAX güvenlik kontrolü -> cd fonksiyonunda kullanmak için
 #ifndef PATH_MAX
 # ifdef _POSIX_PATH_MAX
@@ -22,8 +22,8 @@
 #endif
 # define PROMPT "minishell$ "
 
-#define S_IFDIR  0040000
-#define S_IFMT  00170000
+// #define S_IFDIR  0040000
+// #define S_IFMT  00170000
 
 
 
@@ -80,10 +80,6 @@ typedef struct s_heredoc
 // command yapısı -> tek bir komutu temsil eder 
 typedef struct s_cmd
 {
-	char    **all_output_files;     // Tüm output dosyaları
-    int     *all_append_modes;      // Her dosya için append mode
-    int     output_count;           // Toplam output dosya sayısı
-
 	t_token			*args;              // Linked list of arguments with types
 	char 			**expanded_argv;	// argümanların expand edilmiş bir şekilde tutulduğu hali
 	char			*input_file;        // < input.txt (raw value)
@@ -95,7 +91,10 @@ typedef struct s_cmd
 	t_token_type	heredoc_type;       // Delimiter token type
 	int				heredoc_fd;         // heredoc için file descriptor
 	int				heredoc_should_expand; // expand edilsin mi edilmesin mi kontrolü
-	t_heredoc		*heredocs;  // LINKED LIST olarak değiştir
+	t_heredoc		*heredocs;  		// LINKED LIST olarak değiştir
+	char    		**all_output_files;     // Tüm output dosyaları
+    int     		*all_append_modes;      // Her dosya için append mode
+    int     		output_count;           // Toplam output dosya sayısı
 	struct s_cmd	*next;              // pipe'daki sonraki komut
 } t_cmd;
 
@@ -174,15 +173,17 @@ t_cmd	*ft_create_command(t_shell *shell);
 void		ft_get_cmd_arguments(t_token **current, t_cmd *cmd);
 int			ft_parse_redirections(t_cmd *cmd, t_token **current);
 t_cmd	*ft_parse_command(t_token **current, t_shell *shell);
-void		ft_add_command(t_cmd **commands, t_cmd *new_cmd);
+//void		ft_add_command_list(t_cmd **commands, t_cmd *new_cmd);
 t_cmd	*ft_parse_tokens(t_token *tokens, t_shell *shell);
 int			ft_is_redirection(t_token_type type);
 int			ft_is_argument_token(t_token_type type);
-int			ft_count_args(t_token *tokens);
+//int			ft_count_args(t_token *tokens);
 int	ft_in_parser_handle_redirect_in(t_cmd *cmd, t_token **current, t_shell *shell);
 int	ft_in_parser_handle_redirect_out(t_cmd *cmd, t_token **current, t_shell *shell);
 int	ft_in_parser_handle_redirect_append(t_cmd *cmd, t_token **current, t_shell *shell);
 int	ft_in_parser_handle_heredoc(t_cmd *cmd, t_token **current, t_shell *shell);
+char	*ft_join_redirect_filename(t_token **current, t_shell *shell);
+int	ft_in_parser_handle_redirect_output(t_cmd *cmd, t_token **current, t_shell *shell, int append_mode);
 
 //--------------------------------EXPANDER--------------------------------
 char	**ft_expand_tokens(t_token *args, t_shell *shell);
@@ -240,6 +241,5 @@ void	ft_handle_sigquit(int sig);
 void	ft_setup_signals(void);
 void	ft_ignore_signals(void);
 void	ft_default_signals(void);
-
 
 #endif

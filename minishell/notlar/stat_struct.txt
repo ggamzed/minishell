@@ -1,0 +1,28 @@
+stat() fonksiyonu ve S_ISDIR makrosu dosya/dizin bilgilerini almak için kullanılır
+
+#include <sys/stat.h>
+int stat(const char *pathname, struct stat *statbuf);
+
+struct stat file_info;
+if (stat("/path/to/file", &file_info) == 0) {
+    // Başarılı - dosya/dizin var
+    // file_info struct'ı dolduruldu
+} else {
+    // Hata - dosya/dizin yok veya erişim sorunu
+}
+
+struct stat {
+    mode_t    st_mode;     // Dosya türü ve izinler
+    off_t     st_size;     // Dosya boyutu
+    time_t    st_mtime;    // Son değişiklik zamanı
+    uid_t     st_uid;      // Sahip kullanıcı ID
+    gid_t     st_gid;      // Grup ID
+    // ... ve daha fazlası
+};
+
+st_mode alanından dosyanın directory olup olmadığını kontrol eder.
+
+S_ISDIR(path_stat.st_mode) -> 1 dönerse directory / 0 dönerse değil
+
+stat true (== 0) -> dosya, dizin varsa 
+stat false (!= 0) -> dosya, dizin, izin yoksa

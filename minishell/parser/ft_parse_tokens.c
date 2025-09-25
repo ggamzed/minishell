@@ -1,39 +1,48 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_parse_tokens.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <eecegokcece@gmail.com>             +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/23 22:25:02 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/23 22:25:02 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-// komut listesinin sonuna yeni komut ekler
-void	ft_add_command(t_cmd **commands, t_cmd *new_cmd)
+void	ft_add_command_list(t_cmd **command_list, t_cmd *new_cmd)
 {
 	t_cmd	*current;
 
-	if (!*commands)
+	if (!*command_list)
 	{
-		*commands = new_cmd;
-		return;
+		*command_list = new_cmd;
+		return ;
 	}
-	current = *commands;
+	current = *command_list;
 	while (current->next)
 		current = current->next;
 	current->next = new_cmd;
 }
 
-// pipe'larla ayrılmış komutları ayrı t_cmd'lere dönüştürür
 t_cmd	*ft_parse_tokens(t_token *tokens, t_shell *shell)
 {
-	
-	t_cmd	*commands;  //komut listesi
-	t_cmd	*cmd; //tek bir komut
+	t_cmd	*command_list;
+	t_cmd	*cmd;
 	t_token	*current;
 
-	commands = NULL;
+	command_list = NULL;
 	current = tokens;
 	while (current)
 	{
 		cmd = ft_parse_command(&current, shell);
 		if (!cmd)
 			return (NULL);
-		ft_add_command(&commands, cmd);
+		ft_add_command_list(&command_list, cmd);
 		if (current && current->type == PIPE)
 			current = current->next;
 	}
-	return (commands);
+	return (command_list);
 }

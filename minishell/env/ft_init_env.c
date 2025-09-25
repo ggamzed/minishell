@@ -1,23 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_init_env.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <eecegokcece@gmail.com>             +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/25 00:23:08 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/25 00:23:08 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
-
-// static void	ft_set_shlvl(t_env **env_list, t_shell *shell)
-// {
-// 	char	*current_shlvl;
-// 	int		shlvl_value;
-// 	char	*new_shlvl;
-
-// 	current_shlvl = ft_get_env_value("SHLVL", *env_list);
-// 	if (current_shlvl)
-// 	{
-// 		shlvl_value = ft_atoi(current_shlvl);
-// 		shlvl_value++;
-// 		new_shlvl = ft_itoa(shlvl_value, shell);
-// 		ft_set_env_value("SHLVL", new_shlvl, env_list, shell);
-// 		free(new_shlvl);
-// 	}
-// 	else
-// 		ft_set_env_value("SHLVL", "1", env_list, shell);
-// }
 
 static void	ft_set_shlvl(t_env **env_list, t_shell *shell)
 {
@@ -25,23 +18,28 @@ static void	ft_set_shlvl(t_env **env_list, t_shell *shell)
 
 	current_shlvl = ft_get_env_value("SHLVL", *env_list);
 	if (current_shlvl)
-	{
-		// SHLVL mevcut - değiştirme, olduğu gibi bırak
-		// Bash zaten doğru değeri vermiş
-		return;
-	}
+		return ;
 	else
-	{
-		// SHLVL yok - 1 yap (env -i durumu)
 		ft_set_env_value("SHLVL", "1", env_list, shell);
-	}
 }
 
+static int	ft_ensure_pwd_exists(t_env **env_list, t_shell *shell)
+{
+	char	*pwd;
+
+	if (ft_get_env_value("PWD", *env_list))
+		return (1);
+	pwd = getcwd(NULL, 0);
+	if (!pwd)
+		return (0);
+	ft_set_env_value("PWD", pwd, env_list, shell);
+	free(pwd);
+	return (1);
+}
 
 t_env	*ft_init_env(char **envp, t_shell *shell)
 {
 	t_env	*env_list;
-	char	*pwd;
 	int		i;
 
 	env_list = NULL;
@@ -55,21 +53,8 @@ t_env	*ft_init_env(char **envp, t_shell *shell)
 			i++;
 		}
 	}
-	
-	// PWD ayarla
-	if (!ft_get_env_value("PWD", env_list))
-	{
-		pwd = getcwd(NULL, 0);
-		if (pwd)
-		{
-			ft_set_env_value("PWD", pwd, &env_list, shell);
-			free(pwd);
-		}
-	}
-	
-	// SHLVL'ı doğru şekilde ayarla
+	if (!ft_ensure_pwd_exists(&env_list, shell))
+		return (env_list);
 	ft_set_shlvl(&env_list, shell);
-	
 	return (env_list);
 }
-

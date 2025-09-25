@@ -92,9 +92,7 @@ void	*ft_malloc(size_t size, t_shell *shell)
 		return (NULL);
 	}
 	if (!shell || !shell->mem_tracker)
-    {
         return (ptr);
-    }
 	mem_node = malloc(sizeof(t_mem));
 	if (!mem_node)
 	{
@@ -105,7 +103,6 @@ void	*ft_malloc(size_t size, t_shell *shell)
 	mem_node->ptr = ptr;
 	mem_node->next = *shell->mem_tracker;
 	*shell->mem_tracker = mem_node;
-	
 	return (ptr);
 }
 

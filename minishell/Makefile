@@ -18,16 +18,19 @@ SRCS = main.c \
 		utils.c \
 		free.c \
 		signals.c \
+		$(lexer)ft_get_type.c \
+		$(lexer)ft_get_word.c \
 		$(lexer)ft_tokenize.c \
 		$(lexer)ft_token.c \
-		$(lexer)ft_get_word.c \
-		$(lexer)ft_count_args.c \
 		$(validate_syntax)ft_validate_syntax.c \
 		$(validate_syntax)ft_validate_quotes.c \
 		$(validate_syntax)ft_validate_pipes.c \
 		$(validate_syntax)ft_validate_redirections.c \
+		$(parser)ft_in_parser_handle_redirect_input.c \
+		$(parser)ft_in_parser_handle_redirect_output.c \
+		$(parser)ft_is.c \
+		$(parser)ft_join_redirect_filename.c \
 		$(parser)ft_parse_tokens.c \
-		$(parser)ft_in_parser_handle_redirections.c \
 		$(parser)ft_parse_command.c \
 		$(env)ft_env_node.c \
 		$(env)ft_env_utils.c \

@@ -12,20 +12,45 @@ static char	*ft_extract_variable_name(char *str, int *i, t_shell *shell)
 	return (ft_substr(str, start, *i - start, shell));
 }
 
-char	*ft_extract_and_expand_var(char *str, int *i, t_shell *shell)
-{
-	char	*var_name;
-	char	*env_value;
+// char	*ft_extract_and_expand_var(char *str, int *i, t_shell *shell)
+// {
+// 	char	*var_name;
+// 	char	*env_value;
 
-	var_name = ft_extract_variable_name(str, i, shell);
-	if (!var_name || !*var_name) // "$" tek başına olabilir
-	{
-		//free(var_name);
-		return (ft_strdup("", shell)); 
-	}
-	env_value = ft_get_env_value(var_name, shell->env_list);
-	//free(var_name);
-	if (env_value)
-		return (ft_strdup(env_value, shell));
-	return (ft_strdup("", shell));
+// 	var_name = ft_extract_variable_name(str, i, shell);
+// 	if (!var_name || !*var_name) // "$" tek başına olabilir
+// 	{
+// 		//free(var_name);
+// 		return (ft_strdup("", shell)); 
+// 	}
+// 	env_value = ft_get_env_value(var_name, shell->env_list);
+// 	//free(var_name);
+// 	if (env_value)
+// 		return (ft_strdup(env_value, shell));
+// 	return (ft_strdup("", shell));
+// }
+
+char *ft_extract_and_expand_var(char *str, int *i, t_shell *shell)
+{
+    char *var_name;
+    char *env_value;
+    char *remaining_part;
+    char *result;
+    int var_end;
+
+    var_name = ft_extract_variable_name(str, i, shell);
+    if (!var_name || !*var_name)
+        return (ft_strdup("", shell));
+    
+    // Variable'ın bittiği yerden sonraki kısmı al
+    var_end = *i;  // ft_extract_variable_name i'yi güncelledi
+    remaining_part = str + var_end;  // "/ece.txt" kısmı
+    
+    env_value = ft_get_env_value(var_name, shell->env_list);
+    if (!env_value)
+        env_value = "";
+    
+    // HOME değeri + kalan kısım
+    result = ft_strjoin(env_value, remaining_part, shell);
+    return (result);
 }

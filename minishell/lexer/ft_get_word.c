@@ -1,35 +1,78 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_get_word.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <eecegokcece@gmail.com>             +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/23 18:19:09 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/24 19:51:25 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-t_token_type	ft_get_word_type(char *line, int i)
+static int	ft_handle_quoted_word(char *line, int *i, int *start)
 {
-	if (line[i] == '$' && line[i + 1] == '?')
-		return (EXIT_STATUS);
-	if (line[i] == '$' && (ft_isalpha(line[i + 1]) || line[i + 1] == '_'))
-		return (VARIABLE);
-	if (line[i] == '\'')
-		return (SINGLE_QUOTED_STRING);
-	if (line[i] == '"')
-		return (DOUBLE_QUOTED_STRING);
-	return (WORD);
+	char	quote;
+
+	quote = line[*i];
+	(*i)++;
+	*start = *i;
+	while (line[*i])
+	{
+		// if (quote == '"' && line[*i] == '\\' && line[*i + 1] != '\0')
+		// {
+		// 	*i += 2;
+		// 	printf("girdi");
+		// 	continue ;
+		// }
+		if (line[*i] == quote)
+			break ;
+		(*i)++;
+	}
+	(*i)++;
+	return (*i - *start - 1);
 }
 
-t_token_type	ft_get_operator_type(char *line, int *i)
+static int	ft_handle_variable_word(char *line, int *i, int start)
 {
-	if (line[*i] == '|' && ++(*i))
-		return (PIPE);
-	if (line[*i] == '<')
+	(*i)++;
+	if (line[*i] == '?')
 	{
-		if (line[*i + 1] == '<' && (*i += 2))
-			return (HEREDOC);
-		return (++(*i), REDIRECT_IN);
+		(*i)++;
+		return (*i - start);
 	}
-	if (line[*i] == '>')
+	if (ft_isalpha(line[*i]) || line[*i] == '_')
 	{
-		if (line[*i + 1] == '>' && (*i += 2))
-			return (REDIRECT_APPEND);
-		return (++(*i), REDIRECT_OUT);
+		while (line[*i] && (ft_isalnum(line[*i]) || line[*i] == '_'))
+			(*i)++;
+		return (*i - start);
 	}
-	return (ft_get_word_type(line, *i));
+	return (1);
+}
+
+static int	ft_is_word_delimiter(char c)
+{
+	if (ft_is_space(c) || c == '|' || c == '<' || c == '>')
+		return (1);
+	if (c == '\'' || c == '"')
+		return (1);
+	return (0);
+}
+
+static int	ft_handle_normal_word(char *line, int *i, int start)
+{
+	while (line[*i] && !ft_is_word_delimiter(line[*i]))
+	{
+		if (line[*i] == '\\' && line[*i + 1] != '\0')
+			*i += 2;
+		else if (line[*i] == '$')
+			break ;
+		else
+			(*i)++;
+	}
+	return (*i - start);
 }
 
 char	*ft_get_word(char *line, int *i, t_shell *shell)
@@ -37,74 +80,14 @@ char	*ft_get_word(char *line, int *i, t_shell *shell)
 	int		start;
 	int		len;
 	char	*word;
-	char	quote;
 
 	start = *i;
-	
-	// Quote ile başlıyorsa
 	if (line[*i] == '\'' || line[*i] == '"')
-	{
-		quote = line[*i];
-		(*i)++;      // Açılış quote'unu atla
-		start = *i;  // Gerçek içerik başlangıcı
-		
-		while (line[*i])
-		{
-			// Çift tırnak içinde escape karakterleri
-			if (quote == '"' && line[*i] == '\\' && line[*i + 1] != '\0')
-			{
-				*i += 2;
-				continue;
-			}
-			if (line[*i] == quote)
-				break;
-			(*i)++;
-		}
-		len = *i - start;  // Quote içindeki uzunluk
-		(*i)++;           // Kapanış quote'unu atla
-	}
-	// $ variable ile başlıyorsa
+		len = ft_handle_quoted_word(line, i, &start);
 	else if (line[*i] == '$')
-	{
-		(*i)++; // $ karakterini atla
-		
-		// $? durumu
-		if (line[*i] == '?')
-		{
-			(*i)++;
-			len = *i - start;
-		}
-		// Normal variable $VAR durumu
-		else if (ft_isalpha(line[*i]) || line[*i] == '_')
-		{
-			while (line[*i] && (ft_isalnum(line[*i]) || line[*i] == '_'))
-				(*i)++;
-			len = *i - start;
-		}
-		// Sadece $ karakteri
-		else
-		{
-			len = 1; // Sadece $ karakteri
-		}
-	}
-	// Normal kelime
+		len = ft_handle_variable_word(line, i, start);
 	else
-	{
-		while (line[*i] && !ft_is_space(line[*i])
-				&& line[*i] != '|' && line[*i] != '<' && line[*i] != '>'
-				&& line[*i] != '\'' && line[*i] != '"')
-		{
-			// Escape karakteri varsa bir sonrakini de dahil et
-			if (line[*i] == '\\' && line[*i + 1] != '\0')
-				*i += 2;  // Hem \ hem de sonraki karakteri dahil et
-			else if (line[*i] == '$')
-				break;    // $ gördüğünde dur (ayrı token olsun)
-			else
-				(*i)++;
-		}
-		len = *i - start;
-	}
-	
+		len = ft_handle_normal_word(line, i, start);
 	word = ft_substr(line, start, len, shell);
 	if (!word)
 		return (NULL);

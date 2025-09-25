@@ -1,0 +1,65 @@
+//-------------------------------- CD --------------------------------\\
+getcwd() - Get Current Working Directory
+Programın şu anda hangi dizinde çalıştığını öğrenmek için kullanılır.
+
+Nasıl Çalışır:
+	Sistemden mevcut dizin bilgisini alır
+	Bu bilgiyi verdiğiniz buffer'a kopyalar
+	Buffer'ın adresini geri döndürür
+
+Parametreler:
+	buf: Sonucun yazılacağı karakter dizisi (array)
+	size: Bu dizinin kaç karakter alabileceğini belirtir
+
+başarısız durumda null döner.
+
+char *result = getcwd(NULL, 0);
+
+Ne Yapar:
+	Sistem otomatik olarak yeterli boyutta memory allocate eder
+	Current directory path'ini bu memory'ye yazar
+	Bu memory'nin adresini döndürür
+
+Avantajları:
+	Buffer boyutu hesaplamaya gerek yok
+	Uzun path'ler için güvenli
+	Otomatik boyutlandırma
+
+Dezavantajları:
+	Manuel free() gerekli - memory leak riski
+
+
+
+chdir() - Change Directory
+Programın çalıştığı dizini değiştirmek için kullanılır.
+
+Nasıl Çalışır:
+	Verilen path'e gitmeye çalışır
+	Başarılıysa programın working directory'si değişir
+	Bu değişiklik sadece program için geçerlidir
+
+Parametreler:
+	path: Gidilecek dizinin yolu (string)
+
+!! getcwd() string döndürür, chdir() sadece başarı/başarısızlık
+
+
+//-------------------------------- ENV --------------------------------\\
+
+pwd = getcwd(NULL, 0);
+if (pwd)
+{
+	clean_envp[0] = ft_strjoin("PWD=", pwd, shell);
+	free(pwd);
+}
+else
+	clean_envp[0] = ft_strdup("PWD=/", shell);
+
+Ne zaman else'e girer?
+- mevcut dizin silinmiş / izin problemi
+Eğer mevcut dizin belirlenemezse en azından geçerli bir PWD değeri set eder.
+Bu durumda PWD=/ (root directory) kullanılır çünkü:
+	Her sistem'de / directory vardır
+	Geçerli bir path'tir
+	Program crash etmez
+Pratikte çok nadir olur, ama güvenlik için gerekli.
