@@ -59,8 +59,10 @@ SRCS = main.c \
 		$(executor)ft_child_utils.c \
 		$(executor)ft_multiple_command_utils.c \
 		$(executor)ft_single_command_utils.c \
-		$(redirections)ft_handle_redirections.c \
-		$(redirections)ft_handle_heredoc.c
+		$(redirections)ft_handle_heredoc_redirection.c \
+		$(redirections)ft_handle_input_redirection.c \
+		$(redirections)ft_handle_output_redirection.c \
+		$(redirections)ft_process_heredoc.c
 
 OBJS = $(SRCS:.c=.o)
 

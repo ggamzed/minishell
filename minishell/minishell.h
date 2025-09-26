@@ -239,13 +239,10 @@ void	ft_restore_redirections(int stdin_backup, int stdout_backup);
 int	ft_handle_builtin_redirections(t_cmd *cmd, int *stdin_backup, int *stdout_backup);
 
 //--------------------------------REDIRECTIONS--------------------------------
-int		ft_handle_heredoc(t_shell *shell);
-int		ft_process_heredoc(char *delimiter, t_shell *shell, int should_expand); // BU SATIRI EKLEYİN
-
+int	ft_handle_heredoc_redirection(t_cmd *cmd);
 int	ft_handle_input_redirection(t_cmd *cmd);
-int	ft_handle_heredoc_redirection(t_cmd *cmd);  
 int	ft_handle_output_redirection(t_cmd *cmd);
-
+int	ft_process_heredoc(char *delimiter, t_shell *shell, int should_expand);
 
 // free
 void	ft_free_mem_tracker(t_mem **mem_tracker);

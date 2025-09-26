@@ -24,7 +24,10 @@ static int	ft_handle_export_option(char *option)
 	ft_putstr_fd(option, 2);
 	ft_putstr_fd(": invalid option\n", 2);
 	if (option[0] == '-' && option[1] == '-')
-		ft_putstr_fd("export: usage: export [-fn] [name[=value] ...] or export -p\n", 2);
+	{
+		ft_putstr_fd("export: usage: export [-fn] ", 2);
+		ft_putstr_fd("[name[=value] ...] or export -p\n", 2);
+	}
 	return (2);
 }
 

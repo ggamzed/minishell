@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_in_parser_handle_redirect_output.c              :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: egokce <eecegokcece@gmail.com>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/24 18:32:49 by egokce            #+#    #+#             */
-/*   Updated: 2025/09/24 19:52:37 by egokce           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../minishell.h"
 
 static int	ft_add_output_file(t_cmd *cmd, char *filename, int append_mode,

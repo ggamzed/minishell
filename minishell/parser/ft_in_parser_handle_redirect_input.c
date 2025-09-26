@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_in_parser_handle_redirect_input.c               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: egokce <eecegokcece@gmail.com>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/24 18:30:58 by egokce            #+#    #+#             */
-/*   Updated: 2025/09/24 18:30:58 by egokce           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../minishell.h"
 
 static char	*ft_join_consecutive_tokens(t_token **current, t_shell *shell,

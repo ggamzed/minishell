@@ -1,18 +1,7 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_process_heredoc.c                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: username <username@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/01 00:00:00 by username          #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by username         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../minishell.h"
 
-static int	ft_check_heredoc_conditions(char *line, char *delimiter, int *pipefd)
+static int	ft_check_heredoc_conditions(char *line, char *delimiter,
+									int *pipefd)
 {
 	if (g_signal == SIGINT)
 	{
@@ -21,7 +10,7 @@ static int	ft_check_heredoc_conditions(char *line, char *delimiter, int *pipefd)
 		free(line);
 		return (-1);
 	}
-	if (!line)//close pi
+	if (!line)
 	{
 		ft_putstr_fd("minishell: warning: here-document at line 1 ", 2);
 		ft_putstr_fd("delimited by end-of-file (wanted `", 2);
@@ -37,7 +26,7 @@ static int	ft_check_heredoc_conditions(char *line, char *delimiter, int *pipefd)
 	return (0);
 }
 
-static int	ft_process_and_write_line(char *line, int should_expand, 
+static int	ft_process_and_write_line(char *line, int should_expand,
 									t_shell *shell, int *pipefd)
 {
 	char	*expanded_line;

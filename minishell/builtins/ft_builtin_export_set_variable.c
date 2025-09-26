@@ -50,7 +50,7 @@ void	ft_set_export_variable(char *arg, t_env **env_list, t_shell *shell)
 		if (arg[i] == '+' && arg[i + 1] == '=')
 		{
 			append_pos = i;
-			break;
+			break ;
 		}
 		i++;
 	}

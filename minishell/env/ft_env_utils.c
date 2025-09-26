@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_env_utils.c                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: egokce <eecegokcece@gmail.com>             +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/25 00:18:43 by egokce            #+#    #+#             */
-/*   Updated: 2025/09/25 00:18:43 by egokce           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../minishell.h"
 
 char	*ft_get_env_value(char *key, t_env *env_list)
@@ -53,14 +41,6 @@ int	ft_set_env_value(char *key, char *value, t_env **env_list, t_shell *shell)
 	return (0);
 }
 
-static void	ft_remove_env_node(t_env **env_list, t_env *current, t_env *prev)
-{
-	if (prev)
-		prev->next = current->next;
-	else
-		*env_list = current->next;
-}
-
 int	ft_unset_env_value(char *key, t_env **env_list)
 {
 	t_env	*current;
@@ -74,7 +54,10 @@ int	ft_unset_env_value(char *key, t_env **env_list)
 	{
 		if (ft_strcmp(current->key, key) == 0)
 		{
-			ft_remove_env_node(env_list, current, prev);
+			if (prev)
+				prev->next = current->next;
+			else
+				*env_list = current->next;
 			return (0);
 		}
 		prev = current;
@@ -99,12 +82,18 @@ static int	ft_count_env_vars(t_env *env_list)
 	return (count);
 }
 
-static void	ft_fill_env_array(t_env *env_list, char **envp, t_shell *shell)
+char	**ft_env_to_array(t_env *env_list, t_shell *shell)
 {
+	char	**envp;
 	t_env	*current;
 	char	*temp;
+	int		count;
 	int		i;
 
+	count = ft_count_env_vars(env_list);
+	envp = ft_malloc(sizeof(char *) * (count + 1), shell);
+	if (!envp)
+		ft_cleanup_and_exit(shell, 1);
 	current = env_list;
 	i = 0;
 	while (current)
@@ -118,17 +107,5 @@ static void	ft_fill_env_array(t_env *env_list, char **envp, t_shell *shell)
 		current = current->next;
 	}
 	envp[i] = NULL;
-}
-
-char	**ft_env_to_array(t_env *env_list, t_shell *shell)
-{
-	char	**envp;
-	int		count;
-
-	count = ft_count_env_vars(env_list);
-	envp = ft_malloc(sizeof(char *) * (count + 1), shell);
-	if (!envp)
-		ft_cleanup_and_exit(shell, 1);
-	ft_fill_env_array(env_list, envp, shell);
 	return (envp);
 }

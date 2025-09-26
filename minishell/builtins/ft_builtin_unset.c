@@ -2,8 +2,9 @@
 
 int	ft_builtin_unset(char **argv, t_env **env_list, t_shell *shell)
 {
-	int	i = 1;
+	int	i;
 
+	i = 1;
 	if (!argv[1])
 		return (0);
 	while (argv[i])
