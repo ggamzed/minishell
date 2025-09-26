@@ -1,4 +1,6 @@
 #include "../minishell.h"
+#include <stdio.h>
+#include <unistd.h>
 #include <fcntl.h>
 
 static int	ft_count_commands(t_cmd *cmd_list)

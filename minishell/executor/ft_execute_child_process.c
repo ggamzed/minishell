@@ -1,5 +1,6 @@
 #include "../minishell.h"
-#include <sys/stat.h>
+#include <stdio.h>
+#include <unistd.h>
 
 static void	ft_execute_builtin_in_child(t_shell *shell, t_cmd *cmd)
 {

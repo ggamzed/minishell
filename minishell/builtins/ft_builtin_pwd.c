@@ -1,4 +1,6 @@
 #include "../minishell.h"
+#include <stdio.h>
+#include <unistd.h>
 
 int	ft_builtin_pwd(void)
 {

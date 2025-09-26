@@ -1,4 +1,7 @@
 #include "../minishell.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 static int	ft_execute_builtin_in_parent(t_shell *shell, t_cmd *cmd)
 {

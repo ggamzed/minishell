@@ -1,4 +1,7 @@
 #include "../minishell.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 int	ft_create_pipe(t_cmd *cmd, int pipefd[2])
 {

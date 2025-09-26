@@ -1,4 +1,7 @@
 #include "../minishell.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 static int	ft_execute_with_clean_env(char **argv, t_shell *shell)
 {

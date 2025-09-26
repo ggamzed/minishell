@@ -1,4 +1,6 @@
 #include "../minishell.h"
+#include <stdlib.h>
+#include <unistd.h>
 
 static void	ft_set_shlvl(t_env **env_list, t_shell *shell)
 {

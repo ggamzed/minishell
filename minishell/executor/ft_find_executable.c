@@ -1,4 +1,5 @@
 #include "../minishell.h"
+#include <unistd.h>
 #include <sys/stat.h>
 
 static char	*ft_check_direct_path(char *cmd, t_shell *shell)

@@ -1,4 +1,5 @@
 #include "../minishell.h"
+#include <unistd.h>
 
 static char	*ft_join_consecutive_tokens(t_token **current, t_shell *shell,
 									int *has_quotes)

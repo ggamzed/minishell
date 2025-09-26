@@ -1,4 +1,6 @@
 #include "minishell.h"
+#include <string.h>
+#include <readline/readline.h>
 
 void	ft_handle_sigint(int sig)
 {

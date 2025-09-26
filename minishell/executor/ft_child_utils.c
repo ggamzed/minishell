@@ -1,4 +1,5 @@
 #include "../minishell.h"
+#include <unistd.h>
 #include <sys/stat.h>
 
 void	ft_setup_pipe_connections(int *pipefd, int prev_fd, t_cmd *cmd)

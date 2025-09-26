@@ -1,5 +1,8 @@
 #include "../minishell.h"
-#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+# include <fcntl.h>
 
 static int	ft_open_output_file(char *filename, int append_mode)
 {

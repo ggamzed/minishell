@@ -1,4 +1,6 @@
 #include "minishell.h"
+#include <stdlib.h>
+#include <unistd.h>
 
 void	ft_cleanup_and_exit(t_shell *shell, int exit_code)
 {

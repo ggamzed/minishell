@@ -1,4 +1,6 @@
 #include "../minishell.h"
+#include <unistd.h>
+#include <sys/wait.h>
 
 int	ft_handle_builtin_redirections(t_cmd *cmd, int *stdin_backup,
 					int *stdout_backup)

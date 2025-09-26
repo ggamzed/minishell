@@ -1,17 +1,9 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
-# include <string.h>
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <limits.h>
-# include <sys/wait.h>
+# include <stddef.h>
 # include <signal.h>
-# include <errno.h>
-#include <sys/stat.h>
+
 // PATH_MAX güvenlik kontrolü -> cd fonksiyonunda kullanmak için
 #ifndef PATH_MAX
 # ifdef _POSIX_PATH_MAX
@@ -25,14 +17,9 @@
 // #define S_IFDIR  0040000
 // #define S_IFMT  00170000
 
-
-
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1
 # endif
-
-
-
 
 extern volatile sig_atomic_t g_signal;
 
@@ -59,14 +46,6 @@ typedef struct s_token
 	int				space_flag;
 	struct s_token	*next;		//sonraki node'un adresi
 }	t_token;
-
-// // command argument yapısı
-// typedef struct s_cmd_arg
-// {
-// 	char			*value;          // Raw token value
-// 	t_token_type	type;           // Token type (WORD, VARIABLE, DOUBLE_QUOTED, etc.)
-// 	struct s_cmd_arg *next;
-// }	t_cmd_arg;
 
 typedef struct s_heredoc
 {

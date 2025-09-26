@@ -1,4 +1,7 @@
 #include "../minishell.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <readline/readline.h>
 
 static int	ft_check_heredoc_conditions(char *line, char *delimiter,
 									int *pipefd)

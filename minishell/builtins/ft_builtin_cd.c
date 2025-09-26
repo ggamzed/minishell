@@ -1,4 +1,7 @@
 #include "../minishell.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/stat.h>
 
 static int	ft_count_args(char **argv)
 {

@@ -1,4 +1,5 @@
 #include "../minishell.h"
+#include <unistd.h>
 
 int	ft_handle_heredoc_redirection(t_cmd *cmd)
 {

@@ -1,4 +1,6 @@
 #include "../minishell.h"
+#include <stdio.h>
+#include <unistd.h>
 
 static pid_t	ft_create_child_and_execute(t_shell *shell, t_cmd *cmd,
 										int pipefd[2], int prev_fd)

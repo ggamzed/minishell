@@ -1,4 +1,7 @@
 #include "../minishell.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 
 static int	ft_check_directory_input(char *input_file)

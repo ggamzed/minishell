@@ -1,4 +1,5 @@
 #include "../minishell.h"
+#include <stdio.h>
 
 static int	ft_is_valid_export_var(char *str)
 {
