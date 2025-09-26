@@ -23,7 +23,6 @@ static void	ft_execute_external_in_child(t_shell *shell, t_cmd *cmd)
 	envp = ft_env_to_array(shell->env_list, shell);
 	execve(executable, cmd->expanded_argv, envp);
 	perror("execve");
-	ft_free_fds(cmd);
 	ft_cleanup_and_exit(shell, 126);
 }
 
@@ -38,7 +37,6 @@ int	ft_execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd,
 	}
 	if (!cmd->expanded_argv || !cmd->expanded_argv[0])
 	{
-		ft_free_fds(cmd);
 		ft_cleanup_and_exit(shell, 1);
 	}
 	if (ft_is_builtin(cmd->expanded_argv[0]))
