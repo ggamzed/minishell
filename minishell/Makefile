@@ -11,12 +11,9 @@ builtins = builtins/
 executor = executor/
 redirections = redirections/
 validate_syntax = validate_syntax/
-get = get_next_line/
+utils = utils/
 SRCS = main.c \
-		utils.c \
 		signals.c \
-		ft_exit_utils.c \
-		ft_main_utils.c \
 		$(lexer)ft_get_type.c \
 		$(lexer)ft_get_word.c \
 		$(lexer)ft_tokenize.c \
@@ -63,7 +60,14 @@ SRCS = main.c \
 		$(redirections)ft_handle_heredoc_redirection.c \
 		$(redirections)ft_handle_input_redirection.c \
 		$(redirections)ft_handle_output_redirection.c \
-		$(redirections)ft_process_heredoc.c
+		$(redirections)ft_process_heredoc.c \
+		$(utils)ft_check_utils.c \
+		$(utils)ft_convert_utils.c \
+		$(utils)ft_exit_utils.c \
+		$(utils)ft_main_utils.c \
+		$(utils)ft_split.c \
+		$(utils)ft_str_utils.c \
+		$(utils)ft_str_utils2.c \
 
 OBJS = $(SRCS:.c=.o)
 
