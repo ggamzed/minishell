@@ -33,6 +33,11 @@ static int	ft_execute_external_command(t_shell *shell, t_cmd *cmd)
 		ft_execute_child_process(shell, cmd, NULL, -1);
 		ft_cleanup_and_exit(shell, 1);
 	}
+	if (cmd->heredoc_fd != -1)
+	{
+		close(cmd->heredoc_fd);
+		cmd->heredoc_fd = -1;
+	}
 	ft_ignore_signals();
 	waitpid(pid, &status, 0);
 	return (ft_check_only_child_status(status));

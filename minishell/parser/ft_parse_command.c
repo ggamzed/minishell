@@ -1,4 +1,5 @@
 #include "../minishell.h"
+#include <unistd.h>
 
 static t_cmd	*ft_create_command(t_shell *shell)
 {

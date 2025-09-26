@@ -88,7 +88,7 @@ int	main(int argc, char **argv, char **envp)
 	t_shell	*shell;
 	t_mem	*mem_tracker;
 	int		exit_code;
-
+	
 	(void)argc;
 	(void)argv;
 	mem_tracker = NULL;

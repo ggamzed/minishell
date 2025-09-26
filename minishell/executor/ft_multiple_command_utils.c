@@ -77,4 +77,9 @@ void	ft_handle_pipe_fds(t_cmd *current, int *pipefd, int *prev_fd)
 		close(pipefd[1]);
 		*prev_fd = pipefd[0];
 	}
+	if (current->heredoc_fd != -1)
+	{
+		close(current->heredoc_fd);
+		current->heredoc_fd = -1;
+	}
 }
