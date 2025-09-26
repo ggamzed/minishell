@@ -236,5 +236,11 @@ void	ft_handle_sigquit(int sig);
 void	ft_setup_signals(void);
 void	ft_ignore_signals(void);
 void	ft_default_signals(void);
+int		my_rl_hook(void);
+
+// ft_main_utils
+void	ft_init_export_list(t_shell *shell);
+int		ft_validate_and_parse(t_shell *shell, char *line);
+int		ft_expand_argv(t_shell *shell);
 
 #endif

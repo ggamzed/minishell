@@ -4,19 +4,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-volatile sig_atomic_t g_signal = 0;
-
-void	ft_init_export_list(t_shell *shell)
-{
-	t_env	*curr;
-
-	curr = shell->env_list;
-	while (curr)
-	{
-		ft_set_env_value(curr->key, curr->value, &shell->export_list, shell);
-		curr = curr->next;
-	}
-}
+volatile sig_atomic_t	g_signal = 0;
 
 static t_shell	*ft_init_shell(char **envp, t_mem **mem_tracker)
 {
@@ -43,96 +31,55 @@ static t_shell	*ft_init_shell(char **envp, t_mem **mem_tracker)
 
 static int	ft_process_line(t_shell *shell, char *line)
 {
-	t_token	*tokens;
-	t_cmd *current;
+	int	parse_result;
 
-	shell->line = line;
-	if (ft_validate_syntax(line) == 1)
-	{
-		shell->exit_status = 2;
+	parse_result = ft_validate_and_parse(shell, line);
+	if (parse_result != -1)
+		return (parse_result);
+	if (ft_expand_argv(shell))
 		return (1);
-	}
-	tokens = ft_tokenize(line, shell);
-	if (!tokens)
-		return (1);
-	shell->cmd_list = ft_parse_tokens(tokens, shell);
-	if (!shell->cmd_list)
-		return (0);
-	if (g_signal == SIGINT)
-	{
-		g_signal = 0;
-		return (130);
-	}
-	current = shell->cmd_list;
-	while (current)
-	{
-		if (current->args)
-		{
-			current->expanded_argv = ft_expand_tokens(current->args, shell);
-			if (!current->expanded_argv || !current->expanded_argv[0] || 
-							ft_strlen(current->expanded_argv[0]) == 0)
-			{
-				if (current->args && current->args->type == VARIABLE)
-				{
-					shell->exit_status = 0;
-				}
-				else
-				{
-					ft_print_error_msg("", ": command not found\n");
-					shell->exit_status = 127;
-				}
-				ft_free_fds(shell->cmd_list);
-				shell->cmd_list = NULL;
-				return (1);
-			}
-		}
-		current = current->next;
-	}
 	shell->exit_status = ft_execute_commands(shell);
 	ft_free_fds(shell->cmd_list);
 	shell->cmd_list = NULL;
 	return (1);
 }
-int my_rl_hook(void)
+
+static int	ft_handle_readline_input(t_shell *shell, char **line)
 {
-    if (g_signal == SIGINT)
-    {
-        //printf("minishell> ");
-        //g_signal = 0;
-    }
-    return 0;
+	*line = readline(PROMPT);
+	if (!(*line))
+	{
+		printf("exit\n");
+		shell->exit_flag = 1;
+		return (1);
+	}
+	if (**line)
+	{
+		add_history(*line);
+		if (ft_process_line(shell, *line) == 0)
+		{
+			free(*line);
+			return (1);
+		}
+	}
+	return (0);
 }
 
 static void	ft_shell_loop(t_shell *shell)
 {
 	char	*line;
-	
+
 	while (!shell->exit_flag)
 	{
 		ft_setup_signals();
 		rl_event_hook = my_rl_hook;
 		if (g_signal == SIGINT)
 		{
-
 			shell->exit_status = 130;
 			g_signal = 0;
 		}
-		line = readline(PROMPT);
-		if (!line)
-		{
-			printf("exit\n");
-			shell->exit_flag = 1;
-			break;
-		}
-		if (*line)
-		{
-			add_history(line);
-			if (ft_process_line(shell, line) == 0)
-			{
-				free(line);
-				break ;
-			}
-		}
+		if (ft_handle_readline_input(shell, &line))
+			break ;
 		free(line);
 	}
 }

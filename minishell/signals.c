@@ -44,3 +44,11 @@ void	ft_default_signals(void)
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 }
+
+int	my_rl_hook(void)
+{
+	if (g_signal == SIGINT)
+	{
+	}
+	return (0);
+}

@@ -16,6 +16,7 @@ SRCS = main.c \
 		utils.c \
 		signals.c \
 		ft_exit_utils.c \
+		ft_main_utils.c \
 		$(lexer)ft_get_type.c \
 		$(lexer)ft_get_word.c \
 		$(lexer)ft_tokenize.c \
