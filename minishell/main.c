@@ -39,7 +39,6 @@ static int	ft_process_line(t_shell *shell, char *line)
 	if (ft_expand_argv(shell))
 		return (1);
 	shell->exit_status = ft_execute_commands(shell);
-	ft_free_fds(shell->cmd_list);
 	shell->cmd_list = NULL;
 	return (1);
 }
@@ -101,6 +100,7 @@ int	main(int argc, char **argv, char **envp)
 	}
 	ft_shell_loop(shell);
 	exit_code = shell->exit_status;
+	ft_free_fds(shell->cmd_list);
 	ft_free_mem_tracker(&mem_tracker);
 	free(shell);
 	rl_clear_history();

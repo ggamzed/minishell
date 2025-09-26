@@ -4,6 +4,7 @@
 
 void	ft_cleanup_and_exit(t_shell *shell, int exit_code)
 {
+	ft_free_fds(shell->cmd_list);
 	ft_free_mem_tracker(shell->mem_tracker);
 	free(shell);
 	exit(exit_code);
