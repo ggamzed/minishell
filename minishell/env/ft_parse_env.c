@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-char	*ft_parse_env_value(char *env_str, t_shell *shell)
+static char	*ft_parse_env_value(char *env_str, t_shell *shell)
 {
 	char	*equals_sign;
 	char	*value;
@@ -14,7 +14,7 @@ char	*ft_parse_env_value(char *env_str, t_shell *shell)
 	return (value);
 }
 
-char	*ft_parse_env_key(char *env_str, t_shell *shell)
+static char	*ft_parse_env_key(char *env_str, t_shell *shell)
 {
 	char	*equals_sign;
 	char	*key;

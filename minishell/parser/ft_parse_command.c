@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-t_cmd	*ft_create_command(t_shell *shell)
+static t_cmd	*ft_create_command(t_shell *shell)
 {
 	t_cmd	*cmd;
 
@@ -26,7 +26,7 @@ t_cmd	*ft_create_command(t_shell *shell)
 	return (cmd);
 }
 
-void	ft_link_arg_token(t_cmd *cmd, t_token *token)
+static void	ft_link_arg_token(t_cmd *cmd, t_token *token)
 {
 	t_token	*current;
 

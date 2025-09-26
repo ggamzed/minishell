@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int	ft_is_valid_number(char *str)
+static int	ft_is_valid_number(char *str)
 {
 	int	i;
 

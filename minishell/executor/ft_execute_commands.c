@@ -18,7 +18,7 @@ static int	ft_count_commands(t_cmd *cmd_list)
 	return (count);
 }
 
-int	ft_execute_redirection_only(t_cmd *cmd, t_shell *shell)
+static int	ft_execute_redirection_only(t_cmd *cmd, t_shell *shell)
 {
 	int	fd;
 

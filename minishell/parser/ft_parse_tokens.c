@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-void	ft_add_command_list(t_cmd **command_list, t_cmd *new_cmd)
+static void	ft_add_command_list(t_cmd **command_list, t_cmd *new_cmd)
 {
 	t_cmd	*current;
 

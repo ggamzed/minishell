@@ -16,7 +16,7 @@ static char	*ft_handle_var_and_char(char *result, char *str, int *i,
 	return (result);
 }
 
-char	*ft_expand_word_variables(char *str, t_shell *shell)
+static char	*ft_expand_word_variables(char *str, t_shell *shell)
 {
 	char	*result;
 	int		i;

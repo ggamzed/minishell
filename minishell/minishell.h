@@ -4,6 +4,10 @@
 # include <stddef.h>
 # include <signal.h>
 
+//ikisinden birini pid_t için eklememiz gerek
+// #include <sys/types.h>  // pid_t için
+// #include <unistd.h>     // fork(), getpid(), exec() gibi fonksiyonlar için
+
 // PATH_MAX güvenlik kontrolü -> cd fonksiyonunda kullanmak için
 #ifndef PATH_MAX
 # ifdef _POSIX_PATH_MAX
@@ -103,16 +107,12 @@ typedef struct s_shell
 	int		exit_flag;		// shell kapansın mı? (exit komutu)
 }	t_shell;
 
-
-
-
 //--------------------------------UTILS--------------------------------
 int		ft_is_space(char c);
 void	ft_putstr_fd(char *s, int fd);
 char	*ft_substr(char const *s, unsigned int start, size_t len, t_shell *shell);
 int		ft_strlen(const char *s);
 char	*ft_strdup(const char *s, t_shell *shell);
-//void	*ft_malloc(size_t size);
 int		ft_isalpha(int c);
 char	*ft_itoa(int n, t_shell *shell);
 int		ft_isalnum(int c);
@@ -121,21 +121,21 @@ int		ft_strcmp(const char *s1, const char *s2);
 char	*ft_strchr(const char *s, int c);
 int		ft_is_digit(char c);
 int		ft_atoi(const char *str);
-//int		ft_strncmp(const char *s1, const char *s2, size_t n);
 char	**ft_split(char const *s, char c, t_shell *shell);
 
 //--------------------------------FREE--------------------------------
-void	ft_free_tokens(t_token *tokens);
-void	ft_free_commands(t_cmd *commands);
-void	ft_free_shell(t_shell *shell);
-void	ft_free_split(char **split);
+void	ft_free_mem_tracker(t_mem **mem_tracker);
+void	*ft_malloc(size_t size, t_shell *shell);
+void	ft_cleanup_and_exit(t_shell *shell, int exit_code);
+void	ft_print_error_msg(char *cmd, char *msg);
+void	ft_free_fds(t_cmd *commands);
 
 //--------------------------------LEXER--------------------------------
 t_token_type	ft_get_operator_type(char *line, int *i);
 t_token_type	ft_get_word_type(char *line, int i);
-char	*ft_get_word(char *line, int *i, t_shell *shell);
-t_token	*ft_tokenize(char *line, t_shell *shell);
-t_token	*ft_create_token(t_token_type type, char *value, t_shell *shell);
+char			*ft_get_word(char *line, int *i, t_shell *shell);
+t_token			*ft_tokenize(char *line, t_shell *shell);
+t_token			*ft_create_token(t_token_type type, char *value, t_shell *shell);
 void			ft_add_token(t_token **token_list, t_token *new_token);
 
 //--------------------------------VALIDATOR--------------------------------
@@ -145,23 +145,15 @@ int	ft_validate_pipes(char *line);
 int	ft_validate_redirections(char *line);
 
 //--------------------------------PARSER--------------------------------
-t_cmd	*ft_create_command(t_shell *shell);
-//t_token	*ft_create_cmd_arg(char *value, t_token_type type); //ft_create_token_arg
-//void		ft_add_cmd_arg(t_token **args, t_token *new_arg);	//ft_add_token_to_args
-void		ft_get_cmd_arguments(t_token **current, t_cmd *cmd);
-int			ft_parse_redirections(t_cmd *cmd, t_token **current);
 t_cmd	*ft_parse_command(t_token **current, t_shell *shell);
-//void		ft_add_command_list(t_cmd **commands, t_cmd *new_cmd);
 t_cmd	*ft_parse_tokens(t_token *tokens, t_shell *shell);
-int			ft_is_redirection(t_token_type type);
-int			ft_is_argument_token(t_token_type type);
-//int			ft_count_args(t_token *tokens);
-int	ft_in_parser_handle_redirect_in(t_cmd *cmd, t_token **current, t_shell *shell);
-int	ft_in_parser_handle_redirect_out(t_cmd *cmd, t_token **current, t_shell *shell);
-int	ft_in_parser_handle_redirect_append(t_cmd *cmd, t_token **current, t_shell *shell);
-int	ft_in_parser_handle_heredoc(t_cmd *cmd, t_token **current, t_shell *shell);
+int		ft_is_redirection(t_token_type type);
+int		ft_is_argument_token(t_token_type type);
+int		ft_in_parser_handle_redirect_in(t_cmd *cmd, t_token **current, t_shell *shell);
+int		ft_in_parser_handle_redirect_out(t_cmd *cmd, t_token **current, t_shell *shell);
+int		ft_in_parser_handle_heredoc(t_cmd *cmd, t_token **current, t_shell *shell);
 char	*ft_join_redirect_filename(t_token **current, t_shell *shell);
-int	ft_in_parser_handle_redirect_output(t_cmd *cmd, t_token **current, t_shell *shell, int append_mode);
+int		ft_in_parser_handle_redirect_output(t_cmd *cmd, t_token **current, t_shell *shell, int append_mode);
 
 //--------------------------------EXPANDER--------------------------------
 char	**ft_expand_tokens(t_token *args, t_shell *shell);
@@ -179,26 +171,24 @@ void	ft_skip_token_group(t_token **current);
 //--------------------------------ENVIRONMENT--------------------------------
 t_env	*ft_create_env_node(char *key, char *value, t_shell *shell);
 void	ft_add_env_node(t_env **env_list, t_env *new_node);
-char *ft_parse_env_value(char *env_str, t_shell *shell);
-char *ft_parse_env_key(char *env_str, t_shell *shell);
-int	ft_parsing_env_entry(char *env_str, t_env **env_list, t_shell *shell);
+int		ft_parsing_env_entry(char *env_str, t_env **env_list, t_shell *shell);
 t_env	*ft_init_env(char **envp, t_shell *shell);
 char	*ft_get_env_value(char *key, t_env *env_list);
-int	ft_set_env_value(char *key, char *value, t_env **env_list, t_shell *shell);
+int		ft_set_env_value(char *key, char *value, t_env **env_list, t_shell *shell);
 int		ft_unset_env_value(char *key, t_env **env_list);
 char	**ft_env_to_array(t_env *env_list, t_shell *shell);
 
 //--------------------------------BUILTIN--------------------------------
-int	ft_execute_builtin(t_shell *shell, t_cmd *cmd, int in_pipe);
-int	ft_is_builtin(char *cmd);
-int	ft_builtin_cd(char **argv, t_env *env_list, t_shell *shell);
-int	ft_builtin_echo(char **argv);
-int	ft_builtin_env(char **argv, t_env *env_list, t_shell *shell);
-int	ft_builtin_exit(char **argv, t_shell *shell, int in_pipe);
-int	ft_builtin_export(char **argv, t_env **env_list, t_shell *shell);
+int		ft_execute_builtin(t_shell *shell, t_cmd *cmd, int in_pipe);
+int		ft_is_builtin(char *cmd);
+int		ft_builtin_cd(char **argv, t_env *env_list, t_shell *shell);
+int		ft_builtin_echo(char **argv);
+int		ft_builtin_env(char **argv, t_env *env_list, t_shell *shell);
+int		ft_builtin_exit(char **argv, t_shell *shell, int in_pipe);
+int		ft_builtin_export(char **argv, t_env **env_list, t_shell *shell);
+int		ft_builtin_pwd(void);
+int 	ft_builtin_unset(char **argv, t_env **env_list, t_shell *shell);
 void	ft_set_export_variable(char *arg, t_env **env_list, t_shell *shell);
-int	ft_builtin_pwd(void);
-int ft_builtin_unset(char **argv, t_env **env_list, t_shell *shell);
 
 //--------------------------------EXECUTOR--------------------------------
 int		ft_execute_child_process(t_shell *shell, t_cmd *cmd, int *pipefd, int prev_fd);
@@ -210,12 +200,12 @@ int		ft_handle_redirections(t_cmd *cmd);
 void	ft_exec_error(t_shell *shell, char *cmd);
 void	ft_update_shlvl(t_shell *shell);
 void	ft_setup_pipe_connections(int *pipefd, int prev_fd, t_cmd *cmd);
-int	ft_create_pipe(t_cmd *cmd, int pipefd[2]);
+int		ft_create_pipe(t_cmd *cmd, int pipefd[2]);
 void	ft_handle_pipe_fds(t_cmd *current, int *pipefd, int *prev_fd);
-int	ft_wait_all_children(pid_t last_pid);
-int	ft_check_only_child_status(int status);
+int		ft_wait_all_children(pid_t last_pid);
+int		ft_check_only_child_status(int status);
 void	ft_restore_redirections(int stdin_backup, int stdout_backup);
-int	ft_handle_builtin_redirections(t_cmd *cmd, int *stdin_backup, int *stdout_backup);
+int		ft_handle_builtin_redirections(t_cmd *cmd, int *stdin_backup, int *stdout_backup);
 
 //--------------------------------REDIRECTIONS--------------------------------
 int	ft_handle_heredoc_redirection(t_cmd *cmd);
@@ -223,14 +213,7 @@ int	ft_handle_input_redirection(t_cmd *cmd);
 int	ft_handle_output_redirection(t_cmd *cmd);
 int	ft_process_heredoc(char *delimiter, t_shell *shell, int should_expand);
 
-// free
-void	ft_free_mem_tracker(t_mem **mem_tracker);
-void	*ft_malloc(size_t size, t_shell *shell);
-void	ft_cleanup_and_exit(t_shell *shell, int exit_code);
-void	ft_print_error_msg(char *cmd, char *msg);
-void	ft_free_fds(t_cmd *commands);
-
-// signal
+//--------------------------------SIGNAL--------------------------------
 void	ft_handle_sigint(int sig);
 void	ft_handle_sigquit(int sig);
 void	ft_setup_signals(void);
@@ -238,7 +221,7 @@ void	ft_ignore_signals(void);
 void	ft_default_signals(void);
 int		my_rl_hook(void);
 
-// ft_main_utils
+//--------------------------------MAIN_UTILS--------------------------------
 void	ft_init_export_list(t_shell *shell);
 int		ft_validate_and_parse(t_shell *shell, char *line);
 int		ft_expand_argv(t_shell *shell);
