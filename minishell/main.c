@@ -96,7 +96,7 @@ int	main(int argc, char **argv, char **envp)
 	if (!shell)
 	{
 		ft_putstr_fd("minishell: failed to initialize shell\n", 2);
-		ft_cleanup_and_exit(shell, 1);
+		exit(1);
 	}
 	ft_shell_loop(shell);
 	exit_code = shell->exit_status;
