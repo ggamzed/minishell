@@ -13,7 +13,7 @@ static int	ft_is_valid_number(char *str)
 		return (0);
 	while (str[i])
 	{
-		if (!ft_is_digit(str[i]))
+		if (!ft_is_digit(str[i]) && str[i] != ' ')
 			return (0);
 		i++;
 	}
