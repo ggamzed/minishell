@@ -6,7 +6,7 @@
 /*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 09:19:59 by egokce            #+#    #+#             */
-/*   Updated: 2025/09/28 12:44:28 by egokce           ###   ########.fr       */
+/*   Updated: 2025/09/28 20:24:34 by egokce           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,6 @@ static int	ft_check_child_status(int status, pid_t last_pid,
 	else if (WIFSIGNALED(status))
 	{
 		sig = WTERMSIG(status);
-		if (sig == SIGPIPE)
-		{
-			if (last_pid == -1 || waited_pid == last_pid)
-				return (-1);
-			return (-1);
-		}
 		if (sig == SIGQUIT && !(*quit_printed))
 		{
 			ft_putstr_fd("Quit (core dumped)\n", 2);

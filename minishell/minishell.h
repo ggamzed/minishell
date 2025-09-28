@@ -23,11 +23,8 @@
 #  define PATH_MAX 4096
 # endif
 #endif
-# define PROMPT "minishell$ "
 
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1
-# endif
+# define PROMPT "minishell$ "
 
 extern volatile sig_atomic_t g_signal;
 
