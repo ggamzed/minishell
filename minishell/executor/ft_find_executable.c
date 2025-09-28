@@ -22,7 +22,7 @@ static char	*ft_check_direct_path(char *cmd, t_shell *shell)
 		return (cmd);
 	if (access(cmd, F_OK) != 0)
 		return (NULL);
-	if (stat(cmd, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
+	if (stat(cmd, &st) == 0 && S_ISDIR(st.st_mode))
 		return (NULL);
 	if (access(cmd, X_OK) != 0)
 		return (NULL);
@@ -43,7 +43,7 @@ static char	*ft_search_in_paths(char *cmd, char **paths, t_shell *shell)
 		full_path = ft_strjoin(temp, cmd, shell);
 		if (access(full_path, F_OK) == 0)
 		{
-			if (stat(full_path, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
+			if (stat(full_path, &st) == 0 && S_ISDIR(st.st_mode))
 			{
 				i++;
 				continue ;

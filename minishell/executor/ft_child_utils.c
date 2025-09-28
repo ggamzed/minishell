@@ -6,7 +6,7 @@
 /*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 09:19:29 by egokce            #+#    #+#             */
-/*   Updated: 2025/09/28 09:31:55 by egokce           ###   ########.fr       */
+/*   Updated: 2025/09/28 12:42:44 by egokce           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	ft_exec_error(t_shell *shell, char *cmd)
 	{
 		if (access(cmd, F_OK) == 0)
 		{
-			if (stat(cmd, &st) == 0 && (st.st_mode & S_IFMT) == S_IFDIR)
+			if (stat(cmd, &st) == 0 && S_ISDIR(st.st_mode))
 			{
 				ft_print_error_msg(cmd, ": is a directory\n");
 				ft_cleanup_and_exit(shell, 126);

@@ -14,7 +14,7 @@
 
 static void	ft_skip_spaces(char *line, int *i, int *had_space)
 {
-	while (line[*i] && ft_is_space(line[*i]))
+	while (line[*i] && ft_is_white_space(line[*i]))
 	{
 		*had_space = 1;
 		(*i)++;
@@ -23,7 +23,7 @@ static void	ft_skip_spaces(char *line, int *i, int *had_space)
 
 static int	ft_check_space_after(char *line, int i)
 {
-	if (line[i] && ft_is_space(line[i]))
+	if (line[i] && ft_is_white_space(line[i]))
 		return (1);
 	return (0);
 }

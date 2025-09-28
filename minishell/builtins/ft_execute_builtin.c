@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <stdio.h>
 
 int	ft_is_builtin(char *cmd)
 {

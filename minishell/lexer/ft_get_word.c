@@ -6,7 +6,7 @@
 /*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 09:19:19 by egokce            #+#    #+#             */
-/*   Updated: 2025/09/28 09:20:38 by egokce           ###   ########.fr       */
+/*   Updated: 2025/09/28 13:49:38 by egokce           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static int	ft_handle_variable_word(char *line, int *i, int start)
 
 static int	ft_is_word_delimiter(char c)
 {
-	if (ft_is_space(c) || c == '|' || c == '<' || c == '>')
+	if (ft_is_white_space(c) || c == '|' || c == '<' || c == '>')
 		return (1);
 	if (c == '\'' || c == '"')
 		return (1);

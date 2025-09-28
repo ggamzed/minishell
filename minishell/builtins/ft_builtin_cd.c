@@ -94,8 +94,8 @@ static int	ft_perform_cd_operation(char *path, t_env **env_list,
 	else
 	{
 		ft_putstr_fd("cd: error retrieving current directory: getcwd: \
-						cannot access parent directories: \
-						No such file or directory\n", 2);
+cannot access parent directories: \
+No such file or directory\n", 2);
 		return (1);
 	}
 	return (0);

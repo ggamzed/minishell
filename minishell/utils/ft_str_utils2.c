@@ -6,7 +6,7 @@
 /*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 09:21:27 by egokce            #+#    #+#             */
-/*   Updated: 2025/09/28 09:21:28 by egokce           ###   ########.fr       */
+/*   Updated: 2025/09/28 14:07:03 by egokce           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,4 +88,47 @@ char	*ft_strjoin(char const *s1, char const *s2, t_shell *shell)
 	}
 	joined[i + j] = '\0';
 	return (joined);
+}
+
+size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
+{
+	unsigned long		i;
+	size_t				sizesrc;
+
+	i = 0;
+	if (dstsize == 0)
+		return (ft_strlen(src));
+	else if (dstsize != 0)
+	{
+		while ((src[i] != '\0') && (i < dstsize - 1))
+		{
+			dst[i] = src[i];
+			i++;
+		}
+		dst[i] = '\0';
+	}
+	sizesrc = ft_strlen(src);
+	return (sizesrc);
+}
+
+char	*ft_strtrim(char const *s1, t_shell *shell)
+{
+	char	*str;
+	size_t	start;
+	size_t	end;
+
+	if (!s1)
+		ft_cleanup_and_exit(shell, 1);
+	start = 0;
+	while (s1[start] && ft_is_white_space(s1[start]))
+		start++;
+	end = ft_strlen(s1);
+	while (end > start && ft_is_white_space(s1[end - 1]))
+		end--;
+	str = ft_malloc(((end - start + 1) * sizeof(char)), shell);
+	if (!str)
+		ft_cleanup_and_exit(shell, 1);
+	ft_strlcpy(str, &s1[start], end - start + 1);
+	str[end - start] = '\0';
+	return (str);
 }

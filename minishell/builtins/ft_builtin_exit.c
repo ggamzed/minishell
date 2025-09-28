@@ -25,19 +25,19 @@ static int	ft_is_valid_number(char *str)
 		return (0);
 	while (str[i])
 	{
-		if (!ft_is_digit(str[i]) && str[i] != ' ')
+		if (!ft_is_digit(str[i]))
 			return (0);
 		i++;
 	}
 	return (1);
 }
 
-static int	ft_handle_exit_argument(char **argv, int argc, t_shell *shell)
+static int	ft_handle_exit_argument(char *argv, int argc, t_shell *shell)
 {
-	if (!ft_is_valid_number(argv[1]))
+	if (!ft_is_valid_number(argv))
 	{
 		ft_putstr_fd("minishell: exit: ", 2);
-		ft_putstr_fd(argv[1], 2);
+		ft_putstr_fd(argv, 2);
 		ft_putstr_fd(": numeric argument required\n", 2);
 		return (2);
 	}
@@ -47,14 +47,15 @@ static int	ft_handle_exit_argument(char **argv, int argc, t_shell *shell)
 		shell->exit_flag = 0;
 		return (-1);
 	}
-	return (ft_atoi(argv[1]));
+	return (ft_atoi(argv));
 }
 
 int	ft_builtin_exit(char **argv, t_shell *shell, int in_pipe)
 {
-	int	exit_code;
-	int	argc;
-	int	arg_result;
+	int		exit_code;
+	int		argc;
+	int		arg_result;
+	char	*tmp;
 
 	argc = 0;
 	while (argv[argc])
@@ -64,7 +65,8 @@ int	ft_builtin_exit(char **argv, t_shell *shell, int in_pipe)
 		exit_code = shell->exit_status;
 	else
 	{
-		arg_result = ft_handle_exit_argument(argv, argc, shell);
+		tmp = ft_strtrim(argv[1], shell);
+		arg_result = ft_handle_exit_argument(tmp, argc, shell);
 		if (arg_result == -1)
 			return (1);
 		exit_code = arg_result;

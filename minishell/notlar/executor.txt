@@ -349,3 +349,6 @@ Dönüş değeri:
 
 access(cmd, F_OK) == 0: Dosya var mı?
 access(cmd, X_OK) == 0: Dosya çalıştırılabilir mi?	
+
+
+echo ece | ls | echo > a.txt

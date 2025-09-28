@@ -6,7 +6,7 @@
 /*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 09:21:01 by egokce            #+#    #+#             */
-/*   Updated: 2025/09/28 09:21:02 by egokce           ###   ########.fr       */
+/*   Updated: 2025/09/28 12:46:39 by egokce           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int	ft_check_directory_input(char *input_file)
 
 	if (stat(input_file, &st) == 0)
 	{
-		if ((st.st_mode & S_IFMT) == S_IFDIR)
+		if (S_ISDIR(st.st_mode))
 		{
 			ft_print_error_msg(input_file, ": Is a directory\n");
 			return (1);

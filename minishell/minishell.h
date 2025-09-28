@@ -25,14 +25,6 @@
 #endif
 # define PROMPT "minishell$ "
 
-#ifndef S_IFDIR
- #define S_IFDIR  0040000
-#endif
-
-#ifndef SIFMT
-# define S_IFMT  00170000
-#endif
-
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1
 # endif
@@ -105,7 +97,7 @@ typedef struct s_shell
 }	t_shell;
 
 //--------------------------------UTILS--------------------------------
-int		ft_is_space(char c);
+int		ft_is_white_space(char c);
 void	ft_putstr_fd(char *s, int fd);
 char	*ft_substr(char const *s, unsigned int start, size_t len, t_shell *shell);
 int		ft_strlen(const char *s);
@@ -119,6 +111,8 @@ char	*ft_strchr(const char *s, int c);
 int		ft_is_digit(char c);
 int		ft_atoi(const char *str);
 char	**ft_split(char const *s, char c, t_shell *shell);
+size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize);
+char	*ft_strtrim(char const *s1, t_shell *shell);
 
 //--------------------------------FREE--------------------------------
 void	ft_free_mem_tracker(t_mem **mem_tracker);
@@ -216,11 +210,11 @@ void	ft_handle_sigquit(int sig);
 void	ft_setup_signals(void);
 void	ft_ignore_signals(void);
 void	ft_default_signals(void);
-int		my_rl_hook(void);
 
 //--------------------------------MAIN_UTILS--------------------------------
 void	ft_init_export_list(t_shell *shell);
 int		ft_validate_and_parse(t_shell *shell, char *line);
 int		ft_expand_argv(t_shell *shell);
+int		my_rl_hook(void);
 
 #endif

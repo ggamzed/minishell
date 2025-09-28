@@ -19,9 +19,9 @@ static int	ft_check_pipe_boundaries(char *line)
 
 	i = 0;
 	j = ft_strlen(line) - 1;
-	while (line[i] && ft_is_space(line[i]))
+	while (line[i] && ft_is_white_space(line[i]))
 		i++;
-	while (j >= 0 && ft_is_space(line[j]))
+	while (j >= 0 && ft_is_white_space(line[j]))
 		j--;
 	if (line[i] == '|' || (j >= 0 && line[j] == '|'))
 	{
@@ -34,7 +34,7 @@ static int	ft_check_pipe_boundaries(char *line)
 static int	ft_handle_pipe_found(char *line, int *i, int is_quote)
 {
 	(*i)++;
-	while (line[*i] && ft_is_space(line[*i]))
+	while (line[*i] && ft_is_white_space(line[*i]))
 		(*i)++;
 	if (line[*i] == '|')
 	{

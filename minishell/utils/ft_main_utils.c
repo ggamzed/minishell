@@ -6,7 +6,7 @@
 /*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 09:21:20 by egokce            #+#    #+#             */
-/*   Updated: 2025/09/28 09:21:21 by egokce           ###   ########.fr       */
+/*   Updated: 2025/09/28 12:36:42 by egokce           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,14 @@ int	ft_expand_argv(t_shell *shell)
 			}
 		}
 		current = current->next;
+	}
+	return (0);
+}
+
+int	my_rl_hook(void)
+{
+	if (g_signal == SIGINT)
+	{
 	}
 	return (0);
 }

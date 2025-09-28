@@ -30,7 +30,7 @@ static void	ft_skip_redirection_operator(char *line, int *i)
 
 static int	ft_check_filename_after_redirection(char *line, int i, int is_quote)
 {
-	while (line[i] && ft_is_space(line[i]))
+	while (line[i] && ft_is_white_space(line[i]))
 		i++;
 	if (!line[i] || line[i] == '|' || line[i] == '<' || line[i] == '>')
 	{

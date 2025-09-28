@@ -18,7 +18,7 @@ int	ft_builtin_pwd(char **argv)
 {
 	char	cwd[PATH_MAX];
 
-	if (argv && (argv[1][0] == '-'))
+	if (argv[1] && (argv[1][0] == '-'))
 	{
 		ft_putstr_fd("pwd: invalid option\n", 2);
 		return (2);

@@ -6,7 +6,7 @@
 /*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 09:22:04 by egokce            #+#    #+#             */
-/*   Updated: 2025/09/28 09:22:05 by egokce           ###   ########.fr       */
+/*   Updated: 2025/09/28 14:07:49 by egokce           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,12 +55,4 @@ void	ft_default_signals(void)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-}
-
-int	my_rl_hook(void)
-{
-	if (g_signal == SIGINT)
-	{
-	}
-	return (0);
 }
