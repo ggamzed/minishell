@@ -34,7 +34,7 @@ static int	ft_process_line(t_shell *shell, char *line)
 	int	parse_result;
 
 	parse_result = ft_validate_and_parse(shell, line);
-	if (parse_result != -1)
+	if (parse_result != 1)
 		return (parse_result);
 	if (ft_expand_argv(shell))
 		return (1);
@@ -46,6 +46,7 @@ static int	ft_process_line(t_shell *shell, char *line)
 static int	ft_handle_readline_input(t_shell *shell, char **line)
 {
 	*line = readline(PROMPT);
+
 	if (!(*line))
 	{
 		printf("exit\n");
@@ -55,7 +56,7 @@ static int	ft_handle_readline_input(t_shell *shell, char **line)
 	if (**line)
 	{
 		add_history(*line);
-		if (ft_process_line(shell, *line) == 0)
+		if (ft_process_line(shell, *line) == -1)
 		{
 			free(*line);
 			return (1);

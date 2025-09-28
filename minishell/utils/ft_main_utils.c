@@ -20,20 +20,19 @@ int	ft_validate_and_parse(t_shell *shell, char *line)
 	if (ft_validate_syntax(line) == 1)
 	{
 		shell->exit_status = 2;
-		return (1);
+		return (0);
 	}
 	tokens = ft_tokenize(line, shell);
 	if (!tokens)
-		return (1);
+		return (0);
 	shell->cmd_list = ft_parse_tokens(tokens, shell);
 	if (!shell->cmd_list)
-		return (0);
+		return (-1);
 	if (g_signal == SIGINT)
 	{
-		g_signal = 0;
 		return (130);
 	}
-	return (-1);
+	return (1);
 }
 
 static int	ft_handle_expansion_error(t_shell *shell, t_cmd *current)
