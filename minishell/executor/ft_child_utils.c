@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_child_utils.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:19:29 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:31:55 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 #include <unistd.h>
 #include <sys/stat.h>
@@ -56,8 +68,6 @@ void	ft_exec_error(t_shell *shell, char *cmd)
 			ft_print_error_msg(cmd, ": Permission denied\n");
 			ft_cleanup_and_exit(shell, 126);
 		}
-		// ft_print_error_msg(cmd, ": No such file or directory\n");
-		// ft_cleanup_and_exit(shell, 127);
 	}
 	ft_print_error_msg(cmd, ": command not found\n");
 	ft_cleanup_and_exit(shell, 127);

@@ -1,19 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:22:00 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:22:00 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
 # include <stddef.h>
 # include <signal.h>
 
-//ikisinden birini pid_t için eklememiz gerek
-// #include <sys/types.h>  // pid_t için
-// #include <unistd.h>     // fork(), getpid(), exec() gibi fonksiyonlar için
-
-// PATH_MAX güvenlik kontrolü -> cd fonksiyonunda kullanmak için
 #ifndef PATH_MAX
 # ifdef _POSIX_PATH_MAX
 #  define PATH_MAX _POSIX_PATH_MAX
 # else
-#  define PATH_MAX 4096  // eski sistemlerde tanımlı olmayabiliyormuş, onun için
+#  define PATH_MAX 4096
 # endif
 #endif
 # define PROMPT "minishell$ "
@@ -32,61 +39,47 @@
 
 extern volatile sig_atomic_t g_signal;
 
-//token tipleri
 typedef enum e_token_type
 {
-	WORD,					// echo, hello, /bin/ls
-	SINGLE_QUOTED_STRING,	// 'hello world'
-	DOUBLE_QUOTED_STRING,	// "hello $USER"
-	VARIABLE,				// $USER, $HOME
-	EXIT_STATUS,			// $?
-	PIPE,					// |
-	REDIRECT_IN,			// < (stdin redirection)
-	REDIRECT_OUT,			// > (stdout redirection)
-	REDIRECT_APPEND,		// >> (output append)
-	HEREDOC,				// << (here document)
+	WORD,
+	SINGLE_QUOTED_STRING,
+	DOUBLE_QUOTED_STRING,
+	VARIABLE,
+	EXIT_STATUS,
+	PIPE,
+	REDIRECT_IN,
+	REDIRECT_OUT,
+	REDIRECT_APPEND,
+	HEREDOC,
 }	t_token_type;
 
-//token yapısı
 typedef struct s_token
 {
-	t_token_type	type;		//token hangi tipte?
-	char			*value;		//token içeriği
+	t_token_type	type;
+	char			*value;
 	int				space_flag;
-	struct s_token	*next;		//sonraki node'un adresi
+	struct s_token	*next;
 }	t_token;
 
-typedef struct s_heredoc
-{
-	char			*delimiter;
-	t_token_type	type;
-	int				should_expand;
-	int				fd;
-	struct s_heredoc *next;
-} t_heredoc;
-
-// command yapısı -> tek bir komutu temsil eder 
 typedef struct s_cmd
 {
-	t_token			*args;              // Linked list of arguments with types
-	char 			**expanded_argv;	// argümanların expand edilmiş bir şekilde tutulduğu hali
-	char			*input_file;        // < input.txt (raw value)
-	t_token_type	input_type;         // Input file token type
-	char			*output_file;       // > output.txt (raw value)  
-	t_token_type	output_type;        // Output file token type
-	int				append_mode;        // >> modu (1) veya > modu (0)
-	char			*heredoc_delimiter; // << eof (raw value)
-	t_token_type	heredoc_type;       // Delimiter token type
-	int				heredoc_fd;         // heredoc için file descriptor
-	int				heredoc_should_expand; // expand edilsin mi edilmesin mi kontrolü
-	t_heredoc		*heredocs;  		// LINKED LIST olarak değiştir
-	char    		**all_output_files;     // Tüm output dosyaları
-    int     		*all_append_modes;      // Her dosya için append mode
-    int     		output_count;           // Toplam output dosya sayısı
-	struct s_cmd	*next;              // pipe'daki sonraki komut
+	t_token			*args;
+	char 			**expanded_argv;
+	char			*input_file;
+	t_token_type	input_type;
+	char			*output_file;
+	t_token_type	output_type;
+	int				append_mode;
+	char			*heredoc_delimiter;
+	t_token_type	heredoc_type;
+	int				heredoc_fd;
+	int				heredoc_should_expand;
+	char    		**all_output_files;
+	int     		*all_append_modes;
+	int     		output_count;
+	struct s_cmd	*next;
 } t_cmd;
 
-// environment (çevre değişkenleri) yapısı
 typedef struct s_env
 {
 	char			*key;
@@ -100,16 +93,15 @@ typedef struct	s_mem
 	struct s_mem	*next;
 }	t_mem;
 
-// main shell yapısı
 typedef struct s_shell
 {
 	t_mem	**mem_tracker;
-	t_env	*env_list;		// environment değişkenleri ($HOME, $USER...)
+	t_env	*env_list;
 	t_env	*export_list;
-	t_cmd	*cmd_list;		// parse edilmiş komut listesi
-	char	*line;			// kullanıcının girdiği raw input
-	int		exit_status;	// son komutun exit code'u ($?)
-	int		exit_flag;		// shell kapansın mı? (exit komutu)
+	t_cmd	*cmd_list;
+	char	*line;
+	int		exit_status;
+	int		exit_flag;
 }	t_shell;
 
 //--------------------------------UTILS--------------------------------
@@ -188,10 +180,10 @@ int		ft_execute_builtin(t_shell *shell, t_cmd *cmd, int in_pipe);
 int		ft_is_builtin(char *cmd);
 int		ft_builtin_cd(char **argv, t_env *env_list, t_shell *shell);
 int		ft_builtin_echo(char **argv);
-int		ft_builtin_env(char **argv, t_env *env_list, t_shell *shell);
+int		ft_builtin_env(char **argv, t_env *env_list);
 int		ft_builtin_exit(char **argv, t_shell *shell, int in_pipe);
 int		ft_builtin_export(char **argv, t_env **env_list, t_shell *shell);
-int		ft_builtin_pwd(void);
+int		ft_builtin_pwd(char **argv);
 int 	ft_builtin_unset(char **argv, t_env **env_list, t_shell *shell);
 void	ft_set_export_variable(char *arg, t_env **env_list, t_shell *shell);
 

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_str_utils2.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:21:27 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:21:28 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 char	*ft_substr(char const *s,
@@ -8,7 +20,7 @@ char	*ft_substr(char const *s,
 	size_t	s_len;
 
 	if (!s)
-		return (NULL);
+		ft_cleanup_and_exit(shell, 1);
 	if (len == 0)
 		return (ft_strdup("", shell));
 	s_len = ft_strlen(s);
@@ -35,8 +47,9 @@ char	*ft_strdup(const char *s, t_shell *shell)
 	int		len;
 	int		i;
 
+	if (!s)
+		ft_cleanup_and_exit(shell, 1);
 	len = ft_strlen(s);
-	dup = NULL;
 	dup = ft_malloc(len + 1, shell);
 	if (!dup)
 		ft_cleanup_and_exit(shell, 1);
@@ -57,8 +70,8 @@ char	*ft_strjoin(char const *s1, char const *s2, t_shell *shell)
 	int		j;
 
 	if (!s1 || !s2)
-		return (NULL);
-	joined = ft_malloc(ft_strlen(s1) + ft_strlen(s2)+ 1, shell);
+		ft_cleanup_and_exit(shell, 1);
+	joined = ft_malloc(ft_strlen(s1) + ft_strlen(s2) + 1, shell);
 	if (!joined)
 		ft_cleanup_and_exit(shell, 1);
 	i = 0;

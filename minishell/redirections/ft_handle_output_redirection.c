@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_handle_output_redirection.c                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:21:04 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:31:04 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 #include <stdio.h>
 #include <unistd.h>
@@ -48,7 +60,7 @@ static int	ft_process_multiple_outputs(t_cmd *cmd)
 		if (i == cmd->output_count - 1)
 			final_fd = fd;
 		else
-			close(fd); //not: hepsini açıp kapatıp son file'ı almamızın sebebi bash davranışı
+			close(fd);
 		i++;
 	}
 	if (final_fd != -1)

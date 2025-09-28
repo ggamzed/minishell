@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:21:52 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:21:52 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,7 +58,6 @@ static int	ft_process_line(t_shell *shell, char *line)
 static int	ft_handle_readline_input(t_shell *shell, char **line)
 {
 	*line = readline(PROMPT);
-
 	if (!(*line))
 	{
 		printf("exit\n");
@@ -89,7 +100,7 @@ int	main(int argc, char **argv, char **envp)
 	t_shell	*shell;
 	t_mem	*mem_tracker;
 	int		exit_code;
-	
+
 	(void)argc;
 	(void)argv;
 	mem_tracker = NULL;

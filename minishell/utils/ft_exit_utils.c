@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_exit_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:21:15 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:21:19 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 #include <stdlib.h>
 #include <unistd.h>
@@ -24,7 +36,6 @@ void	ft_cleanup_and_exit(t_shell *shell, int exit_code)
 {
 	ft_free_fds(shell->cmd_list);
 	ft_free_mem_tracker(shell->mem_tracker);
-	//free(shell->mem_tracker);
 	free(shell);
 	exit(exit_code);
 }

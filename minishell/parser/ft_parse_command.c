@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_parse_command.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:20:54 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:20:54 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 #include <unistd.h>
 
@@ -19,7 +31,6 @@ static t_cmd	*ft_create_command(t_shell *shell)
 	cmd->heredoc_type = WORD;
 	cmd->heredoc_fd = -1;
 	cmd->heredoc_should_expand = 1;
-	cmd->heredocs = NULL;  //yeni ekledim
 	cmd->all_output_files = NULL;
 	cmd->all_append_modes = NULL;
 	cmd->output_count = 0;

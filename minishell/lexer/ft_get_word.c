@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_get_word.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:19:19 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:20:38 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 static int	ft_handle_quoted_word(char *line, int *i, int *start)
@@ -9,12 +21,6 @@ static int	ft_handle_quoted_word(char *line, int *i, int *start)
 	*start = *i;
 	while (line[*i])
 	{
-		// if (quote == '"' && line[*i] == '\\' && line[*i + 1] != '\0')
-		// {
-		// 	*i += 2;
-		// 	printf("girdi");
-		// 	continue ;
-		// }
 		if (line[*i] == quote)
 			break ;
 		(*i)++;
@@ -77,7 +83,5 @@ char	*ft_get_word(char *line, int *i, t_shell *shell)
 	else
 		len = ft_handle_normal_word(line, i, start);
 	word = ft_substr(line, start, len, shell);
-	if (!word)
-		return (NULL);
 	return (word);
 }

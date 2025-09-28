@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_builtin_export.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:18:52 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:34:23 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 #include <stdio.h>
 
@@ -19,16 +31,9 @@ static int	ft_is_valid_export_var(char *str)
 
 static int	ft_handle_export_option(char *option)
 {
-	if (ft_strcmp(option, "-p") == 0)
-		return (0);
 	ft_putstr_fd("minishell: export: ", 2);
 	ft_putstr_fd(option, 2);
 	ft_putstr_fd(": invalid option\n", 2);
-	if (option[0] == '-' && option[1] == '-')
-	{
-		ft_putstr_fd("export: usage: export [-fn] ", 2);
-		ft_putstr_fd("[name[=value] ...] or export -p\n", 2);
-	}
 	return (2);
 }
 
@@ -61,8 +66,8 @@ int	ft_builtin_export(char **argv, t_env **env_list, t_shell *shell)
 	exit_code = 0;
 	while (argv[i])
 	{
-		if (argv[i][0] == '-' && ft_handle_export_option(argv[i]) != 0)
-			return (2);
+		if (argv[1][0] == '-')
+			return (ft_handle_export_option(argv[i]));
 		else if (ft_is_valid_export_var(argv[i]) == 0)
 		{
 			ft_putstr_fd("minishell: export: not a valid identifier\n", 2);

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_validate_redirections.c                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:21:35 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:21:35 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 static void	ft_skip_redirection_operator(char *line, int *i)
@@ -24,7 +36,7 @@ static int	ft_check_filename_after_redirection(char *line, int i, int is_quote)
 	{
 		if (is_quote)
 			return (0);
-		ft_putstr_fd("minishell: syntax error near unexpected token\n", 2);//daha düzgün bir hata mesajı yazdır
+		ft_putstr_fd("minishell: syntax error near unexpected token\n", 2);
 		return (1);
 	}
 	return (0);

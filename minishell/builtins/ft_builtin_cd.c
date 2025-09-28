@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_builtin_cd.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:18:31 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:18:31 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 #include <stdio.h>
 #include <unistd.h>
@@ -81,7 +93,9 @@ static int	ft_perform_cd_operation(char *path, t_env **env_list,
 		ft_set_env_value("PWD", new_cwd, env_list, shell);
 	else
 	{
-		ft_putstr_fd("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n", 2);
+		ft_putstr_fd("cd: error retrieving current directory: getcwd: \
+						cannot access parent directories: \
+						No such file or directory\n", 2);
 		return (1);
 	}
 	return (0);

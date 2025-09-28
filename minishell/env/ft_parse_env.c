@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_parse_env.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:19:11 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:19:11 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 static char	*ft_parse_env_value(char *env_str, t_shell *shell)
@@ -9,8 +21,6 @@ static char	*ft_parse_env_value(char *env_str, t_shell *shell)
 	if (!equals_sign)
 		return (NULL);
 	value = ft_strdup(equals_sign + 1, shell);
-	if (!value)
-		return (NULL);
 	return (value);
 }
 
@@ -23,8 +33,6 @@ static char	*ft_parse_env_key(char *env_str, t_shell *shell)
 	if (!equals_sign)
 		return (NULL);
 	key = ft_substr(env_str, 0, equals_sign - env_str, shell);
-	if (!key)
-		return (NULL);
 	return (key);
 }
 

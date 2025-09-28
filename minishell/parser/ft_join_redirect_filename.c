@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_join_redirect_filename.c                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:20:51 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:20:52 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 static char	*ft_join_filename_tokens(t_token **current, t_shell *shell)
@@ -7,8 +19,6 @@ static char	*ft_join_filename_tokens(t_token **current, t_shell *shell)
 	t_token	*token_ptr;
 
 	filename = ft_strdup((*current)->value, shell);
-	if (!filename)
-		return (NULL);
 	token_ptr = *current;
 	while (token_ptr->next && token_ptr->next->space_flag == 0
 		&& token_ptr->next->type != PIPE
@@ -20,8 +30,6 @@ static char	*ft_join_filename_tokens(t_token **current, t_shell *shell)
 		token_ptr = token_ptr->next;
 		temp = ft_strjoin(filename, token_ptr->value, shell);
 		filename = temp;
-		if (!filename)
-			return (NULL);
 	}
 	*current = token_ptr;
 	return (filename);

@@ -1,47 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_builtin_env.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:18:39 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:18:39 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 #include <stdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
 
-static int	ft_execute_with_clean_env(char **argv, t_shell *shell)
-{
-	pid_t	pid;
-	int		status;
-
-	pid = fork();
-	if (pid == 0)
-	{
-		if (execve(argv[2], &argv[2], NULL) == -1)
-		{
-			perror("env");
-			ft_cleanup_and_exit(shell, 1);
-		}
-	}
-	else if (pid > 0)
-	{
-		waitpid(pid, &status, 0);
-		return (WEXITSTATUS(status));
-	}
-	else
-	{
-		perror("fork");
-		return (1);
-	}
-	return (0);
-}
-
-int	ft_builtin_env(char **argv, t_env *env_list, t_shell *shell)
+int	ft_builtin_env(char **argv, t_env *env_list)
 {
 	t_env	*current;
 
-	if (argv && argv[1])
+	if (argv[1])
 	{
-		if (ft_strcmp(argv[1], "-i") == 0)
-			return (ft_execute_with_clean_env(argv, shell));
-		else
+		if (argv[1][0] == '-')
 		{
 			ft_putstr_fd("env: invalid option\n", 2);
-			return (1);
+			return (125);
+		}
+		else
+		{
+			ft_putstr_fd("env: No such file or directory", 2);
+			return (127);
 		}
 	}
 	current = env_list;

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_execute_builtin.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:19:02 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:19:02 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 #include <stdio.h>
 
@@ -17,20 +29,6 @@ int	ft_is_builtin(char *cmd)
 	return (0);
 }
 
-static int	ft_is_valid_env_arg(char **argv)
-{
-	if (argv[1] != NULL)
-	{
-		if (ft_strcmp(argv[1], "-i") == 0)
-			return (0);
-		if (ft_strcmp(argv[1], "env") == 0)
-			return (0);
-		printf("env: '%s': No such file or directory\n", argv[1]);
-		return (127);
-	}
-	return (0);
-}
-
 static int	ft_execute_builtin_function(char **argv, t_shell *shell,
 									int in_pipe)
 {
@@ -39,17 +37,13 @@ static int	ft_execute_builtin_function(char **argv, t_shell *shell,
 	else if (ft_strcmp(argv[0], "cd") == 0)
 		return (ft_builtin_cd(argv, shell->env_list, shell));
 	else if (ft_strcmp(argv[0], "pwd") == 0)
-		return (ft_builtin_pwd());
+		return (ft_builtin_pwd(argv));
 	else if (ft_strcmp(argv[0], "export") == 0)
 		return (ft_builtin_export(argv, &shell->env_list, shell));
 	else if (ft_strcmp(argv[0], "unset") == 0)
 		return (ft_builtin_unset(argv, &shell->env_list, shell));
 	else if (ft_strcmp(argv[0], "env") == 0)
-	{
-		if (ft_is_valid_env_arg(argv) == 127)
-			return (127);
-		return (ft_builtin_env(argv, shell->env_list, shell));
-	}
+		return (ft_builtin_env(argv, shell->env_list));
 	else if (ft_strcmp(argv[0], "exit") == 0)
 		return (ft_builtin_exit(argv, shell, in_pipe));
 	return (1);

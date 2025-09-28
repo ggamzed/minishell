@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_double_quoted.c                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:20:05 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:20:06 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 char	*ft_append_char(char *str, char c, t_shell *shell)
@@ -18,8 +30,6 @@ char	*ft_expand_double_quoted(char *str, t_shell *shell)
 	int		i;
 
 	result = ft_strdup("", shell);
-	if (!result)
-		return (NULL);
 	i = 0;
 	while (str[i])
 	{

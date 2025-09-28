@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_in_parser_handle_redirect_input.c               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:20:46 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:20:46 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 #include <unistd.h>
 
@@ -8,17 +20,15 @@ static char	*ft_join_consecutive_tokens(t_token **current, t_shell *shell,
 	char			*temp;
 	t_token_type	type;
 	t_token			*token_ptr;
-	
+
 	delimiter = ft_strdup((*current)->value, shell);
-	if (!delimiter)
-		return (NULL);
 	token_ptr = *current;
 	type = token_ptr->type;
 	while (token_ptr->next && token_ptr->next->space_flag == 0)
 	{
 		if ((type != PIPE && type != REDIRECT_IN
-			&& type != REDIRECT_OUT && type != REDIRECT_APPEND
-			&& type != HEREDOC))
+				&& type != REDIRECT_OUT && type != REDIRECT_APPEND
+				&& type != HEREDOC))
 			return (delimiter);
 		token_ptr = token_ptr->next;
 		type = token_ptr->type;
@@ -26,8 +36,6 @@ static char	*ft_join_consecutive_tokens(t_token **current, t_shell *shell,
 			*has_quotes = 1;
 		temp = ft_strjoin(delimiter, token_ptr->value, shell);
 		delimiter = temp;
-		if (!delimiter)
-			return (NULL);
 	}
 	*current = token_ptr;
 	return (delimiter);

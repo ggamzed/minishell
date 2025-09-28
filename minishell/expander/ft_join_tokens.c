@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_join_tokens.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/09/28 09:20:17 by egokce            #+#    #+#             */
+/*   Updated: 2025/09/28 09:20:18 by egokce           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 static int	ft_count_token_groups(t_token *tokens)
@@ -24,15 +36,11 @@ static char	*ft_join_token_group(char **expanded_argv, int *i,
 	char	*temp;
 
 	merged_word = ft_strdup(expanded_argv[*i], shell);
-	if (!merged_word)
-		return (NULL);
 	(*i)++;
 	*current = (*current)->next;
 	while (*current && (*current)->space_flag == 0)
 	{
 		temp = ft_strjoin(merged_word, expanded_argv[*i], shell);
-		if (!temp)
-			return (NULL);
 		merged_word = temp;
 		(*i)++;
 		*current = (*current)->next;
