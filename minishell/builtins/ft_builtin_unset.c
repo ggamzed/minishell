@@ -21,7 +21,7 @@ int	ft_builtin_unset(char **argv, t_env **env_list, t_shell *shell)
 		return (0);
 	while (argv[i])
 	{
-		if (argv[i][0] == '-')
+		if (argv[i] && argv[i][0] == '-')
 		{
 			ft_putstr_fd("minishell: unset: ", 2);
 			ft_putstr_fd(argv[i], 2);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_str_utils2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*   By: gdemirci <gdemirci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 09:21:27 by egokce            #+#    #+#             */
-/*   Updated: 2025/09/28 14:07:03 by egokce           ###   ########.fr       */
+/*   Updated: 2025/09/28 20:44:21 by gdemirci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ char	*ft_strjoin(char const *s1, char const *s2, t_shell *shell)
 	return (joined);
 }
 
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
+static size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
 {
 	unsigned long		i;
 	size_t				sizesrc;

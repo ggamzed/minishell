@@ -110,7 +110,6 @@ char			*ft_strchr(const char *s, int c);
 int				ft_is_digit(char c);
 int				ft_atoi(const char *str);
 char			**ft_split(char const *s, char c, t_shell *shell);
-size_t			ft_strlcpy(char *dst, const char *src, size_t dstsize);
 char			*ft_strtrim(char const *s1, t_shell *shell);
 void			ft_free_mem_tracker(t_mem **mem_tracker);
 void			*ft_malloc(size_t size, t_shell *shell);
@@ -133,8 +132,6 @@ t_cmd			*ft_parse_tokens(t_token *tokens, t_shell *shell);
 int				ft_is_redirection(t_token_type type);
 int				ft_is_argument_token(t_token_type type);
 int				ft_in_parser_handle_redirect_in(t_cmd *cmd, \
-								t_token **current, t_shell *shell);
-int				ft_in_parser_handle_redirect_out(t_cmd *cmd, \
 								t_token **current, t_shell *shell);
 int				ft_in_parser_handle_heredoc(t_cmd *cmd, \
 								t_token **current, t_shell *shell);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_builtin_export.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: egokce <egokce@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*   By: gdemirci <gdemirci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/28 09:18:52 by egokce            #+#    #+#             */
-/*   Updated: 2025/09/28 09:34:23 by egokce           ###   ########.fr       */
+/*   Updated: 2025/09/28 20:45:31 by gdemirci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int	ft_builtin_export(char **argv, t_env **env_list, t_shell *shell)
 	exit_code = 0;
 	while (argv[i])
 	{
-		if (argv[1][0] == '-')
+		if (argv[1] && argv[1][0] == '-')
 			return (ft_handle_export_option(argv[i]));
 		else if (ft_is_valid_export_var(argv[i]) == 0)
 		{
