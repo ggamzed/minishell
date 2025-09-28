@@ -18,8 +18,13 @@
 #endif
 # define PROMPT "minishell$ "
 
-// #define S_IFDIR  0040000
-// #define S_IFMT  00170000
+#ifndef S_IFDIR
+ #define S_IFDIR  0040000
+#endif
+
+#ifndef SIFMT
+# define S_IFMT  00170000
+#endif
 
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1

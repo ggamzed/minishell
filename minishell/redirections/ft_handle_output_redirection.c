@@ -9,7 +9,9 @@ static int	ft_open_output_file(char *filename, int append_mode)
 	int	fd;
 
 	if (append_mode == 1)
+	{
 		fd = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	}
 	else
 		fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	return (fd);

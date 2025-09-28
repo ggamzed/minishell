@@ -35,7 +35,12 @@ static void	ft_handle_normal_variable(char *arg, t_env **env_list,
 		ft_set_env_value(key, value, &shell->export_list, shell);
 	}
 	else
-		ft_set_env_value(arg, NULL, &shell->export_list, shell);
+	{
+		if (ft_get_env_value(arg, shell->export_list))
+			return ;
+		else
+			ft_set_env_value(arg, NULL, &shell->export_list, shell);
+	}
 }
 
 void	ft_set_export_variable(char *arg, t_env **env_list, t_shell *shell)

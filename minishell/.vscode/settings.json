@@ -6,6 +6,7 @@
 		"readline.h": "c",
 		"signal.h": "c",
 		"fcntl.h": "c",
-		"stddef.h": "c"
+		"stddef.h": "c",
+		"stdio.h": "c"
 	}
 }

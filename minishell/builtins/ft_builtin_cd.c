@@ -27,7 +27,7 @@ static char	*ft_get_cd_path(char **argv, t_env *env_list)
 	if (!argv[1])
 	{
 		home = ft_get_env_value("HOME", env_list);
-		if (!home)
+		if (!home || !home[0])
 		{
 			ft_putstr_fd("minishell: cd: HOME not set\n", 2);
 			return (NULL);
@@ -79,6 +79,11 @@ static int	ft_perform_cd_operation(char *path, t_env **env_list,
 	}
 	if (getcwd(new_cwd, sizeof(new_cwd)))
 		ft_set_env_value("PWD", new_cwd, env_list, shell);
+	else
+	{
+		ft_putstr_fd("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n", 2);
+		return (1);
+	}
 	return (0);
 }
 
