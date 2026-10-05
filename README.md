@@ -84,20 +84,3 @@ minishell/
 ├── env/               # environment variable list
 └── utils/             # helpers
 ```
-
-## Team
-
-Developed as a pair project by **egokce** and **gdemirci**.
-
-- **gdemirci** — executor and the overall shell flow
-
-## Resources
-
-- [Bash Reference Manual](https://www.gnu.org/software/bash/manual/bash.html)
-- [GNU Readline Library documentation](https://tiswww.case.edu/php/chet/readline/rltop.html)
-- The 42 `minishell` subject
-- Manual pages: `fork`, `execve`, `pipe`, `dup2`, `waitpid`, `sigaction`, `access`
-
-**Use of AI**
-
-AI tools were used as a support resource during this project for code review, debugging assistance and improving the clarity of documentation.
